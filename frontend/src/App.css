@@ -1,0 +1,123 @@
+body {
+  background-color: tomato;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.flex {
+  display: flex;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: 0 10px;
+}
+
+.textCenter {
+  width: 100%;
+  text-align: center;
+}
+
+.container {
+  max-width: 800px;
+  min-height: 100vh;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.shadow {
+  -webkit-box-shadow: 6px 6px 10px 0px rgba(0, 0, 0, 0.38);
+  box-shadow: 6px 6px 10px 0px rgba(0, 0, 0, 0.38);
+}
+
+.logo {
+  height: 10rem;
+  margin-bottom: 2rem;
+}
+
+.input {
+  padding: 5px 10px;
+  background: none;
+  border: 1px solid grey;
+  border-radius: 5px;
+}
+
+select.input {
+  height: 100%;
+}
+
+.button {
+  width: 100%;
+  background-color: tomato;
+  padding: 5px 10px;
+  border-radius: 10px;
+  border: 1px solid tomato;
+  color: white;
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 10px;
+  align-self: center;
+}
+
+.label {
+  font-weight: 700
+}
+
+.labelInBorder {
+  position: absolute;
+  left: 1rem;
+  top: 0;
+  transform: translateY(-50%);
+  background-color: white;
+  padding: 0 4px;
+  font-weight: 700
+}
+
+.inputError {
+  position: absolute;
+  white-space: nowrap;
+  left: 50%;
+  bottom: -5px;
+  transform: translate(-50%, 100%);
+  padding: 2.5px 5px;
+  font-size: 12px;
+  background-color: rgba(216, 24, 24, 0.698);
+  border-radius: 5px;
+  color: white
+}
+
+.redBorder {
+  border: 1px solid red;
+  box-shadow: 0 0 0 .25rem rgba(253, 0, 0, 0.342) !important
+}
+
+
+#permissionCheckBox {
+  margin: 10px;
+}
+
+
+
+.formGroup {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+}
+
+.view {
+  display: flex;
+}
+
+.touchableOpacity {
+  transition: opacity .1s linear;
+}
+
+.touchableOpacity:hover {
+  cursor: pointer;
+}
