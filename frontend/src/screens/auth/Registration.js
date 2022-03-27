@@ -1,20 +1,16 @@
 import React from 'react'
 import { Navigate, Link, useNavigate, useLocation } from 'react-router-dom'
-import { connect } from 'react-redux'
-
+import Cookies from 'js-cookie'
+import axios from 'axios'
 import logo from '../../assets/logo.png'
 import GlobalStyles from '../../GlobalStyles'
 
 import { View, Image, Text, TextInput, TouchableOpacity } from '../../components/react-native'
 
-import { register } from '../../actions/auth'
-
 import setCSRFCookie from '../../utils/setCSRFCookie'
 
-const Registration = ({ register, isAuthenticated }) => {
+const Registration = () => {
     const navigate = useNavigate()
-
-    if (isAuthenticated) navigate('/')
 
     const [userData, setUserData] = React.useState({
         firstName: '',
@@ -27,9 +23,6 @@ const Registration = ({ register, isAuthenticated }) => {
 
     const [repeatPassword, setRepeatPassword] = React.useState('')
     const [isChecked, setIsChecked] = React.useState(false)
-
-    const handleChange = e => setUserData({ ...userData, [e.target.name]: e.target.value })
-
 
     React.useEffect(() => {
         setCSRFCookie()
@@ -89,11 +82,26 @@ const Registration = ({ register, isAuthenticated }) => {
             return
         }
         if (!is_empty && !errors.firstName && !errors.lastName && !errors.email && !errors.password && !errors.repeatPassword && !errors.check) {
-            register(userData)
-            navigate('/')
-            // return <Navigate to='/' />
-            //navigate('/registrationVerification', { userData: userData })
+            register()
         }
+    }
+
+    const register = async () => {
+        const body = JSON.stringify(userData)
+        const config = {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-CSRFToken': Cookies.get('csrftoken')
+            }
+        }
+        try {
+            await axios.post(`${process.env.REACT_APP_API_URL}/authentication/register`, body, config)
+                .then(res => {
+                    if (res.data.error) console.log(res.data.error)
+                    else navigate('/login')
+                })
+        } catch (err) { console.log(err) }
     }
 
     const validate = (inputName, inputValue) => {
@@ -272,11 +280,7 @@ const Registration = ({ register, isAuthenticated }) => {
     </View>
 }
 
-const mapStateToProps = state => ({
-    isAuthenticated: state.auth.isAuthenticated
-})
-
-export default connect(mapStateToProps, { register })(Registration)
+export default Registration
 
 const styles = {
     registerForm: {

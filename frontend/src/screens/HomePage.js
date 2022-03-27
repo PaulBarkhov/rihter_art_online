@@ -1,19 +1,16 @@
 import React from 'react'
-import { useNavigate, Link, Outlet } from 'react-router-dom'
-import { connect } from 'react-redux'
+import { useNavigate, Link, Outlet, Navigate, useLocation } from 'react-router-dom'
 
 import { TouchableOpacity, View, Text, Image } from '../components/react-native'
 
-import { logout } from '../actions/auth'
 import setCSRFToken from '../utils/setCSRFCookie'
 
-function HomePage({ logout, isAuthenticated }) {
+function HomePage() {
+
     const [courses, setCourses] = React.useState([])
     const navigate = useNavigate()
-    if (!isAuthenticated) navigate('/login')
 
     React.useEffect(() => {
-        console.log(isAuthenticated)
         const fetchData = async () => {
             // setCSRFToken()
             await fetch(`${process.env.REACT_APP_API_URL}/all_courses`)
@@ -22,12 +19,12 @@ function HomePage({ logout, isAuthenticated }) {
         }
         fetchData()
 
-    }, [isAuthenticated])
+    }, [])
 
     return (
         <View>
-            <h1>{isAuthenticated}</h1>
-            <View>
+            <h1>Home page</h1>
+            {/* <View>
                 {courses && courses.map(course => {
                     return (
                         <TouchableOpacity
@@ -39,30 +36,21 @@ function HomePage({ logout, isAuthenticated }) {
                                 <Image source={course.preview} style={styles.image} />
                                 <View style={styles.textBlock}>
                                     <Text style={styles.title}><Link to={`/${course.id}`}>{course.name}</Link></Text>
-                                    <Text style={styles.price}>От {course.price} рублей</Text>
-                                    {/* <Text style={styles.price}>
+                                    <Text style={styles.price}>От {course.price} рублей</Text> 
+                                    <Text style={styles.price}>
                                         {String(course.number_of_available_lessons)} из {String(course.total_number_of_lessons).slice(-1)} {ending} доступны
-                                    </Text> */}
+                                    </Text> 
                                 </View>
                             </View>
                         </TouchableOpacity>
                     )
                 })}
-            </View>
-
-            <Outlet />
-            <button onClick={logout}>Loguot</button>
+            </View> */}
         </View>
-
-
     )
 }
 
-const mapStateToProps = state => ({
-    isAuthenticated: state.auth.isAuthenticated
-})
-
-export default connect(mapStateToProps, { logout })(HomePage)
+export default HomePage
 
 const styles = {
     item: {
