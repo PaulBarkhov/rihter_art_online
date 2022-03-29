@@ -45,13 +45,13 @@ const GlobalStyles = {
         borderWidth: 2,
         borderRadius: 5,
         width: '100%',
-        paddingLeft: 15,
-        paddingTop: 10,
-        paddingRight: 15,
-        paddingBottom: 10,
+        paddingLeft: 14,
+        paddingTop: 9,
+        paddingRight: 14,
+        paddingBottom: 9,
         marginBottom: 10,
-
     },
+
     inputError: {
         position: 'absolute',
         whiteSpace: 'nowrap',
