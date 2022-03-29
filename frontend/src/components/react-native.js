@@ -17,6 +17,7 @@ export const Text = (props) => {
 export const TextInput = (props) => {
     return (
         <input
+            className={`${props.placeholderTextColor}Placeholder`}
             style={props.style}
             name={props.name}
             placeholder={props.placeholder}
