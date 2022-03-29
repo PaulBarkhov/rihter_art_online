@@ -24,84 +24,67 @@ const Registration = () => {
     const [repeatPassword, setRepeatPassword] = React.useState('')
     const [isChecked, setIsChecked] = React.useState(false)
 
-    React.useEffect(() => {
-        setCSRFCookie()
-    }, [])
-
     const [errors, setErrors] = React.useState({
         server: '',
         firstName: '',
         lastName: '',
         email: '',
-        birthDate: '',
-        language: '',
+        // birthDate: '',
+        // language: '',
         password: '',
         repeatPassword: '',
         check: ''
     })
 
-    const handleSubmut = async () => {
-        let is_empty = false
-        const errorsCopy = JSON.parse(JSON.stringify(errors))
-
-        if (!isChecked) {
-            errorsCopy.check = 'Подтвердите согласие'
-            is_empty = true
-        }
-        if (!repeatPassword) {
-            errorsCopy.repeatPassword = 'Повторите пароль'
-            is_empty = true
-        }
-        if (!userData.password) {
-            errorsCopy.password = 'Укажите пароль'
-            is_empty = true
-        }
-        // if (!userData.language) {
-        //     errorsCopy.language = 'Выберите Язык'
-        //     is_empty = true
-        // }
-        // if (!userData.birthDate) {
-        //     errorsCopy.birthDate = 'Укажите дату'
-        //     is_empty = true
-        // }
-        if (!userData.email) {
-            errorsCopy.email = 'Введите Email'
-            is_empty = true
-        }
-        if (!userData.lastName) {
-            errorsCopy.lastName = 'Введите фамилию'
-            is_empty = true
-        }
-        if (!userData.firstName) {
-            errorsCopy.firstName = 'Введите имя'
-            is_empty = true
-        }
-
-        if (is_empty) {
-            setErrors(errorsCopy)
-            return
-        }
-        if (!is_empty && !errors.firstName && !errors.lastName && !errors.email && !errors.password && !errors.repeatPassword && !errors.check) {
-            register()
-        }
-    }
+    React.useEffect(() => {
+        setCSRFCookie()
+    }, [])
 
     const register = async () => {
-        const body = JSON.stringify(userData)
-        const config = {
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'X-CSRFToken': Cookies.get('csrftoken')
+        // if (
+        //     !errors.firstName &&
+        //     !errors.lastName &&
+        //     !errors.email &&
+        //     !errors.password &&
+        //     !errors.repeatPassword &&
+        //     !errors.check
+        // ) {
+        setErrors({
+            server: '',
+            firstName: !userData.firstName ? 'Введите имя' : errors.firstName,
+            lastName: !userData.lastName ? 'Введите фамилию' : errors.lastName,
+            email: !userData.email ? 'Введите Email' : errors.email,
+            // birthDate: !userData.birthDate ?'Введите Дату рождения' : errors.birthDate,
+            // language: !userData.language ?'Выберите язык' : errors.language,
+            password: !userData.password ? 'Введите пароль' : errors.password,
+            repeatPassword: !userData.repeatPassword ? 'Повторите пароль' : errors.repeatPassword,
+            check: !userData.check ? 'Подтвердите согласие' : errors.check,
+        })
+
+        if (userData.firstName && !errors.firstName &&
+            userData.lastName && !errors.lastName &&
+            userData.email && !errors.email &&
+            userData.password && !errors.password &&
+            !errors.repeatPassword &&
+            !errors.check
+        ) {
+            const body = JSON.stringify(userData)
+            const config = {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': Cookies.get('csrftoken')
+                }
             }
+            try {
+                await axios.post(`${process.env.REACT_APP_API_URL}/authentication/register`, body, config)
+                    .then(res => {
+                        if (res.data.error) setErrors({ ...errors, server: res.data.error })
+                        else navigate('/login')
+                    })
+            } catch (err) { console.log(err) }
         }
-        try {
-            await axios.post(`${process.env.REACT_APP_API_URL}/authentication/register`, body, config)
-                .then(res => {
-                    if (res.data.error) console.log(res.data.error)
-                    else navigate('/login')
-                })
-        } catch (err) { console.log(err) }
+
     }
 
     const validate = (inputName, inputValue) => {
@@ -149,7 +132,7 @@ const Registration = () => {
         <View style={styles.registerForm}>
             <Image source={logo} alt="logo" style={{ width: 150, height: 150, marginBottom: 10 }} />
             <Text style={{ marginBottom: 20, fontSize: 30, fontWeight: '700' }}>Регистрация</Text>
-            {errors.server ? <Text>{errors.server}</Text> : null}
+            {errors.server ? <Text style={styles.error}>{errors.server}</Text> : null}
             <View style={{ width: '80%', flexDirection: 'column' }}>
                 <View style={styles.row}>
                     <View style={styles.formGroup}>
@@ -272,7 +255,7 @@ const Registration = () => {
                     {errors.check && <Text style={GlobalStyles.inputError}>{errors.check}</Text>}
                 </View>
 
-                <TouchableOpacity style={GlobalStyles.button} onClick={handleSubmut}><Text>Зарегистрироваться</Text></TouchableOpacity>
+                <TouchableOpacity style={GlobalStyles.button} onClick={register}><Text>Зарегистрироваться</Text></TouchableOpacity>
                 <div style={{ width: '100%', textAlign: 'center' }}><span>Уже есть аккаунт? <Link to="/login">Войти</Link></span></div>
 
             </View>
@@ -304,6 +287,9 @@ const styles = {
     },
     label: {
         fontWeight: 700,
+    },
+    error: {
+        height: 30
     },
 
     // select: {
