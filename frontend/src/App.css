@@ -121,3 +121,53 @@ select.input {
 .touchableOpacity:hover {
   cursor: pointer;
 }
+
+.redPlaceholder::placeholder {
+  /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: red;
+  opacity: 1;
+  /* Firefox */
+}
+
+.redPlaceholder::placeholder {
+  /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: red;
+  opacity: 1;
+  /* Firefox */
+}
+
+.redPlaceholder:-ms-input-placeholder {
+  /* Internet Explorer 10-11 */
+  color: red;
+}
+
+.redPlaceholder::-ms-input-placeholder {
+  /* Microsoft Edge */
+  color: red;
+}
+
+
+
+.blackPlaceholder::placeholder {
+  /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: red;
+  opacity: 1;
+  /* Firefox */
+}
+
+.blackPlaceholder::placeholder {
+  /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: black;
+  opacity: 1;
+  /* Firefox */
+}
+
+.greyPlaceholder:-ms-input-placeholder {
+  /* Internet Explorer 10-11 */
+  color: grey;
+}
+
+.greyPlaceholder::-ms-input-placeholder {
+  /* Microsoft Edge */
+  color: grey;
+}
