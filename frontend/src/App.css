@@ -1,4 +1,4 @@
-body {
+/* body {
   background-color: tomato;
   font-family: Arial, Helvetica, sans-serif;
 }
@@ -18,18 +18,18 @@ body {
 .textCenter {
   width: 100%;
   text-align: center;
-}
+} */
 
-.container {
+/* .container {
   max-width: 800px;
   min-height: 100vh;
   margin: 0 auto;
   display: flex;
   justify-content: center;
   align-items: center;
-}
+} */
 
-.shadow {
+/* .shadow {
   -webkit-box-shadow: 6px 6px 10px 0px rgba(0, 0, 0, 0.38);
   box-shadow: 6px 6px 10px 0px rgba(0, 0, 0, 0.38);
 }
@@ -75,7 +75,7 @@ select.input {
   background-color: white;
   padding: 0 4px;
   font-weight: 700
-}
+} */
 
 .inputError {
   position: absolute;

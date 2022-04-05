@@ -1,18 +1,19 @@
-import React from 'react'
-import { Navigate, Link, useNavigate, useLocation } from 'react-router-dom'
+import React, { useContext, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import Cookies from 'js-cookie'
 import axios from 'axios'
 import logo from '../../assets/logo.png'
 import GlobalStyles from '../../GlobalStyles'
+import { AuthContext } from '../../context/AuthContext'
 
 import { View, Image, Text, TextInput, TouchableOpacity } from '../../components/react-native'
 
-import setCSRFCookie from '../../utils/setCSRFCookie'
 
 const Registration = () => {
+    const { register } = useContext(AuthContext)
     const navigate = useNavigate()
 
-    const [userData, setUserData] = React.useState({
+    const [userData, setUserData] = useState({
         firstName: '',
         lastName: '',
         email: '',
@@ -36,11 +37,7 @@ const Registration = () => {
         check: ''
     })
 
-    React.useEffect(() => {
-        setCSRFCookie()
-    }, [])
-
-    const register = async () => {
+    const handleSubmit = async () => {
         // if (
         //     !errors.firstName &&
         //     !errors.lastName &&
@@ -68,21 +65,12 @@ const Registration = () => {
             !errors.repeatPassword &&
             !errors.check
         ) {
-            const body = JSON.stringify(userData)
-            const config = {
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': Cookies.get('csrftoken')
-                }
-            }
-            try {
-                await axios.post(`${process.env.REACT_APP_API_URL}/authentication/register`, body, config)
-                    .then(res => {
-                        if (res.data.error) setErrors({ ...errors, server: res.data.error })
-                        else navigate('/login')
-                    })
-            } catch (err) { console.log(err) }
+            register(userData)
+                .catch(err => setErrors({
+                    ...errors,
+                    server: err
+                    // server: err.response.status === 401 ? 'Неправильное имя пользователя или пароль' : err
+                }))
         }
 
     }
@@ -128,139 +116,141 @@ const Registration = () => {
         }
     }
 
-    return <View style={GlobalStyles.container}>
-        <View style={styles.registerForm}>
-            <Image source={logo} alt="logo" style={{ width: 150, height: 150, marginBottom: 10 }} />
-            <Text style={{ marginBottom: 20, fontSize: 30, fontWeight: '700' }}>Регистрация</Text>
-            {errors.server ? <Text style={styles.error}>{errors.server}</Text> : null}
-            <View style={{ width: '80%', flexDirection: 'column' }}>
-                <View style={styles.row}>
-                    <View style={styles.formGroup}>
-                        <Text style={styles.label}>Имя</Text>
+    return (
+        <div className='d-flex'>
+            <View style={styles.registerForm}>
+                <Image source={logo} alt="logo" style={{ width: 150, height: 150, marginBottom: 10 }} />
+                <Text style={{ marginBottom: 20, fontSize: 30, fontWeight: '700' }}>Регистрация</Text>
+                {errors.server ? <Text style={styles.error}>{errors.server}</Text> : null}
+                <View style={{ width: '80%', flexDirection: 'column' }}>
+                    <View style={styles.row}>
+                        <View style={styles.formGroup}>
+                            <Text style={styles.label}>Имя</Text>
+                            <TextInput
+                                style={errors.firstName ? GlobalStyles.redBorderInput : GlobalStyles.input}
+                                name="firstName"
+                                type="text"
+                                maxLength={50}
+                                value={userData.firstName}
+                                onChange={e => validate(e.target.name, e.target.value)}
+                            />
+                            {errors.firstName && <Text style={GlobalStyles.inputError}>{errors.firstName}</Text>}
+                        </View>
+
+                        <View style={styles.formGroup}>
+                            <Text style={styles.label}>Фамилия</Text>
+                            <TextInput
+                                style={errors.lastName ? GlobalStyles.redBorderInput : GlobalStyles.input}
+                                name="lastName"
+                                type="text"
+                                maxLength={50}
+                                value={userData.lastName}
+                                onChange={e => validate(e.target.name, e.target.value)}
+                            />
+                            {errors.lastName && <Text style={GlobalStyles.inputError}>{errors.lastName}</Text>}
+                        </View>
+                    </View>
+
+                    <View style={styles.formGroup} >
+                        <Text style={styles.label} >Электронная почта</Text>
                         <TextInput
-                            style={errors.firstName ? GlobalStyles.redBorderInput : GlobalStyles.input}
-                            name="firstName"
-                            type="text"
-                            maxLength={50}
-                            value={userData.firstName}
+                            style={errors.email ? GlobalStyles.redBorderInput : GlobalStyles.input}
+                            name="email"
+                            type="email"
+                            maxLength={62}
+                            value={userData.email}
                             onChange={e => validate(e.target.name, e.target.value)}
-                        />
-                        {errors.firstName && <Text style={GlobalStyles.inputError}>{errors.firstName}</Text>}
-                    </View>
-
-                    <View style={styles.formGroup}>
-                        <Text style={styles.label}>Фамилия</Text>
-                        <TextInput
-                            style={errors.lastName ? GlobalStyles.redBorderInput : GlobalStyles.input}
-                            name="lastName"
-                            type="text"
-                            maxLength={50}
-                            value={userData.lastName}
-                            onChange={e => validate(e.target.name, e.target.value)}
-                        />
-                        {errors.lastName && <Text style={GlobalStyles.inputError}>{errors.lastName}</Text>}
-                    </View>
-                </View>
-
-                <View style={styles.formGroup} >
-                    <Text style={styles.label} >Электронная почта</Text>
-                    <TextInput
-                        style={errors.email ? GlobalStyles.redBorderInput : GlobalStyles.input}
-                        name="email"
-                        type="email"
-                        maxLength={62}
-                        value={userData.email}
-                        onChange={e => validate(e.target.name, e.target.value)}
-                        onBlur={() => {
-                            const emailFormat = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
-                            if (userData.email && !emailFormat.test(userData.email)) setErrors({ ...errors, email: "Неправильный email" })
-                            else setErrors({ ...errors, email: '' })
-                        }}
-                    />
-                    {errors.email && <Text style={GlobalStyles.inputError}>{errors.email}</Text>}
-                </View>
-
-                {/* <View style={styles.row}>
-
-                    <View style={styles.formGroup}>
-                        <Text style={styles.label}>Дата рождения</Text>
-                        {errors.birthDate && <Text style={GlobalStyles.inputError}>{errors.birthDate}</Text>}
-                        <TextInput
-                            style={errors.birthDate ? GlobalStyles.redBorderInput : GlobalStyles.input}
-                            name="birthDate"
-                            type="date"
-                            onChange={e => setUserData({ ...userData, birthDate: e.target.value })}
-                        />
-
-                    </View>
-
-                    <View style={styles.formGroup}>
-                        <Text style={styles.label}>Язык</Text>
-                        {errors.language && <Text style={GlobalStyles.inputError}>{errors.language}</Text>}
-                        <select
-                            style={errors.language ? styles.redBorderSelect : styles.select}
-                            name="language"
-                            onChange={e => setUserData({ ...userData, language: e.target.value })}
-                        >
-                            <option>Русский</option>
-                            <option>Английский</option>
-                        </select>
-
-                    </View>
-
-                </View> */}
-
-                <View style={styles.formGroup}>
-                    <Text style={styles.label}>Пароль</Text>
-                    <TextInput
-                        style={errors.password ? GlobalStyles.redBorderInput : GlobalStyles.input}
-                        name="password"
-                        type="password"
-                        maxLength={256}
-                        value={userData.password}
-                        onChange={e => validate(e.target.name, e.target.value)}
-                        onBlur={() => {
-                            if (userData.password.length !== 0 && userData.password.length < 8) setErrors({ ...errors, password: 'Минимум 8 символов' })
-                        }} />
-                    {errors.password && <Text style={GlobalStyles.inputError}>{errors.password}</Text>}
-                </View>
-                <View style={styles.formGroup}>
-                    <Text style={styles.label}>Повторите пароль</Text>
-                    <TextInput
-                        style={errors.repeatPassword ? GlobalStyles.redBorderInput : GlobalStyles.input}
-                        name="repeatPassword"
-                        type="password"
-                        maxLength={256}
-                        value={repeatPassword}
-                        onChange={e => validate(e.target.name, e.target.value)}
-                        onBlur={() => {
-                            if (repeatPassword && repeatPassword !== userData.password) setErrors({ ...errors, repeatPassword: 'Пароли не совпадают' })
-                        }}
-                    />
-                    {errors.repeatPassword && <Text style={GlobalStyles.inputError}>{errors.repeatPassword}</Text>}
-                </View>
-                <View style={styles.formGroup}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <input
-                            id="permissionCheckBox"
-                            type="checkbox"
-                            onChange={e => {
-                                setIsChecked(e.target.checked)
-                                if (e.target.checked) setErrors({ ...errors, check: '' })
+                            onBlur={() => {
+                                const emailFormat = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
+                                if (userData.email && !emailFormat.test(userData.email)) setErrors({ ...errors, email: "Неправильный email" })
+                                else setErrors({ ...errors, email: '' })
                             }}
                         />
-                        <Text>Согласие на получение рассылок по почте</Text>
+                        {errors.email && <Text style={GlobalStyles.inputError}>{errors.email}</Text>}
                     </View>
 
-                    {errors.check && <Text style={GlobalStyles.inputError}>{errors.check}</Text>}
+                    {/* <View style={styles.row}>
+
+                        <View style={styles.formGroup}>
+                            <Text style={styles.label}>Дата рождения</Text>
+                            {errors.birthDate && <Text style={GlobalStyles.inputError}>{errors.birthDate}</Text>}
+                            <TextInput
+                                style={errors.birthDate ? GlobalStyles.redBorderInput : GlobalStyles.input}
+                                name="birthDate"
+                                type="date"
+                                onChange={e => setUserData({ ...userData, birthDate: e.target.value })}
+                            />
+
+                        </View>
+
+                        <View style={styles.formGroup}>
+                            <Text style={styles.label}>Язык</Text>
+                            {errors.language && <Text style={GlobalStyles.inputError}>{errors.language}</Text>}
+                            <select
+                                style={errors.language ? styles.redBorderSelect : styles.select}
+                                name="language"
+                                onChange={e => setUserData({ ...userData, language: e.target.value })}
+                            >
+                                <option>Русский</option>
+                                <option>Английский</option>
+                            </select>
+
+                        </View>
+
+                    </View> */}
+
+                    <View style={styles.formGroup}>
+                        <Text style={styles.label}>Пароль</Text>
+                        <TextInput
+                            style={errors.password ? GlobalStyles.redBorderInput : GlobalStyles.input}
+                            name="password"
+                            type="password"
+                            maxLength={256}
+                            value={userData.password}
+                            onChange={e => validate(e.target.name, e.target.value)}
+                            onBlur={() => {
+                                if (userData.password.length !== 0 && userData.password.length < 8) setErrors({ ...errors, password: 'Минимум 8 символов' })
+                            }} />
+                        {errors.password && <Text style={GlobalStyles.inputError}>{errors.password}</Text>}
+                    </View>
+                    <View style={styles.formGroup}>
+                        <Text style={styles.label}>Повторите пароль</Text>
+                        <TextInput
+                            style={errors.repeatPassword ? GlobalStyles.redBorderInput : GlobalStyles.input}
+                            name="repeatPassword"
+                            type="password"
+                            maxLength={256}
+                            value={repeatPassword}
+                            onChange={e => validate(e.target.name, e.target.value)}
+                            onBlur={() => {
+                                if (repeatPassword && repeatPassword !== userData.password) setErrors({ ...errors, repeatPassword: 'Пароли не совпадают' })
+                            }}
+                        />
+                        {errors.repeatPassword && <Text style={GlobalStyles.inputError}>{errors.repeatPassword}</Text>}
+                    </View>
+                    <View style={styles.formGroup}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <input
+                                id="permissionCheckBox"
+                                type="checkbox"
+                                onChange={e => {
+                                    setIsChecked(e.target.checked)
+                                    if (e.target.checked) setErrors({ ...errors, check: '' })
+                                }}
+                            />
+                            <Text>Согласие на получение рассылок по почте</Text>
+                        </View>
+
+                        {errors.check && <Text style={GlobalStyles.inputError}>{errors.check}</Text>}
+                    </View>
+
+                    <TouchableOpacity style={GlobalStyles.button} onPress={handleSubmit}><Text>Зарегистрироваться</Text></TouchableOpacity>
+                    <div style={{ width: '100%', textAlign: 'center' }}><span>Уже есть аккаунт? <Link to="/login">Войти</Link></span></div>
+
                 </View>
-
-                <TouchableOpacity style={GlobalStyles.button} onClick={register}><Text>Зарегистрироваться</Text></TouchableOpacity>
-                <div style={{ width: '100%', textAlign: 'center' }}><span>Уже есть аккаунт? <Link to="/login">Войти</Link></span></div>
-
             </View>
-        </View>
-    </View>
+        </div>
+    )
 }
 
 export default Registration

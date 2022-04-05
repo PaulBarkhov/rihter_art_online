@@ -1,13 +1,18 @@
+from os import access
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie, csrf_protect
 from django.contrib.auth.models import User
+# from backend import authentication
+from user_profile.models import UserProfile
 from django.http import HttpResponse, JsonResponse
 from django.core.mail import send_mail
 from django.conf import settings
-from rest_framework import viewsets, permissions
+from rest_framework import authentication, generics
+from rest_framework.decorators import api_view
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import CourseSerializer, UserSerializer, LessonSerializer, LessonGroupSerializer
+from . import serializers
 from django.db.models import Min, Count
 import json
 import random
@@ -20,21 +25,38 @@ def front(request):
     context = {}
     return render(request, "index.html", context)
 
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
 
-class CourseViewSet(viewsets.ModelViewSet):
-    queryset = models.Course.objects.all().annotate(number_of_lessons = Count("lessons"))
-    serializer_class = CourseSerializer
+class CourseListView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = serializers.CourseListSerializer
+    queryset = models.Course.objects.all()
 
-class LessonViewSet(viewsets.ModelViewSet):
-    queryset = models.Lesson.objects.all()
-    serializer_class = LessonSerializer
+# class CourseDetailView(generics.RetrieveAPIView):
+#     serializer_class = serializers.CourseDetailSerializer
+#     queryset = models.Course.objects.all()
 
-class LessonGroupViewSet(viewsets.ModelViewSet):
-    queryset = models.LessonPack.objects.all()
-    serializer_class = LessonGroupSerializer
+class CourseDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request, pk):
+        course = models.Course.objects.get(id=pk)
+        profile = UserProfile.objects.get(user=request.user)
+
+        free_lessons = course.lessons.filter(access='free')
+        free_lessons = serializers.LessonSerializer(free_lessons, many=True)
+
+        purchased_lessonPacks = profile.purchased_lessonPacks.filter(course = course)
+        purchased_lessonPacks = serializers.LessonGroupSerializer(purchased_lessonPacks, many=True)
+
+        unavailable_lessonPacks = course.lessonPacks.exclude(profiles = profile)
+        unavailable_lessonPacks = serializers.LessonGroupSerializer(unavailable_lessonPacks, many=True)
+
+        return Response({ 
+            'free_lessons': free_lessons.data,
+            'purchased_lessonPacks': purchased_lessonPacks.data,
+            'unavailable_lessonPacks': unavailable_lessonPacks.data
+        })
+
+
 
 def get_all_courses(request):
     profile = request.user.profile

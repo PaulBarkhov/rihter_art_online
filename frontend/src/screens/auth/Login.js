@@ -1,130 +1,81 @@
 import React from 'react'
-import { Navigate, Link, useNavigate, useLocation } from 'react-router-dom'
-import axios from 'axios'
-import Cookies from 'js-cookie'
+import { Link } from 'react-router-dom'
 import logo from '../../assets/logo.png'
-import GlobalStyles from '../../GlobalStyles';
-
-import { View, Image, Text, TextInput, TouchableOpacity } from '../../components/react-native'
-
-
-import setCSRFCookie from '../../utils/setCSRFCookie'
-
-import AuthContext from '../../context/AuthContext';
-
+import { AuthContext } from '../../context/AuthContext';
 
 const Login = () => {
-    const auth = React.useContext(AuthContext)
-    const location = useLocation()
-    const navigate = useNavigate()
+    const { login } = React.useContext(AuthContext)
 
     const [userData, setUserData] = React.useState({
-        email: '',
+        username: '',
         password: '',
     })
 
     const [errors, setErrors] = React.useState({
         server: '',
-        email: '',
+        username: '',
         password: ''
     })
 
-    React.useEffect(() => {
-        setCSRFCookie()
-    }, [])
-
-    // const handleClick = () => {
-    //     console.log('logging in...')
-    //     login(userData)
-    //         .then(res => res.data.isAuthenticated && navigate(from, { replace: true }))
-    // }
-
-    const login = async () => {
+    const handleSubmit = e => {
+        e.preventDefault()
         setErrors({
             server: '',
-            email: !userData.email ? 'Введите Email' : '',
+            username: !userData.username ? 'Введите Email' : '',
             password: !userData.password ? 'Введите Пароль?' : ''
         })
-        if (userData.email && userData.password) {
-            const body = JSON.stringify(userData)
-            const config = {
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': Cookies.get('csrftoken')
-                }
-            }
-            try {
-                await axios.post(`${process.env.REACT_APP_API_URL}/authentication/login`, body, config)
-                    .then(res => {
-                        if (res.data.error) {
-                            setUserData({ email: '', password: '' })
-                            setErrors({ ...errors, server: res.data.error })
-                        }
-                        else {
-                            auth.setIsAuthenticated(true)
-                            navigate(location.state?.from || "/", { replace: true })
-                        }
-                    })
-            } catch (err) { console.log(err) }
+        if (userData.username && userData.password) {
+            login({ ...userData })
+                .catch(err => setErrors({
+                    ...errors,
+                    server: err.response.status === 401 ? 'Неправильное имя пользователя или пароль' : err
+                }))
         }
     }
 
-    return <View style={GlobalStyles.container}>
-
-        <View style={styles.loginForm}>
-            <Image source={logo} alt="logo" style={{ width: 150, height: 150, marginBottom: 10 }} />
-            <Text style={styles.error}>{errors.server}</Text>
-            <TextInput
-                style={errors.email ? GlobalStyles.redBorderInput : GlobalStyles.input}
-                name="email"
-                placeholder={errors.email ? 'Введите Email' : 'Email'}
-                placeholderTextColor={errors.email ? 'red' : 'grey'}
-                value={userData.email}
-                type="email"
-                onChange={e => {
-                    setErrors({ ...errors, email: '' })
-                    setUserData({ ...userData, email: e.target.value })
-                }}
-            />
-            <TextInput
-                style={errors.password ? GlobalStyles.redBorderInput : GlobalStyles.input}
-                name="password"
-                placeholder={errors.password ? 'Введите пароль' : 'Пароль'}
-                placeholderTextColor={errors.email ? 'red' : 'grey'}
-                value={userData.password}
-                type="password"
-                onChange={e => {
-                    setErrors({ ...errors, password: '' })
-                    setUserData({ ...userData, password: e.target.value })
-                }}
-            />
-            <TouchableOpacity style={GlobalStyles.button} onClick={login}>Войти</TouchableOpacity>
-            <Text>Нет аккаунта? <Link to="/registration">Регистрация</Link></Text>
-            <Link to="/">Забыли пароль?</Link>
-        </View>
-    </View>
+    return (
+        <div className='min-vh-100 d-flex justify-content-center align-items-center'>
+            <div className="d-flex flex-row justify-content-center shadow p-5 bg-white rounded">
+                <div>
+                    <img src={logo} alt="logo" style={{ width: 200, height: 200, marginRight: 30 }} />
+                </div>
+                <div className="d-flex flex-column justify-content-center text-center">
+                    <h2>Логин</h2>
+                    <span>{errors.server}</span>
+                    <form onSubmit={e => handleSubmit(e)}>
+                        <div className="form-group">
+                            <input
+                                className="form-control mb-2"
+                                name="username"
+                                type="email"
+                                placeholder={errors.username ? 'Введите Email' : 'Email'}
+                                value={userData.username}
+                                onChange={e => {
+                                    setErrors({ ...errors, server: '', username: '' })
+                                    setUserData({ ...userData, username: e.target.value })
+                                }}
+                            />
+                            <input
+                                className="form-control mb-2"
+                                name="password"
+                                type="password"
+                                placeholder={errors.password ? 'Введите пароль' : 'Пароль'}
+                                value={userData.password}
+                                onChange={e => {
+                                    setErrors({ ...errors, server: '', password: '' })
+                                    setUserData({ ...userData, password: e.target.value })
+                                }}
+                            />
+                            <button className="btn btn-primary btn-block mb-3" type="submit">Войти</button>
+                        </div>
+                    </form>
+                    <span>Нет аккаунта? <Link to="/registration">Регистрация</Link></span>
+                    <Link to="">Забыли пароль?</Link>
+                </div>
+            </div>
+        </div>
+    )
 }
 
 export default Login
-
-const styles = {
-    loginForm: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-
-        padding: 30,
-        minWidth: 320,
-        width: 'calc(60% - 60px)',
-
-        backgroundColor: 'white',
-        borderRadius: 15
-    },
-    error: {
-        height: 30
-    }
-
-}
 

@@ -35,6 +35,7 @@ class Lesson(models.Model):
     lessonPack = models.ForeignKey(LessonPack, verbose_name='Уроки', null=True, on_delete=models.CASCADE, blank=True, related_name='lessons')
     name = models.CharField('Название', max_length=64, blank=True)
     description = models.TextField('Описание', null=True, max_length=512, blank=True)
+    preview = models.ImageField('Фото', upload_to='uploads/lessons/previews', null=True, blank=True)
     video = models.CharField('Видео(url)', max_length=512, null=True, blank=True)
     excersize = models.CharField('Задание', null=True, max_length=512, blank=True)
     access = models.CharField('Доступ', null=True, max_length=4, choices=[('free', 'бесплатно'), ('paid', 'платно')], default='free')

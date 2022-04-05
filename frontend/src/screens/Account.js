@@ -1,5 +1,5 @@
 import React from 'react'
-import AuthContext from '../context/AuthContext'
+import { AuthContext } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import Cookies from 'js-cookie'
 import axios from 'axios'
@@ -8,7 +8,7 @@ import { TouchableOpacity } from '../components/react-native'
 
 function Account() {
     const authContext = React.useContext(AuthContext)
-    const navigate = useNavigate()
+    // const navigate = useNavigate()
 
     const logout = async () => {
         const body = JSON.stringify({ 'withCredentials': true })
@@ -25,7 +25,7 @@ function Account() {
                     if (res.data.error) console.log(res.data.error)
                     else {
                         authContext.setIsAuthenticated(false)
-                        navigate('/login')
+                        // navigate('/login')
                     }
                 })
         } catch (err) { console.log(err) }
@@ -33,7 +33,7 @@ function Account() {
 
     return <div>
         <h1>Account</h1>
-        <TouchableOpacity style={GlobalStyles.button} onClick={logout}>Выйти</TouchableOpacity>
+        <TouchableOpacity style={GlobalStyles.button} onPress={logout}>Выйти</TouchableOpacity>
     </div>
 }
 

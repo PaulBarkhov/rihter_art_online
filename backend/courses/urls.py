@@ -4,7 +4,9 @@ from django.contrib.auth import views as auth_views
 
 
 urlpatterns = [
-    path("all_courses", views.CourseViewSet.as_view({'get': 'list'})),
+    path("all_courses", views.CourseListView.as_view()),
+    path("course/<int:pk>", views.CourseDetailView.as_view()),
+
     # path('courses/', views.CourseListView.as_view()),
     # path('courses/<int:pk>', views.CourseDetailView.as_view()),
     # path('register', views.RegisterView.as_view()),
@@ -15,7 +17,6 @@ urlpatterns = [
 
     path("get_all_courses", views.get_all_courses),
     # path("account", views.account_view),
-    path("get_lessons/<int:pk>", views.get_lessons),
     path("video/<int:id>", views.video),
     # path("auth", views.auth),
     # path("lesson/<int:pk>/comments", views.comments),

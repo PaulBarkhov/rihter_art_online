@@ -1,14 +1,11 @@
 const GlobalStyles = {
     container: {
-        display: 'flex',
-        minHeight: '100vh',
-        justifyContent: 'center',
-        alignItems: 'center',
 
-        maxWidth: 800,
+        minHeight: '100vh',
+        maxWidth: 1000,
         margin: '0 auto',
 
-        backgroundColor: 'tomato',
+        // backgroundColor: 'tomato',
     },
     button: {
         display: 'flex',

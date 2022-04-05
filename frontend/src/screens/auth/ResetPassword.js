@@ -30,13 +30,13 @@ const ResetPassword = ({ navigation, route }) => {
             <View style={GlobalStyles.form}>
                 <Text style={GlobalStyles.header}>Сброс пароля</Text>
                 {errorMessage ? <Text>{errorMessage}</Text> : null}
-                <KeyboardAvoidingView style={{ width: '100%' }} behavior={Platform.OS === "ios" ? "padding" : "height"}>
+                <View style={{ width: '100%' }}>
                     <TextInput
                         style={GlobalStyles.input}
                         placeholder='Email'
                         onChangeText={text => setInputValue(text)}
                     />
-                </KeyboardAvoidingView>
+                </View>
                 <TouchableOpacity onPress={handlePress} style={GlobalStyles.button}><Text style={GlobalStyles.buttonText}>Сбросить пароль</Text></TouchableOpacity>
                 <TouchableOpacity onPress={() => navigation.navigate('registration')} style={{ flexDirection: 'row' }}><Text>Вспомнили пароль? </Text><Text style={{ color: 'blue' }}>Войти</Text></TouchableOpacity>
             </View>

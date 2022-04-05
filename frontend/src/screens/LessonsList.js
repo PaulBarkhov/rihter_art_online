@@ -1,62 +1,83 @@
 import React, { useState, useEffect } from "react"
+import axios from "axios"
 import { Text, View, TouchableOpacity, Image } from "../components/react-native"
 import GlobalStyles from "../GlobalStyles"
 import { useNavigate, useParams } from "react-router-dom"
+import { AuthContext } from "../context/AuthContext"
 
 
 const LessonsList = () => {
-  const [lessons, setLessons] = useState()
+  const { tokens, logout } = React.useContext(AuthContext)
+  const [lessons, setLessons] = useState({
+    free_lessons: [],
+    purchased_lessonPacks: [],
+    unavailable_lessonPacks: []
+  })
+  const [loading, setLoading] = useState(false)
   const [refresher, setRefresher] = useState(false)
   const navigate = useNavigate()
   const params = useParams()
 
   useEffect(() => {
-    fetch(`${process.env.REACT_APP_API_URL}/get_lessons/${params.courseID}`)
-      .then(res => res.json())
-      .then(data => setLessons(data))
-  }, [refresher, params.courseID])
+    if (tokens) {
+      const config = {
+        headers: {
+          'Authorization': `Bearer ${tokens.access}`
+        }
+      }
+      const fetchLessons = async () => {
+        await axios.get(`${process.env.REACT_APP_API_URL}/course/${params.courseID}`, config)
+          .then(res => setLessons({
+            free_lessons: res.data.free_lessons,
+            purchased_lessonPacks: res.data.purchased_lessonPacks,
+            unavailable_lessonPacks: res.data.unavailable_lessonPacks
+          }))
+          .catch(err => err.response.status === 401 ? logout() : console.log(err))
+      }
+      fetchLessons()
+    } else logout()
+
+  }, [params.courseID, tokens, logout])
   const refresh = () => setRefresher(!refresher)
 
-
-  if (!lessons) return (<View><Text>Loading</Text></View>)
-  else return (
-    <View >
+  if (loading) return (<View><Text>Loading</Text></View>)
+  return (
+    <View style={GlobalStyles.container}>
       <View style={styles.course}>
         <Text style={styles.courseHeader}>Курс</Text>
         <Text>Name</Text>
         <Text>Description</Text>
         {lessons.free_lessons.map(lesson => {
           return (
-            <TouchableOpacity key={lesson.id} style={styles.touchable} onPress={() => navigate()}>
+            <TouchableOpacity key={`fl_${lesson.id}`} style={styles.touchable} onPress={() => navigate()}>
               <View style={styles.item}>
+                <Image source={lesson.preview} style={styles.image} />
                 <Text style={styles.title}>{lesson.name}</Text>
               </View>
             </TouchableOpacity>
           )
         })}
 
-        {lessons.purchased_lessons.map(lesson => {
-          return (
-            <TouchableOpacity key={lesson.id} style={styles.touchable} onPress={() => navigate()}>
-              <View style={styles.item}>
-                <Text style={styles.title}>{lesson.name}</Text>
-              </View>
-            </TouchableOpacity>
-          )
+        {lessons.purchased_lessonPacks.map(lessonPack => {
+          return lessonPack.lessons.map(lesson => {
+            return (
+              <TouchableOpacity key={`pl_${lesson.id}`} style={styles.touchable} onPress={() => navigate()}>
+                <View style={styles.item}>
+                  <Text style={styles.title}>{lesson.name}</Text>
+                </View>
+              </TouchableOpacity>
+            )
+          })
         })}
-
-
-
 
 
         {lessons.unavailable_lessonPacks.map(lessonPack => {
           return (
-            <View key={lessonPack.id} style={{ width: '100%', position: 'relative' }}>
-              {lessonPack.videos.map(lesson => {
+            <View key={`ulp_${lessonPack.id}`} style={{ display: 'flex', flexDirection: 'column', width: '100%', position: 'relative', filter: 'blur(8px)' }}>
+              {lessonPack.lessons && lessonPack.lessons.map(lesson => {
                 return (
-                  <TouchableOpacity key={lesson.id} style={styles.touchable} onPress={() => navigate()}>
-                    <View style={[styles.item]}>
-                      {/* <View style={[styles.item, { backgroundColor: '#cfcfcf' }]}> */}
+                  <TouchableOpacity key={`ul_${lesson.id}`} style={styles.touchable} onPress={() => navigate()}>
+                    <View style={styles.item}>
                       <Text style={styles.title}>{lesson.name}</Text>
                     </View>
                   </TouchableOpacity>
@@ -100,10 +121,6 @@ const LessonsList = () => {
 
           )
         })}
-
-
-
-
       </View>
     </View>
   )
@@ -113,15 +130,21 @@ export default LessonsList
 
 const styles = {
   course: {
+    display: 'flex',
+    flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    width: '100%'
+    backgroundColor: 'white',
+    width: '100%',
+    minHeight: '100vh',
   },
   courseHeader: {
     fontSize: 30,
     margin: 10
   },
   touchable: {
+    display: 'flex',
+    flexDirection: 'column',
     width: '100%',
     padding: 5
   },
@@ -132,6 +155,9 @@ const styles = {
     alignItems: 'center',
     backgroundColor: 'tomato',
     borderRadius: 6
+  },
+  image: {
+    height: 150,
   },
   title: {
     fontSize: 20,

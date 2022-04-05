@@ -34,7 +34,7 @@ export const TouchableOpacity = (props) => {
         <div
             className='touchableOpacity'
             style={props.style}
-            onClick={props.onClick}
+            onClick={props.onPress}
             onMouseDown={e => e.target.style.opacity = 0.4}
             onMouseUp={e => e.target.style.opacity = 1}
         >
