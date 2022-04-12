@@ -23,7 +23,7 @@ function HomePage() {
                 await axios.get(`${process.env.REACT_APP_API_URL}/all_courses`, config)
                     // .then(res => res.json())
                     .then(res => {
-                        setCourses(res.data)
+                        setCourses(res.data.courses)
                     })
                     .catch(err => err.response.status === 401 ? logout() : console.log(err))
             } else logout()
@@ -32,29 +32,33 @@ function HomePage() {
         fetchData()
     }, [tokens, logout])
 
+    console.log(courses)
+
     return (
-        <View style={GlobalStyles.container}>
-            <View style={{ backgroundColor: 'white' }}>
-                {courses && courses.map(course => {
-                    return (
-                        <TouchableOpacity
+        <div className='d-flex flex-row flex-wrap'>
+            {courses && courses.map(course => {
+                return (
+                    <div key={course.id} className="col-12 col-lg-3">
+                        <div
+                            className='mb-4 m-lg-1 border rounded'
+                            // style={{ minWidth: '18rem', width: '18rem' }}
                             key={course.id}
-                            onPress={() => navigate(`/${course.id}`, { replace: true })}>
-                            <View style={styles.item}>
-                                <Image source={course.preview} style={styles.image} />
-                                <View style={styles.textBlock}>
-                                    <Text style={styles.title}>{course.name}</Text>
-                                    {/* <Text style={styles.price}>От {course.price} рублей</Text>
+                            onClick={() => navigate(`/course/${course.id}`, { replace: true })}>
+                            <img className='card-img-top' src={course.preview} alt='Preview' />
+                            <div className='card-body'>
+                                <h5 className="card-title">{course.name}</h5>
+                                <p className="card-text"></p>
+                                {/* <p className="card-text">{course.description}</p> */}
+                                {/* <Text style={styles.price}>От {course.price} рублей</Text>
                                 <Text style={styles.price}>
-                                    {String(course.number_of_available_lessons)} из {String(course.total_number_of_lessons).slice(-1)} {ending} доступны
+                                {String(course.number_of_available_lessons)} из {String(course.total_number_of_lessons).slice(-1)} {ending} доступны
                                 </Text> */}
-                                </View>
-                            </View>
-                        </TouchableOpacity>
-                    )
-                })}
-            </View>
-        </View>
+                            </div>
+                        </div>
+                    </div>
+                )
+            })}
+        </div>
     )
 }
 
