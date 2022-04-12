@@ -25,8 +25,8 @@ export const AuthProvider = ({ children }) => {
         // }
         await axios.post(`${process.env.REACT_APP_API_URL}/authentication/register`, { ...userData })
             .then(res => {
-                console.log('Alles gut')
-                navigate('/login')
+                if (res.data.error) throw res.data.error
+                else navigate('/login')
             })
     }
 
@@ -53,7 +53,6 @@ export const AuthProvider = ({ children }) => {
         const refreshToken = async () => {
             await axios.post(`${process.env.REACT_APP_API_URL}/authentication/token/refresh`, { refresh: tokens.refresh })
                 .then(res => {
-                    console.log(res)
                     setTokens(res.data)
                     setUser(jwt_decode(res.data.access))
                     localStorage.setItem('tokens', JSON.stringify(res.data))
