@@ -13,7 +13,7 @@ import Login from './screens/auth/Login'
 import Registration from './screens/auth/Registration'
 import RegistrationVerification from './screens/auth/RegistrationVerification'
 import Course from './components/Course'
-import LessonsList from './screens/LessonsList'
+
 import Lesson from './components/Lesson'
 
 function App() {
