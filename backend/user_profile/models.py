@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from courses.models import LessonPack
+from courses.models import LessonPack, Lesson
 import datetime
 
 class UserProfile(models.Model):
@@ -15,5 +15,11 @@ class UserProfile(models.Model):
 
     purchased_lessonPacks = models.ManyToManyField(LessonPack, verbose_name='Купленные уроки', blank=True, related_name='profiles')
 
+    available_lessons = models.ManyToManyField(Lesson, verbose_name='Доступные уроки', blank=True, related_name='profiles')
+    completed_lessons = models.ManyToManyField(Lesson, verbose_name='Пройденные уроки', blank=True, related_name='completed')
+    lessons_on_review = models.ManyToManyField(Lesson, verbose_name='Уроки на ревью', blank=True, related_name='on_review')
+
     def __str__(self):
         return f"{self.id}: {self.user}"
+
+        # 202 + 90 + 80 + 
