@@ -4,7 +4,7 @@ import { AuthContext } from "../context/AuthContext"
 import Badge from 'react-bootstrap/Badge'
 import { useNavigate } from 'react-router-dom'
 
-const CourseListItem = ({ lesson }) => {
+const CourseListItem = ({ lesson, index }) => {
     const navigate = useNavigate()
     const { tokens, logout } = React.useContext(AuthContext)
 
@@ -27,10 +27,11 @@ const CourseListItem = ({ lesson }) => {
                     completed: res.data.completed,
                     on_review: res.data.on_review
                 }))
+                .catch(err => err.response.status === 401 ? logout() : console.log(err))
 
         }
         getStatus()
-    }, [lesson.id, tokens.access])
+    }, [lesson.id, tokens.access, logout])
 
     return (
         <div
@@ -43,7 +44,7 @@ const CourseListItem = ({ lesson }) => {
                 {/* {status.completed && <Badge bg='success' style={{ float: 'right' }}>Пройден</Badge>} */}
                 {/* {status.on_review && <Badge bg='primary' style={{ float: 'right' }}>На ревью</Badge>} */}
                 <div>
-                    <h3>{lesson.name}</h3>
+                    <h3>{index + 1} {lesson.name}</h3>
                     <p>{lesson.description}</p>
                 </div>
                 <div className="text-right">
