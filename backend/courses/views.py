@@ -13,7 +13,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from . import serializers
-from django.db.models import Min, Count
+from django.db.models import Min, Count, Subquery
 import json
 import random
 import vimeo
@@ -26,35 +26,113 @@ def front(request):
     return render(request, "index.html", context)
 
 
-class CourseListView(generics.ListAPIView):
+class CourseListView(APIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = serializers.CourseListSerializer
-    queryset = models.Course.objects.all()
-
-# class CourseDetailView(generics.RetrieveAPIView):
-#     serializer_class = serializers.CourseDetailSerializer
-#     queryset = models.Course.objects.all()
+    def get(self, request):
+        courses = models.Course.objects.all()
+        courses = serializers.CourseListSerializer(courses, many=True).data
+        return Response({'courses': courses})
 
 class CourseDetailView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request, pk):
         course = models.Course.objects.get(id=pk)
-        profile = UserProfile.objects.get(user=request.user)
+        purchased_lessonPacks = request.user.profile.purchased_lessonPacks.all()
+        unavailable_lessonPacks = course.lessonPacks.exclude(profiles = request.user.profile)
 
-        free_lessons = course.lessons.filter(access='free')
-        free_lessons = serializers.LessonSerializer(free_lessons, many=True)
-
-        purchased_lessonPacks = profile.purchased_lessonPacks.filter(course = course)
-        purchased_lessonPacks = serializers.LessonGroupSerializer(purchased_lessonPacks, many=True)
-
-        unavailable_lessonPacks = course.lessonPacks.exclude(profiles = profile)
-        unavailable_lessonPacks = serializers.LessonGroupSerializer(unavailable_lessonPacks, many=True)
-
-        return Response({ 
-            'free_lessons': free_lessons.data,
-            'purchased_lessonPacks': purchased_lessonPacks.data,
-            'unavailable_lessonPacks': unavailable_lessonPacks.data
+        return Response({
+            'course': serializers.CourseDetailSerializer(course).data,
+            'purchased_lessonPacks': serializers.LessonGroupSerializer(purchased_lessonPacks, many=True).data,
+            'unavailable_lessonPacks': serializers.LessonGroupSerializer(unavailable_lessonPacks, many=True).data
         })
+        # profile = UserProfile.objects.get(user=request.user)
+
+        # free_lessons = course.lessons.filter(access='free')
+        # free_lessons = serializers.LessonListSerializer(free_lessons, many=True)
+
+        # purchased_lessonPacks = profile.purchased_lessonPacks.filter(course = course)
+        # purchased_lessonPacks = serializers.LessonGroupSerializer(purchased_lessonPacks, many=True)
+
+        # unavailable_lessonPacks = course.lessonPacks.exclude(profiles = profile)
+        # unavailable_lessonPacks = serializers.LessonGroupSerializer(unavailable_lessonPacks, many=True)
+
+
+        # return Response({ 
+        #     'course_name': course.name,
+        #     'course_description': course.description,
+        #     'preview': course.preview.url,
+        #     'free_lessons': free_lessons.data,
+        #     'purchased_lessonPacks': purchased_lessonPacks.data,
+        #     'unavailable_lessonPacks': unavailable_lessonPacks.data,
+        # })
+
+
+class GetLessonStatus(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request, pk):
+        profile = request.user.profile
+        available = profile.available_lessons.filter(id=pk).exists()
+        completed = profile.completed_lessons.filter(id=pk).exists()
+        on_review = profile.lessons_on_review.filter(id=pk).exists()
+        return Response({
+            'available': available,
+            'completed': completed,
+            'on_review': on_review
+        })
+
+class LessonListView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request, pk):
+        course = models.Course.objects.get(id=pk)
+        lessons = serializers.LessonListSerializer(course.lessons, many=True)
+        return Response(lessons)
+
+class LessonDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request, pk):
+        profile = request.user.profile
+        lesson = models.Lesson.objects.get(id=pk)
+
+
+
+
+        client = vimeo.VimeoClient(
+            token=settings.VIMEO_TOKEN,
+            key=settings.VIMEO_KEY,
+            secret=settings.VIMEO_SECRET
+        )
+
+        videos = []
+
+        for video in lesson.videos.all():
+            url = client.get(f'https://api.vimeo.com/me/videos/{video.url}', params={'fields': 'name, player_embed_url'}).json()
+            videos.append(url)
+
+        # for video in videos:
+        #     print(video)
+
+        # Make the request to the server for the "/me" endpoint.
+        # video = client.get(f'https://api.vimeo.com/me/videos/{id}')
+
+        # return JsonResponse(video.json())
+
+        if lesson.access == 'free' or lesson in profile.available_lessons.all():
+            return Response({
+                'lesson': serializers.LessonSerializer(lesson).data,
+                'videos': videos
+            })
+        else: 
+            return Response(status=403)
+
+
+class MarkCompleted(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request, pk):
+        lesson = models.Lesson.objects.get(id=pk)
+        profile = request.user.profile
+        profile.completed_lessons.add(lesson)
+        print(profile.completed_lessons)
+        return Response({'sdf': 'sdf'})
 
 
 
@@ -147,48 +225,6 @@ def comments(request, pk):
 
     comments = list(lesson.comments.all().values())
     return JsonResponse(comments, safe=False)
-
-@csrf_exempt
-def verification_view(request):
-    data = json.loads(request.body.decode("utf-8"))
-    if User.objects.filter(email = data['email']).exists():
-        return HttpResponse('qweqweqwe', status=409)
-    return HttpResponse(status=409)
-    code = random.randint(1111, 9999)
-    request.session['reset_password'] = {
-        "email": data["email"],
-        "code": code
-    }
-    send_mail(
-        'Код подтверждения',
-        f'Ваш код подтверждения: {code} \n\nЕсли вы не запрашивали код, игнорируйте это письмо и никому не говорите этот код. \n\n P.S. Привет всем пусечкам лапотусечкам',
-        'pavelbarhov@gmail.com',
-        [data["email"]],
-        fail_silently=False,
-    )
-    return HttpResponse(status=400)
-
-
-@csrf_exempt
-def verify_code(request):
-    data = json.loads(request.body.decode("utf-8"))
-    if request.session['reset_password']['code'] == int(data["code"]):
-        print('good')
-        return HttpResponse(status=200)
-    else:
-        return HttpResponse('Неверный код', status=403)
-
-
-@csrf_exempt
-def new_password(request):
-    data = json.loads(request.body.decode("utf-8"))
-    user = User.objects.get(email=request.session['reset_password']['email'])
-    if user is not None:
-        user.set_password(data["password"])
-        user.save()
-        return HttpResponse(status=200)
-    else:
-        return HttpResponse('Что-то пошло не так', status=403)
 
 
 @csrf_exempt
