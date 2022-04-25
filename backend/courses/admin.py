@@ -4,16 +4,38 @@ from user_profile.models import UserProfile
 # Register your models here.
 admin.site.site_header = "Rihter Art Online - Панель администрирования"
 
-class CourseDisplay(admin.ModelAdmin):
-    list_display = ('name', 'description', 'get_lessons')
-    def get_lessons(self, obj):
-        return obj.lessons
+class LessonInline(admin.StackedInline):
+    model = models.Lesson
+    extra = 1
 
+class PhotoInline(admin.StackedInline):
+    model = models.Photo
+    extra = 1
+
+class VideoInline(admin.StackedInline):
+    model = models.Video
+    extra = 1
+
+@admin.register(models.Course)
+class CourseAdmin(admin.ModelAdmin):
+    list_display = ("id", "name", "description", "draft")
+    list_display_links = ("name", )
+    inlines = [LessonInline]
+    save_on_top = True
+    list_editable = ("draft", )
+
+@admin.register(models.Lesson)
+class LessonAdmin(admin.ModelAdmin):
+    list_display = ("id", "name", "course", "description")
+    list_display_links = ("name", )
+    inlines = [PhotoInline, VideoInline]
+    list_filter = ("course", )
+    search_fields = ("name", "description")
 
 admin.site.register(UserProfile)
-admin.site.register(models.Course, CourseDisplay)
+# admin.site.register(models.Course, CourseDisplay)
 admin.site.register(models.LessonPack)
-admin.site.register(models.Lesson)
+# admin.site.register(models.Lesson)
 admin.site.register(models.Comment)
 admin.site.register(models.Photo)
 admin.site.register(models.Order)
