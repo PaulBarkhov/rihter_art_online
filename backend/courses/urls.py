@@ -6,6 +6,9 @@ from django.contrib.auth import views as auth_views
 urlpatterns = [
     path("all_courses", views.CourseListView.as_view()),
     path("course/<int:pk>", views.CourseDetailView.as_view()),
+    path('lesson/<int:pk>', views.LessonDetailView.as_view()),
+    path('lesson/<int:pk>/complete', views.MarkCompleted.as_view()),
+    path('lesson/<int:pk>/get_status', views.GetLessonStatus.as_view()),
 
     # path('courses/', views.CourseListView.as_view()),
     # path('courses/<int:pk>', views.CourseDetailView.as_view()),
@@ -21,10 +24,10 @@ urlpatterns = [
     # path("auth", views.auth),
     # path("lesson/<int:pk>/comments", views.comments),
     # path("profile/<int:pk>", views.profile),
-    path("verification", views.verification_view),
-    path("verify_code", views.verify_code),
-    path("new_password", views.new_password),
-    path("lesson/<int:pk>/upload_photo", views.upload_photo),
-    path("upload_profile_image", views.upload_profile_image),
-    path("buy_lessonPack", views.buy_lessonPack)
+    # path("verification", views.verification_view),
+    # path("verify_code", views.verify_code),
+    # path("new_password", views.new_password),
+    # path("lesson/<int:pk>/upload_photo", views.upload_photo),
+    # path("upload_profile_image", views.upload_profile_image),
+    # path("buy_lessonPack", views.buy_lessonPack)
 ]
