@@ -9,11 +9,12 @@ function CodeInput() {
     }
 
     return (
-        <div>
+        <div className="d-flex flex-row justify-content-evenly">
             {code.map((num, index) => {
                 return (
                     <input
-                        style={styles.codeInput}
+                        // style={styles.codeInput}
+                        className="col-2 rounded shadow-sm border border-2 text-center"
                         key={index}
                         value={num}
                         type='text'
@@ -45,14 +46,3 @@ function CodeInput() {
 }
 
 export default CodeInput
-
-const styles = {
-    codeInput: {
-        width: 50,
-        fontSize: 50,
-        textAlign: 'center',
-        margin: 10,
-        borderRadius: 5,
-        border: '1px solid grey'
-    }
-}
