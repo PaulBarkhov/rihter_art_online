@@ -1,33 +1,41 @@
-import React, { useCallback, useEffect } from 'react'
+import React, { useState, useCallback, useEffect, createContext } from 'react'
 import axios from 'axios'
 import jwt_decode from 'jwt-decode'
 import { useNavigate } from 'react-router-dom'
 
-export const AuthContext = React.createContext()
+export const AuthContext = createContext()
 
 export const AuthProvider = ({ children }) => {
     const navigate = useNavigate()
 
-    const [tokens, setTokens] = React.useState(() => localStorage.getItem('tokens') ? JSON.parse(localStorage.getItem('tokens')) : null)
-    const [user, setUser] = React.useState(() => localStorage.getItem('tokens') ? jwt_decode(localStorage.getItem('tokens')) : null)
+    const [tokens, setTokens] = useState(() => localStorage.getItem('tokens') ? JSON.parse(localStorage.getItem('tokens')) : null)
+    const [user, setUser] = useState(() => localStorage.getItem('tokens') ? jwt_decode(localStorage.getItem('tokens')) : null)
 
-    const [loading, setLoading] = React.useState(true)
-    const [splashLoading, setSplashLoading] = React.useState(false)
+    const [userData, setUserData] = useState({})
 
-    const register = async userData => {
-        const body = JSON.stringify(userData)
-        // const config = {
-        //     headers: {
-        //         'Accept': 'application/json',
-        //         'Content-Type': 'application/json',
-        //         'X-CSRFToken': Cookies.get('csrftoken')
-        //     }
-        // }
-        await axios.post(`${process.env.REACT_APP_API_URL}/authentication/register`, { ...userData })
+    const [header, setHeader] = useState("Rihter Art Online")
+
+    const [loading, setLoading] = useState(true)
+    const [splashLoading, setSplashLoading] = useState(false)
+
+    const register = async code => {
+
+        await axios.post(`${process.env.REACT_APP_API_URL}/authentication/register`, { ...userData, code: code })
+            // await axios.post(`${process.env.REACT_APP_API_URL}/authentication/send_verification_code`, { ...userData })
             .then(res => {
-                if (res.data.error) throw res.data.error
-                else navigate('/login')
+                console.log(res)
+                // if (res.data.error) throw res.data.error
+                // else navigate('/login')
             })
+    }
+
+    const request_verification_code = async userData => {
+        setUserData(userData)
+        await axios.post(`${process.env.REACT_APP_API_URL}/authentication/request_verification_code`, { email: userData.email })
+    }
+
+    const request_reset_code = async email => {
+        await axios.post(`${process.env.REACT_APP_API_URL}/authentication/request_verification_code`, { email: email })
     }
 
     const login = async userData => {
@@ -49,6 +57,7 @@ export const AuthProvider = ({ children }) => {
     }
 
     useEffect(() => {
+        console.log('AuthContext useEffect')
 
         const refreshToken = async () => {
             await axios.post(`${process.env.REACT_APP_API_URL}/authentication/token/refresh`, { refresh: tokens.refresh })
@@ -67,12 +76,12 @@ export const AuthProvider = ({ children }) => {
     }, [tokens, loading])
 
 
-    // React.useEffect(() => {
+    // useEffect(() => {
     //     setTokens(localStorage.getItem('token') || null)
     // }, [])
 
 
-    return <AuthContext.Provider value={{ loading, splashLoading, tokens, user, login, logout, register }}>
+    return <AuthContext.Provider value={{ loading, splashLoading, tokens, user, login, logout, request_verification_code, request_reset_code, register, header, setHeader }}>
         {children}
     </AuthContext.Provider>
 }

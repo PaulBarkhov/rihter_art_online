@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { lazy, Suspense } from 'react'
 import './App.css'
 
 import { AuthProvider } from './context/AuthContext'
@@ -11,10 +11,11 @@ import HomePage from './screens/HomePage'
 import Account from './screens/Account'
 import Login from './screens/auth/Login'
 import Registration from './screens/auth/Registration'
-import RegistrationVerification from './screens/auth/RegistrationVerification'
+import Verification from './screens/auth/Verification'
 import Course from './components/Course'
-
-import Lesson from './components/Lesson'
+import ResetPassword from './screens/auth/ResetPassword'
+const Lesson = lazy(() => import('./components/Lesson'))
+// import Lesson from './components/Lesson'
 
 function App() {
   return (
@@ -24,9 +25,11 @@ function App() {
         <Routes>
           <Route path='/' exact element={<PrivateRoute><HomePage /></PrivateRoute>} />
           <Route path='course/:courseID' element={<PrivateRoute><Course /></PrivateRoute>} />
-          <Route path='lesson/:lessonID' element={<PrivateRoute><Lesson /></PrivateRoute>} />
+          <Route path='lesson/:lessonID' element={<PrivateRoute><Suspense fallback={<h1>Loading...</h1>}><Lesson /></Suspense></PrivateRoute>} />
           <Route path='login' element={<Login />} />
           <Route path='registration' element={<Registration />} />
+          <Route path='verification' element={<Verification />} />
+          <Route path='reset_password' element={<ResetPassword />} />
           <Route path='account' element={<PrivateRoute><Account /></PrivateRoute>} />
         </Routes>
       </AuthProvider>

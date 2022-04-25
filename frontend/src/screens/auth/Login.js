@@ -35,17 +35,17 @@ const Login = () => {
 
     return (
         <div className='min-vh-100 d-flex justify-content-center align-items-center'>
-            <div className="d-flex flex-row justify-content-center shadow p-5 bg-white rounded">
-                <div>
-                    <img src={logo} alt="logo" style={{ width: 200, height: 200, marginRight: 30 }} />
+            <div className="col-lg-5 d-flex flex-column flex-wrap justify-content-center shadow p-5 bg-white rounded" >
+                <div className='d-flex align-items-center justify-content-center'>
+                    <img src={logo} alt="logo" style={{ width: 200, height: 200, margin: 30 }} />
                 </div>
                 <div className="d-flex flex-column justify-content-center text-center">
-                    <h2>Логин</h2>
+                    <h2 className='mb-3'>Логин</h2>
                     <span>{errors.server}</span>
                     <form onSubmit={e => handleSubmit(e)}>
-                        <div className="form-group">
+                        <div className='form-group d-flex flex-column'>
                             <input
-                                className="form-control mb-2"
+                                className="form-control mb-3"
                                 name="username"
                                 type="email"
                                 placeholder={errors.username ? 'Введите Email' : 'Email'}
@@ -56,7 +56,7 @@ const Login = () => {
                                 }}
                             />
                             <input
-                                className="form-control mb-2"
+                                className="form-control mb-3"
                                 name="password"
                                 type="password"
                                 placeholder={errors.password ? 'Введите пароль' : 'Пароль'}
@@ -70,7 +70,7 @@ const Login = () => {
                         </div>
                     </form>
                     <span>Нет аккаунта? <Link to="/registration">Регистрация</Link></span>
-                    <Link to="">Забыли пароль?</Link>
+                    <Link to="/reset_password">Забыли пароль?</Link>
                 </div>
             </div>
         </div>

@@ -32,8 +32,6 @@ function HomePage() {
         fetchData()
     }, [tokens, logout])
 
-    console.log(courses)
-
     return (
         <div className='d-flex flex-row flex-wrap'>
             {courses && courses.map(course => {
@@ -47,7 +45,7 @@ function HomePage() {
                             <img className='card-img-top' src={course.preview} alt='Preview' />
                             <div className='card-body'>
                                 <h5 className="card-title">{course.name}</h5>
-                                <p className="card-text"></p>
+                                <p className="card-text">от {course.min_price} рублей</p>
                                 {/* <p className="card-text">{course.description}</p> */}
                                 {/* <Text style={styles.price}>От {course.price} рублей</Text>
                                 <Text style={styles.price}>
