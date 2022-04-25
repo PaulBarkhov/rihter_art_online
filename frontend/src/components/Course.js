@@ -12,11 +12,15 @@ const Course = () => {
         name: '',
         description: '',
         preview: '',
-        lessons: []
+        lessons: [],
+        purchased_lessonPacks: [],
+        unavailable_lessonPacks: []
     })
     const [loading, setLoading] = useState(true)
     const [refresher, setRefresher] = useState(false)
     const params = useParams()
+
+    const [selectedOptions, setSelectedOptions] = useState([])
 
     useEffect(() => {
         if (tokens) {
@@ -27,13 +31,18 @@ const Course = () => {
             }
             const fetchCourseData = async () => {
                 await axios.get(`${process.env.REACT_APP_API_URL}/course/${params.courseID}`, config)
-                    .then(res => setCourse({
-                        id: res.data.id,
-                        name: res.data.name,
-                        description: res.data.description,
-                        preview: res.data.preview,
-                        lessons: res.data.lessons
-                    }))
+                    .then(res => {
+                        setCourse({
+                            id: res.data.course.id,
+                            name: res.data.course.name,
+                            description: res.data.course.description,
+                            preview: res.data.course.preview,
+                            lessons: res.data.course.lessons,
+                            purchased_lessonPacks: res.data.purchased_lessonPacks,
+                            unavailable_lessonPacks: res.data.unavailable_lessonPacks
+                        })
+                        setSelectedOptions([res.data.unavailable_lessonPacks[0]])
+                    })
                     .catch(err => err.response.status === 401 ? logout() : console.log(err))
                     .finally(setLoading(false))
             }
@@ -51,7 +60,7 @@ const Course = () => {
                 {/* <h1>{lessons.course_name}</h1>
                     <h5>{lessons.course_description}</h5> */}
                 <div className='f-flex flex-column'>
-                    {course.lessons.map(lesson => <CourseListItem key={lesson.id} lesson={lesson} />)}
+                    {course.lessons.map((lesson, index) => <CourseListItem key={lesson.id} index={index} lesson={lesson} logout={logout} />)}
                 </div>
             </div>
 
@@ -63,6 +72,59 @@ const Course = () => {
                     <Card.Body>
                         <Card.Title>{course.name}</Card.Title>
                         <Card.Text>{course.description}</Card.Text>
+                        <form>
+                            <div className="mb-4">
+                                <div className="form-check">
+                                    <input className="form-check-input mr-1" style={{ backgroundColor: 'green' }} type="checkbox" checked disabled name="freeLessonPack" id="freeLessonsCheckbox"></input>
+                                    <label className="form-check-label" htmlFor="freeLessonsCheckbox">Уроки 1-{course.lessons.filter(lesson => lesson.access === 'free').length + 1} бесплатно</label>
+                                </div>
+                                {course.purchased_lessonPacks.map(pack => {
+                                    return (
+                                        <div key={pack.id} className="form-check">
+                                            <input
+                                                className="form-check-input mr-1"
+                                                style={{ backgroundColor: 'green' }}
+                                                type="checkbox"
+                                                name="lessonPack"
+                                                checked
+                                                disabled
+                                                id={pack.id}
+                                            ></input>
+                                            <label className="form-check-label" htmlFor={pack.id}>Уроки {pack.name} уже куплены</label>
+                                        </div>
+                                    )
+                                })}
+                                {course.unavailable_lessonPacks.map((pack, index) => {
+                                    return (
+                                        <div key={pack.id} className="form-check">
+                                            <input
+                                                className="form-check-input mr-1"
+                                                type="checkbox"
+                                                name="lessonPack"
+                                                checked={!!selectedOptions[index]}
+                                                id={pack.id}
+                                                onChange={e => {
+                                                    if (index === 0) e.target.checked = true
+                                                    else {
+                                                        if (e.target.checked) setSelectedOptions(course.unavailable_lessonPacks.slice(0, index + 1))
+                                                        else setSelectedOptions(course.unavailable_lessonPacks.slice(0, index))
+                                                    }
+                                                }}
+                                            ></input>
+                                            <label className="form-check-label" htmlFor={pack.id}>Уроки {pack.name} за {pack.price} рублей</label>
+                                        </div>
+                                    )
+                                })}
+                                <h2 className="mt-3">{selectedOptions && selectedOptions.reduce((sum, option) => { return sum + parseFloat(option.price) }, 0)} рублей</h2>
+                            </div>
+
+                        </form>
+
+                        <div className="d-flex flex-column justify-content-center">
+                            {/* <Card.Text>{selectedOptions && selectedOptions.reduce((sum, option) => { return sum + parseFloat(option.price) }, 0)}</Card.Text> */}
+                            <button className="btn btn-primary w-100 mb-1" disabled={selectedOptions.length === 0}>Купить</button>
+                            <button className="btn btn-outline-primary w-100" disabled={selectedOptions.length === 0}>В корзину</button>
+                        </div>
                     </Card.Body>
                 </Card>
             </div>
