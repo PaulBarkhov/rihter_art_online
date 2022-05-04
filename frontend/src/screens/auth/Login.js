@@ -48,7 +48,7 @@ const Login = () => {
                                 className="form-control mb-3"
                                 name="username"
                                 type="email"
-                                placeholder={errors.username ? 'Введите Email' : 'Email'}
+                                placeholder={errors.username ? 'Введите Email*' : 'Email*'}
                                 value={userData.username}
                                 onChange={e => {
                                     setErrors({ ...errors, server: '', username: '' })
@@ -59,7 +59,7 @@ const Login = () => {
                                 className="form-control mb-3"
                                 name="password"
                                 type="password"
-                                placeholder={errors.password ? 'Введите пароль' : 'Пароль'}
+                                placeholder={errors.password ? 'Введите пароль*' : 'Пароль*'}
                                 value={userData.password}
                                 onChange={e => {
                                     setErrors({ ...errors, server: '', password: '' })
