@@ -26,7 +26,7 @@ const Course = () => {
         if (tokens) {
             const config = {
                 headers: {
-                    'Authorization': `Bearer ${tokens.access}`
+                    'Authorization': `JWT ${tokens.access}`
                 }
             }
             const fetchCourseData = async () => {
@@ -115,7 +115,7 @@ const Course = () => {
                                         </div>
                                     )
                                 })}
-                                <h2 className="mt-3">{selectedOptions && selectedOptions.reduce((sum, option) => { return sum + parseFloat(option.price) }, 0)} рублей</h2>
+                                <h2 className="mt-3">{selectedOptions && selectedOptions.reduce((sum, option) => { return sum + parseFloat(option.price) }, 0).toFixed(2)} рублей</h2>
                             </div>
 
                         </form>
