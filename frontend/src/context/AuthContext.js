@@ -29,13 +29,34 @@ export const AuthProvider = ({ children }) => {
             })
     }
 
+    const signup = async (userData) => {
+        setUserData(userData)
+        await axios.post(`${process.env.REACT_APP_API_URL}/auth/users/`, { username: userData.email, ...userData })
+    }
+
+    const resendActivationEmail = async () => {
+        await axios.post(`${process.env.REACT_APP_API_URL}/auth/users/resend_activation/`, { email: userData.email })
+    }
+
+    const resetPassword = async email => {
+        await axios.post(`${process.env.REACT_APP_API_URL}/auth/users/reset_password/`, { email: email })
+    }
+
+    const setNewPassword = async (uid, token, new_password, re_new_password) => {
+        await axios.post(`${process.env.REACT_APP_API_URL}/auth/users/reset_password_confirm/`, { uid, token, new_password, re_new_password })
+    }
+
+
+
+
+
+
+
+
+
     const request_verification_code = async userData => {
         setUserData(userData)
         await axios.post(`${process.env.REACT_APP_API_URL}/authentication/request_verification_code`, { email: userData.email })
-    }
-
-    const request_reset_code = async email => {
-        await axios.post(`${process.env.REACT_APP_API_URL}/authentication/request_verification_code`, { email: email })
     }
 
     const login = async userData => {
@@ -57,8 +78,6 @@ export const AuthProvider = ({ children }) => {
     }
 
     useEffect(() => {
-        console.log('AuthContext useEffect')
-
         const refreshToken = async () => {
             await axios.post(`${process.env.REACT_APP_API_URL}/authentication/token/refresh`, { refresh: tokens.refresh })
                 .then(res => {
@@ -75,13 +94,14 @@ export const AuthProvider = ({ children }) => {
         return () => clearInterval(interval)
     }, [tokens, loading])
 
+    console.log(userData)
 
     // useEffect(() => {
     //     setTokens(localStorage.getItem('token') || null)
     // }, [])
 
 
-    return <AuthContext.Provider value={{ loading, splashLoading, tokens, user, login, logout, request_verification_code, request_reset_code, register, header, setHeader }}>
+    return <AuthContext.Provider value={{ userData, loading, splashLoading, tokens, user, login, logout, request_verification_code, resetPassword, setNewPassword, register, signup, resendActivationEmail, header, setHeader }}>
         {children}
     </AuthContext.Provider>
 }
