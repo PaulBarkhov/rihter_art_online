@@ -12,26 +12,27 @@ import Verification from './Verification'
 
 
 const Registration = () => {
-    const { request_verification_code } = useContext(AuthContext)
+    const { signup } = useContext(AuthContext)
     const navigate = useNavigate()
 
     const [userData, setUserData] = useState({
-        firstName: '',
-        lastName: '',
+        first_name: '',
+        last_name: '',
         email: '',
         password: ''
     })
 
-    const [repeatPassword, setRepeatPassword] = React.useState('')
+    const [re_password, setRepeatPassword] = React.useState('')
     const [isChecked, setIsChecked] = React.useState(false)
 
     const [errors, setErrors] = React.useState({
         server: '',
-        firstName: '',
-        lastName: '',
+        first_name: '',
+        last_name: '',
         email: '',
+        username: '',
         password: '',
-        repeatPassword: '',
+        re_password: '',
         check: ''
     })
 
@@ -39,32 +40,29 @@ const Registration = () => {
         e.preventDefault()
         setErrors({
             server: '',
-            firstName: !userData.firstName ? 'Введите имя' : errors.firstName,
-            lastName: !userData.lastName ? 'Введите фамилию' : errors.lastName,
+            first_name: !userData.first_name ? 'Введите имя' : errors.first_name,
+            last_name: !userData.last_name ? 'Введите фамилию' : errors.last_name,
             email: !userData.email ? 'Введите Email' : errors.email,
+            username: !userData.email ? '' : errors.username,
             // birthDate: !userData.birthDate ?'Введите Дату рождения' : errors.birthDate,
             // language: !userData.language ?'Выберите язык' : errors.language,
             password: !userData.password ? 'Введите пароль' : errors.password,
-            repeatPassword: !repeatPassword ? 'Повторите пароль' : errors.repeatPassword,
+            re_password: !re_password ? 'Повторите пароль' : errors.re_password,
             check: !isChecked ? 'Подтвердите согласие' : errors.check,
         })
-        if (userData.firstName && !errors.firstName &&
-            userData.lastName && !errors.lastName &&
-            userData.email && !errors.email &&
+        if (userData.first_name && !errors.first_name &&
+            userData.last_name && !errors.last_name &&
+            userData.email && !errors.email && !errors.username &&
             userData.password && !errors.password &&
-            !errors.repeatPassword &&
+            !errors.re_password &&
             !errors.check
         ) {
-            // await axios.post(`${process.env.REACT_APP_API_URL}/authentication/send_verification_code`, { ...userData })
-            request_verification_code(userData)
+            signup(userData)
                 .then(res => {
                     console.log(res)
                     navigate("/verification")
                 })
-                .catch(err => {
-                    if (err.response.status === 409) setErrors({ ...errors, email: err.response.data.error })
-                    else setErrors({ ...errors, server: err.response.data.error })
-                })
+                .catch(err => setErrors(err.response.data))
         }
     }
 
@@ -72,37 +70,37 @@ const Registration = () => {
         const format = /^[a-zа-я ,.'-]+$/i
 
         switch (inputName) {
-            case 'firstName':
+            case 'first_name':
 
-                // setUserData({ ...userData, firstName: inputValue.replace(format, '') })
+                // setUserData({ ...userData, first_name: inputValue.replace(format, '') })
                 if (format.test(inputValue) || inputValue === '') {
-                    setErrors({ ...errors, firstName: '' })
-                    setUserData({ ...userData, firstName: inputValue })
+                    setErrors({ ...errors, first_name: '' })
+                    setUserData({ ...userData, first_name: inputValue })
                 }
                 break
 
-            case 'lastName':
+            case 'last_name':
                 if (format.test(inputValue) || inputValue === '') {
-                    setErrors({ ...errors, lastName: '' })
-                    setUserData({ ...userData, lastName: inputValue })
+                    setErrors({ ...errors, last_name: '' })
+                    setUserData({ ...userData, last_name: inputValue })
                 }
                 break
             case 'email':
                 const emailFormat = /^[a-z0-9@_.-]+$/i
                 if (emailFormat.test(inputValue) || inputValue === '') {
-                    setErrors({ ...errors, email: "" })
+                    setErrors({ ...errors, email: "", username: "" })
                     setUserData({ ...userData, email: inputValue })
                 }
                 break
             case 'password':
                 setUserData({ ...userData, password: inputValue })
                 if (errors.password === "Укажите пароль" || inputValue.length >= 8) setErrors({ ...errors, password: '' })
-                if (inputValue === repeatPassword) setErrors({ ...errors, password: '', repeatPassword: '' })
+                if (inputValue === re_password) setErrors({ ...errors, password: '', re_password: '' })
                 break
-            case 'repeatPassword':
+            case 're_password':
                 setRepeatPassword(inputValue)
-                if (errors.repeatPassword === 'Повторите пароль') setErrors({ ...errors, repeatPassword: '' })
-                if (inputValue === userData.password) setErrors({ ...errors, repeatPassword: '' })
+                if (errors.re_password === 'Повторите пароль') setErrors({ ...errors, re_password: '' })
+                if (inputValue === userData.password) setErrors({ ...errors, re_password: '' })
                 break
             default: break
         }
@@ -121,34 +119,34 @@ const Registration = () => {
                         <div style={styles.row}>
                             <div style={styles.formGroup}>
                                 <input
-                                    className={`form-control ${errors.firstName && 'is-invalid'}`}
-                                    name="firstName"
+                                    className={`form-control ${errors.first_name && 'is-invalid'}`}
+                                    name="first_name"
                                     type="text"
                                     placeholder="Имя"
                                     maxLength={50}
-                                    value={userData.firstName}
+                                    value={userData.first_name}
                                     onChange={e => validate(e.target.name, e.target.value)}
                                 />
-                                {errors.firstName && <div className='invalid-feedback'>{errors.firstName}</div>}
+                                {errors.first_name && <div className='invalid-feedback'>{errors.first_name}</div>}
                             </div>
 
                             <div style={styles.formGroup}>
                                 <input
-                                    className={`form-control ${errors.lastName && 'is-invalid'}`}
-                                    name="lastName"
+                                    className={`form-control ${errors.last_name && 'is-invalid'}`}
+                                    name="last_name"
                                     type="text"
                                     placeholder="Фамилия"
                                     maxLength={50}
-                                    value={userData.lastName}
+                                    value={userData.last_name}
                                     onChange={e => validate(e.target.name, e.target.value)}
                                 />
-                                {errors.lastName && <div className='invalid-feedback'>{errors.lastName}</div>}
+                                {errors.last_name && <div className='invalid-feedback'>{errors.last_name}</div>}
                             </div>
                         </div>
 
                         <div style={styles.formGroup}>
                             <input
-                                className={`form-control ${errors.email && 'is-invalid'}`}
+                                className={`form-control ${(errors.email || errors.username) && 'is-invalid'}`}
                                 name='email'
                                 type='email'
                                 placeholder='Электронная почта'
@@ -162,6 +160,7 @@ const Registration = () => {
                                 }}
                             />
                             {errors.email && <div className='invalid-feedback'>{errors.email}</div>}
+                            {errors.username && <div className='invalid-feedback'>{errors.username}</div>}
                         </div>
 
                         <div style={styles.formGroup}>
@@ -180,18 +179,18 @@ const Registration = () => {
                         </div>
                         <div style={styles.formGroup}>
                             <input
-                                className={`form-control ${errors.repeatPassword && 'is-invalid'}`}
-                                name='repeatPassword'
+                                className={`form-control ${errors.re_password && 'is-invalid'}`}
+                                name='re_password'
                                 type='password'
                                 placeholder='Повторите пароль'
                                 maxLength={256}
-                                value={repeatPassword}
+                                value={re_password}
                                 onChange={e => validate(e.target.name, e.target.value)}
                                 onBlur={() => {
-                                    if (repeatPassword && repeatPassword !== userData.password) setErrors({ ...errors, repeatPassword: 'Пароли не совпадают' })
+                                    if (re_password && re_password !== userData.password) setErrors({ ...errors, re_password: 'Пароли не совпадают' })
                                 }}
                             />
-                            {errors.repeatPassword && <div className='invalid-feedback'>{errors.repeatPassword}</div>}
+                            {errors.re_password && <div className='invalid-feedback'>{errors.re_password}</div>}
                         </div>
                         <div style={styles.formGroup}>
                             <div className='form-check'>
