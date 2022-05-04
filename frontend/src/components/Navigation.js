@@ -7,7 +7,7 @@ import Container from 'react-bootstrap/Container'
 
 
 const Navigation = () => {
-    const { user, logout, header } = useContext(AuthContext)
+    const { user, header } = useContext(AuthContext)
     if (!user) return <></>
     return (
         <Navbar bg="light" expand="lg" className="mb-4">
@@ -17,7 +17,7 @@ const Navigation = () => {
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="me-auto">
                         <Link className="nav-link" to="/">Курсы</Link>
-                        {user && <Link className="nav-link" to="login" onClick={logout}>Выйти</Link>}
+                        {user && <Link className="nav-link" to="profile">Профиль</Link>}
                         {!user && <Link className="nav-link" to="login">Войти</Link>}
 
                     </Nav>
