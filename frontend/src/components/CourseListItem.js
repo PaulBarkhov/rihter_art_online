@@ -52,7 +52,7 @@ const CourseListItem = ({ lesson, index }) => {
                         <button
                             className='btn btn-primary'
                             style={{ float: 'right' }}
-                            onClick={() => navigate(`/lesson/${lesson.id}`, { replace: true })}>
+                            onClick={() => navigate(`/lesson/${lesson.id}`)}>
                             Начать
                         </button>) : (
                         <a
