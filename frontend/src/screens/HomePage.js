@@ -17,7 +17,7 @@ function HomePage() {
             if (tokens) {
                 const config = {
                     headers: {
-                        'Authorization': `Bearer ${tokens.access}`
+                        'Authorization': `JWT ${tokens.access}`
                     }
                 }
                 await axios.get(`${process.env.REACT_APP_API_URL}/all_courses`, config)

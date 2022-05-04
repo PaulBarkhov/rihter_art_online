@@ -18,7 +18,7 @@ const CourseListItem = ({ lesson, index }) => {
         const getStatus = async () => {
             const config = {
                 headers: {
-                    'Authorization': `Bearer ${tokens.access}`
+                    'Authorization': `JWT ${tokens.access}`
                 }
             }
             await axios.get(`${process.env.REACT_APP_API_URL}/lesson/${lesson.id}/get_status`, config)

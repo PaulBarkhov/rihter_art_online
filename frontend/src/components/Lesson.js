@@ -28,7 +28,7 @@ const Lesson = () => {
         const getLessonData = async () => {
             const config = {
                 headers: {
-                    'Authorization': `Bearer ${tokens.access}`
+                    'Authorization': `JWT ${tokens.access}`
                 }
             }
             await axios.get(`${process.env.REACT_APP_API_URL}/lesson/${params.lessonID}`, config)
