@@ -8,7 +8,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 
 
 import HomePage from './screens/HomePage'
-import Account from './screens/Account'
+import Profile from './screens/Profile'
 import Login from './screens/auth/Login'
 import Registration from './screens/auth/Registration'
 import Activate from './screens/auth/Activate'
@@ -36,7 +36,7 @@ function App() {
           <Route path='reset_password' element={<ResetPassword />} />
           <Route path='reset_password_sent' element={<ResetPasswordSent />} />
           <Route path='password/reset/confirm/:uid/:token' element={<ResetPasswordConfirm />} />
-          <Route path='account' element={<PrivateRoute><Account /></PrivateRoute>} />
+          <Route path='profile' element={<PrivateRoute><Profile /></PrivateRoute>} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
