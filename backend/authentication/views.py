@@ -6,7 +6,6 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
-from .models import Verification
 from user_profile.models import UserProfile
 
 
@@ -31,72 +30,72 @@ class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
 
-class RegisterView(APIView):
-    permission_classes = [AllowAny]
+# class RegisterView(APIView):
+#     permission_classes = [AllowAny]
 
-    def post(self, request, format=None):
-        data = self.request.data
-        if data['code'] == Verification.objects.get(email=data['email']).code:
+#     def post(self, request, format=None):
+#         data = self.request.data
+#         if data['code'] == Verification.objects.get(email=data['email']).code:
 
-            username = data["email"]
-            first_name = data["first_name"]
-            last_name = data["last_name"]
-            email = data["email"]
-            password = data["password"]
+#             username = data["email"]
+#             first_name = data["first_name"]
+#             last_name = data["last_name"]
+#             email = data["email"]
+#             password = data["password"]
 
-            try:
-                if User.objects.filter(username=username).exists():
-                    return Response({'error': 'Email занят'})
-                else: 
-                    User.objects.create_user(username=username, email=email, password=password, first_name=first_name, last_name=last_name)
-                    UserProfile.objects.create(user=User.objects.get(username=username))
-                    print("Success")
-                    return Response({'success': 'Успех'}, 200)
-            except: 
-                return Response({'Error': 'Что-то пошло не так при попытке загеристрироваться'}, 500)
+#             try:
+#                 if User.objects.filter(username=username).exists():
+#                     return Response({'error': 'Email занят'})
+#                 else: 
+#                     User.objects.create_user(username=username, email=email, password=password, first_name=first_name, last_name=last_name)
+#                     UserProfile.objects.create(user=User.objects.get(username=username))
+#                     print("Success")
+#                     return Response({'success': 'Успех'}, 200)
+#             except: 
+#                 return Response({'Error': 'Что-то пошло не так при попытке загеристрироваться'}, 500)
 
-        else: return Response({'Error': 'Неверный код'}, 400)
+#         else: return Response({'Error': 'Неверный код'}, 400)
 
 
-class Send_verification_code(APIView):
-    permission_classes = [AllowAny]
-    def post(self, request):
-        data = self.request.data
+# class Send_verification_code(APIView):
+#     permission_classes = [AllowAny]
+#     def post(self, request):
+#         data = self.request.data
 
-        if User.objects.filter(email = data['email']).exists():
-            return Response({'error': 'Email занят'}, 409)
+#         if User.objects.filter(email = data['email']).exists():
+#             return Response({'error': 'Email занят'}, 409)
 
-        code = random.randint(1111, 9999)
-        Verification.objects.update_or_create(email=data['email'], code=code)
-        # request.session['verification'] = {
-        #     "email": data["email"],
-        #     "code": code
-        # }
-        send_mail(
-            'Код подтверждения',
-            f'Ваш код подтверждения: {code} \n\nЕсли вы не запрашивали код, игнорируйте это письмо и никому не говорите этот код. \n\n P.S. Привет всем пусечкам лапотусечкам',
-            'pavelbarhov@gmail.com',
-            [data["email"]],
-            fail_silently=False,
-        )
-        return Response({'success': 'Успех'})
+#         code = random.randint(1111, 9999)
+#         Verification.objects.update_or_create(email=data['email'], code=code)
+#         # request.session['verification'] = {
+#         #     "email": data["email"],
+#         #     "code": code
+#         # }
+#         send_mail(
+#             'Код подтверждения',
+#             f'Ваш код подтверждения: {code} \n\nЕсли вы не запрашивали код, игнорируйте это письмо и никому не говорите этот код. \n\n P.S. Привет всем пусечкам лапотусечкам',
+#             'pavelbarhov@gmail.com',
+#             [data["email"]],
+#             fail_silently=False,
+#         )
+#         return Response({'success': 'Успех'})
 
-class Send_reset_code(APIView):
-    permission_classes = [AllowAny]
-    def post(self, request):
-        data = self.request.data
-        if User.objects.filter(email = data['email']).exists():
-            code = random.randint(1111, 9999)
-            Verification.objects.update_or_create(email=data['email'], code=code)
-            send_mail(
-                'Код сброса пароля',
-                f'Ваш код подтверждения: {code} \n\nЕсли вы не запрашивали код, игнорируйте это письмо и никому не говорите этот код. \n\n P.S. Привет всем пусечкам лапотусечкам',
-                'pavelbarhov@gmail.com',
-                [data["email"]],
-                fail_silently=False,
-            )
-            return Response({'success': 'Успех'}, 200)
-        else: return Response({'Пользователя с таким Email не существует'}, 404)
+# class Send_reset_code(APIView):
+#     permission_classes = [AllowAny]
+#     def post(self, request):
+#         data = self.request.data
+#         if User.objects.filter(email = data['email']).exists():
+#             code = random.randint(1111, 9999)
+#             Verification.objects.update_or_create(email=data['email'], code=code)
+#             send_mail(
+#                 'Код сброса пароля',
+#                 f'Ваш код подтверждения: {code} \n\nЕсли вы не запрашивали код, игнорируйте это письмо и никому не говорите этот код. \n\n P.S. Привет всем пусечкам лапотусечкам',
+#                 'pavelbarhov@gmail.com',
+#                 [data["email"]],
+#                 fail_silently=False,
+#             )
+#             return Response({'success': 'Успех'}, 200)
+#         else: return Response({'Пользователя с таким Email не существует'}, 404)
 
 
 
