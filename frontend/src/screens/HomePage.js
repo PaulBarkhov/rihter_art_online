@@ -41,7 +41,7 @@ function HomePage() {
                             className='mb-4 m-lg-1 border rounded'
                             // style={{ minWidth: '18rem', width: '18rem' }}
                             key={course.id}
-                            onClick={() => navigate(`/course/${course.id}`, { replace: true })}>
+                            onClick={() => navigate(`/course/${course.id}`)}>
                             <img className='card-img-top' src={course.preview} alt='Preview' />
                             <div className='card-body'>
                                 <h5 className="card-title">{course.name}</h5>
