@@ -39,8 +39,8 @@ class RegisterView(APIView):
         if data['code'] == Verification.objects.get(email=data['email']).code:
 
             username = data["email"]
-            first_name = data["firstName"]
-            last_name = data["lastName"]
+            first_name = data["first_name"]
+            last_name = data["last_name"]
             email = data["email"]
             password = data["password"]
 
