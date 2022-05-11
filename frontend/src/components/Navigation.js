@@ -7,18 +7,19 @@ import Container from 'react-bootstrap/Container'
 
 
 const Navigation = () => {
+    const [expanded, setExpanded] = useState(false)
     const { user, header } = useContext(AuthContext)
     if (!user) return <></>
     return (
-        <Navbar bg="light" expand="lg" className="mb-4">
+        <Navbar bg="light" collapseOnSelect expand="lg" className="my-2 border rounded bg-white shadow-sm" expanded={expanded}>
             <Container>
                 <Navbar.Brand>{header}</Navbar.Brand>
-                <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                <Navbar.Toggle onClick={() => setExpanded(!expanded)} />
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="me-auto">
-                        <Link className="nav-link" to="/">Курсы</Link>
-                        {user && <Link className="nav-link" to="profile">Профиль</Link>}
-                        {!user && <Link className="nav-link" to="login">Войти</Link>}
+                        <Link className="nav-link" to="/" onClick={() => setExpanded(false)}>Курсы</Link>
+                        {user && <Link className="nav-link" to="profile" onClick={() => setExpanded(false)}>Профиль</Link>}
+                        {!user && <Link className="nav-link" to="login" onClick={() => setExpanded(false)}>Войти</Link>}
 
                     </Nav>
                 </Navbar.Collapse>
