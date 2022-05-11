@@ -15,12 +15,14 @@ const Verification = () => {
     }
 
     return (
-        <div className='min-vh-100 d-flex flex-column justify-content-center text-left'>
-            <span className='text-primary' onClick={() => navigate(-1)}><u>Назад</u></span>
-            <div className="d-flex flex-column justify-content-center align-items-center text-center">
+        <div className='min-vh-100 d-flex flex-column justify-content-center align-items-center'>
+            <div className="col-12 col-lg-6 d-flex flex-column justify-content-center align-items-center text-center">
                 <h2>Мы отправили на {userData.email} ссылку для активации аккаунта</h2>
                 <span>Возможно придется проверить папку "спам"</span>
-                <button disabled={isResended} className="btn btn-outline-primary my-4" onClick={handleClick}>{isResended ? "Отправлено" : "Я не получил письмо"}</button>
+                <div className="d-flex flex-row mt-2">
+                    <button className="btn btn-outline-secondary mx-1" onClick={() => navigate(-1)}>Назад</button>
+                    <button disabled={isResended} className="btn btn-outline-primary mx-1" onClick={handleClick}>{isResended ? "Отправлено" : "Я не получил письмо"}</button>
+                </div>
                 {error && <span className="text-danger">{error}</span>}
             </div>
         </div>
