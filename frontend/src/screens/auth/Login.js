@@ -1,7 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { EyeFill, EyeSlash, EyeSlashFill } from 'react-bootstrap-icons'
 import { Link } from 'react-router-dom'
 import logo from '../../assets/logo.png'
-import { AuthContext } from '../../context/AuthContext';
+import PasswordVisibility from '../../components/PasswordVisibility'
+import { AuthContext } from '../../context/AuthContext'
 
 const Login = () => {
     const { login } = React.useContext(AuthContext)
@@ -10,6 +12,8 @@ const Login = () => {
         username: '',
         password: '',
     })
+
+    const [isPasswordShown, setIsPasswordShown] = useState(false)
 
     const [errors, setErrors] = React.useState({
         server: '',
@@ -34,14 +38,13 @@ const Login = () => {
     }
 
     return (
-        <div className='min-vh-100 d-flex justify-content-center align-items-center'>
-            <div className="col-lg-5 d-flex flex-column flex-wrap justify-content-center shadow p-5 bg-white rounded" >
-                <div className='d-flex align-items-center justify-content-center'>
-                    <img src={logo} alt="logo" style={{ width: 200, height: 200, margin: 30 }} />
+        <div className='min-vh-100 d-flex flex-column justify-content-center align-items-center'>
+            <div className="col-12 col-md-8 col-lg-5 d-flex flex-column flex-wrap justify-content-center shadow p-5 bg-white rounded" >
+                <div className='d-flex align-items-center justify-content-center mb-4'>
+                    <img src={logo} alt="logo" style={{ width: 200, height: 200 }} />
                 </div>
                 <div className="d-flex flex-column justify-content-center text-center">
-                    <h2 className='mb-3'>Логин</h2>
-                    <span>{errors.server}</span>
+                    <span className="text-danger">{errors.server}</span>
                     <form onSubmit={e => handleSubmit(e)}>
                         <div className='form-group d-flex flex-column'>
                             <input
@@ -52,20 +55,36 @@ const Login = () => {
                                 value={userData.username}
                                 onChange={e => {
                                     setErrors({ ...errors, server: '', username: '' })
-                                    setUserData({ ...userData, username: e.target.value })
+                                    setUserData({ ...userData, username: e.target.value.toLowerCase() })
                                 }}
                             />
-                            <input
-                                className="form-control mb-3"
-                                name="password"
-                                type="password"
-                                placeholder={errors.password ? 'Введите пароль*' : 'Пароль*'}
-                                value={userData.password}
-                                onChange={e => {
-                                    setErrors({ ...errors, server: '', password: '' })
-                                    setUserData({ ...userData, password: e.target.value })
-                                }}
-                            />
+                            <div className="input-group mb-3">
+                                <input
+                                    className="form-control"
+                                    name="password"
+                                    type={isPasswordShown ? "text" : "password"}
+                                    placeholder={errors.password ? 'Введите пароль*' : 'Пароль*'}
+                                    value={userData.password}
+                                    onChange={e => {
+                                        setErrors({ ...errors, server: '', password: '' })
+                                        setUserData({ ...userData, password: e.target.value })
+                                    }}
+                                />
+                                <div className="input-group-append">
+                                    <div className="input-group-text bg-white">
+                                        <label className="control-label" htmlFor="password">
+                                            {isPasswordShown ? <EyeSlashFill /> : <EyeFill />}
+                                        </label>
+                                        <input
+                                            type="checkbox"
+                                            style={{ display: 'none' }}
+                                            name="password"
+                                            id="password"
+                                            onChange={() => setIsPasswordShown(!isPasswordShown)} />
+                                    </div>
+                                </div>
+                            </div>
+
                             <button className="btn btn-primary btn-block mb-3" type="submit">Войти</button>
                         </div>
                     </form>

@@ -1,15 +1,9 @@
 import React, { useContext, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import Cookies from 'js-cookie'
-import axios from 'axios'
 import logo from '../../assets/logo.png'
-import GlobalStyles from '../../GlobalStyles'
 import { AuthContext } from '../../context/AuthContext'
-
-import { View, Image, Text, TextInput, TouchableOpacity } from '../../components/react-native'
-import CodeInput from '../../components/CodeInput'
-import Verification from './Verification'
-
+import { EyeFill } from 'react-bootstrap-icons'
+import { EyeSlashFill } from 'react-bootstrap-icons'
 
 const Registration = () => {
     const { signup } = useContext(AuthContext)
@@ -20,6 +14,11 @@ const Registration = () => {
         last_name: '',
         email: '',
         password: ''
+    })
+
+    const [visibility, setVisibility] = useState({
+        password: 'false',
+        re_password: 'false1'
     })
 
     const [re_password, setRepeatPassword] = React.useState('')
@@ -89,7 +88,7 @@ const Registration = () => {
                 const emailFormat = /^[a-z0-9@_.-]+$/i
                 if (emailFormat.test(inputValue) || inputValue === '') {
                     setErrors({ ...errors, email: "", username: "" })
-                    setUserData({ ...userData, email: inputValue })
+                    setUserData({ ...userData, email: inputValue.toLowerCase() })
                 }
                 break
             case 'password':
@@ -108,9 +107,8 @@ const Registration = () => {
 
     return (
         <div className='d-flex min-vh-100 justify-content-center align-items-center'>
-            <div className='col-md-8 d-flex flex-column justify-content-center align-items-center shadow p-5 bg-white rounded'>
-                <img src={logo} alt="logo" style={{ width: 200, height: 200, marginBottom: 10 }} />
-                <h2>Регистрация</h2>
+            <div className='col-12 col-md-8 d-flex flex-column justify-content-center align-items-center shadow p-5 bg-white rounded'>
+                <img src={logo} alt="logo" style={{ width: 180, height: 180 }} />
                 <div style={{ minHeight: 30, paddingInline: 10, color: 'red' }}>
                     {errors.server && <span style={styles.error}>{errors.server}</span>}
                 </div>
@@ -164,33 +162,66 @@ const Registration = () => {
                         </div>
 
                         <div style={styles.formGroup}>
-                            <input
-                                className={`form-control ${errors.password && 'is-invalid'}`}
-                                name='password'
-                                type='password'
-                                placeholder='Пароль'
-                                maxLength={256}
-                                value={userData.password}
-                                onChange={e => validate(e.target.name, e.target.value)}
-                                onBlur={() => {
-                                    if (userData.password.length !== 0 && userData.password.length < 8) setErrors({ ...errors, password: 'Минимум 8 символов' })
-                                }} />
-                            {errors.password && <div className='invalid-feedback'>{errors.password}</div>}
+                            <div className="input-group">
+                                <input
+                                    className={`form-control ${errors.password && 'is-invalid'}`}
+                                    name='password'
+                                    type={visibility.password ? "text" : "password"}
+                                    placeholder='Пароль'
+                                    maxLength={256}
+                                    value={userData.password}
+                                    onChange={e => validate(e.target.name, e.target.value)}
+                                    onBlur={() => {
+                                        if (userData.password.length !== 0 && userData.password.length < 8) setErrors({ ...errors, password: 'Минимум 8 символов' })
+                                    }} />
+
+                                <div className="input-group-append">
+                                    <div className="input-group-text bg-white">
+                                        <label className="control-label" htmlFor="password">
+                                            {visibility.password ? <EyeSlashFill /> : <EyeFill />}
+                                        </label>
+                                        <input
+                                            type="checkbox"
+                                            style={{ display: 'none' }}
+                                            name="password"
+                                            id="password"
+                                            onChange={() => setVisibility({ ...visibility, password: !visibility.password })} />
+                                    </div>
+                                </div>
+                                {errors.password && <div className='invalid-feedback'>{errors.password}</div>}
+
+                            </div>
                         </div>
                         <div style={styles.formGroup}>
-                            <input
-                                className={`form-control ${errors.re_password && 'is-invalid'}`}
-                                name='re_password'
-                                type='password'
-                                placeholder='Повторите пароль'
-                                maxLength={256}
-                                value={re_password}
-                                onChange={e => validate(e.target.name, e.target.value)}
-                                onBlur={() => {
-                                    if (re_password && re_password !== userData.password) setErrors({ ...errors, re_password: 'Пароли не совпадают' })
-                                }}
-                            />
-                            {errors.re_password && <div className='invalid-feedback'>{errors.re_password}</div>}
+                            <div className="input-group">
+                                <input
+                                    className={`form-control ${errors.re_password && 'is-invalid'}`}
+                                    name='re_password'
+                                    type={visibility.re_password ? "text" : "password"}
+                                    placeholder='Повторите пароль'
+                                    maxLength={256}
+                                    value={re_password}
+                                    onChange={e => validate(e.target.name, e.target.value)}
+                                    onBlur={() => {
+                                        if (re_password && re_password !== userData.password) setErrors({ ...errors, re_password: 'Пароли не совпадают' })
+                                    }}
+                                />
+                                <div className="input-group-append">
+                                    <div className="input-group-text bg-white">
+                                        <label className="control-label" htmlFor="re_password">
+                                            {visibility.re_password ? <EyeSlashFill /> : <EyeFill />}
+                                        </label>
+                                        <input
+                                            type="checkbox"
+                                            style={{ display: 'none' }}
+                                            name="re_password"
+                                            id="re_password"
+                                            onChange={() => setVisibility({ ...visibility, re_password: !visibility.re_password })} />
+                                    </div>
+                                </div>
+                                {errors.re_password && <div className='invalid-feedback'>{errors.re_password}</div>}
+                            </div>
+
                         </div>
                         <div style={styles.formGroup}>
                             <div className='form-check'>
