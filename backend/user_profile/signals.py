@@ -1,16 +1,11 @@
-from django.db.models.signals import post_save
-from django.contrib.auth.models import User 
 from django.dispatch import receiver
 from .models import UserProfile
+from djoser.signals import user_registered
 
-@receiver(post_save, sender=User) 
-def create_profile(sender, instance, created, **kwargs):
-    if created:
-        print('SDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF')
-        UserProfile.objects.create(user=instance)
-
-
-@receiver(post_save, sender=User)
-def save_profile(sender, instance, **kwargs):
-    print('SfsddddddddddddddddddddddddddDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF')
-    instance.profile.save()
+@receiver(user_registered)
+def my_handler(user, request, **kwargs):
+    data = request.data
+    user.first_name = data['first_name']
+    user.last_name = data['last_name']
+    user.save()
+    UserProfile.objects.create(user=user)
