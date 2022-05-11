@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { AuthContext } from '../../context/AuthContext'
 
 const ResetPassword = () => {
@@ -27,7 +27,7 @@ const ResetPassword = () => {
                 <form onSubmit={e => handleSubmit(e)}>
                     <div className="input-group mb-3">
                         <input
-                            type="text"
+                            type="email"
                             placeholder='Email'
                             className="form-control"
                             onChange={e => setEmail(e.target.value)}
@@ -40,6 +40,7 @@ const ResetPassword = () => {
                 <div style={{ minHeight: 25, color: "red", textAlign: 'center' }}>
                     {error && <span>{error}</span>}
                 </div>
+                <Link to="/login">Вспомнили пароль?</Link>
             </div>
         </div>
     )
