@@ -54,7 +54,7 @@ const Lesson = () => {
         }
         getLessonData()
 
-    }, [params.lessonID, tokens.access, logout, setHeader])
+    }, [params.lessonID, tokens, logout, setHeader])
 
     if (loading) return <Spinner animation='border' className="spinner-border-xl f-flex justify-" />
 
@@ -77,7 +77,7 @@ const Lesson = () => {
                 <h1>{lessonData.name}</h1>
                 <p>{lessonData.description}</p>
                 <div className='mb-4'>
-                    {lessonData.videos && lessonData.videos.map(video => <Video video={video} />)}
+                    {lessonData.videos && lessonData.videos.map(video => <Video key={Math.random()} video={video} />)}
                 </div>
                 <div className="d-flex flex-column flex-md-row pb-4">
                     {lessonData.photos && lessonData.photos.map(photo => <div key={photo.id} className="col-md-4 mb-2 text-center">
