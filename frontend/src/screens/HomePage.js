@@ -1,10 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
-
-import { TouchableOpacity, View, Text, Image } from '../components/react-native'
-import GlobalStyles from '../GlobalStyles'
-
 import { AuthContext } from '../context/AuthContext'
 
 function HomePage() {
@@ -39,7 +35,7 @@ function HomePage() {
                     <div key={course.id} className="col-12 col-lg-3">
                         <div
                             className='mb-4 m-lg-1 border rounded'
-                            // style={{ minWidth: '18rem', width: '18rem' }}
+                            style={{ minHeight: 400 }}
                             key={course.id}
                             onClick={() => navigate(`/course/${course.id}`)}>
                             <img className='card-img-top' src={course.preview} alt='Preview' />
