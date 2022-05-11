@@ -4,7 +4,7 @@ import { AuthContext } from "../context/AuthContext"
 import Badge from 'react-bootstrap/Badge'
 import { useNavigate } from 'react-router-dom'
 
-const CourseListItem = ({ lesson, index }) => {
+const CourseListItem = ({ lesson, index, cardRef }) => {
     const navigate = useNavigate()
     const { tokens, logout } = React.useContext(AuthContext)
 
@@ -31,7 +31,7 @@ const CourseListItem = ({ lesson, index }) => {
 
         }
         getStatus()
-    }, [lesson.id, tokens.access, logout])
+    }, [lesson.id, tokens, logout])
 
     return (
         <div
@@ -55,12 +55,12 @@ const CourseListItem = ({ lesson, index }) => {
                             onClick={() => navigate(`/lesson/${lesson.id}`)}>
                             Начать
                         </button>) : (
-                        <a
+                        <button
                             className='btn btn-primary'
                             style={{ float: 'right' }}
-                            href='#card' >
+                            onClick={() => cardRef.current.scrollIntoView(false)}>
                             Купить
-                        </a>
+                        </button>
                     )}
                 </div>
 
