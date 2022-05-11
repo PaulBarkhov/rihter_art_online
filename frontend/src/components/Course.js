@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import axios from "axios"
 import Card from 'react-bootstrap/Card'
 import { useParams } from "react-router-dom"
@@ -19,6 +19,8 @@ const Course = () => {
     const [loading, setLoading] = useState(true)
     const [refresher, setRefresher] = useState(false)
     const params = useParams()
+
+    const cardRef = useRef()
 
     const [selectedOptions, setSelectedOptions] = useState([])
 
@@ -60,15 +62,15 @@ const Course = () => {
                 {/* <h1>{lessons.course_name}</h1>
                     <h5>{lessons.course_description}</h5> */}
                 <div className='f-flex flex-column'>
-                    {course.lessons.map((lesson, index) => <CourseListItem key={lesson.id} index={index} lesson={lesson} logout={logout} />)}
+                    {course.lessons.map((lesson, index) => <CourseListItem key={lesson.id} index={index} lesson={lesson} logout={logout} cardRef={cardRef} />)}
                 </div>
             </div>
 
             <div className="col-lg-1"></div>
 
-            <div id="card" className="col-lg-4">
-                <Card className='border border-3 rounded mb-4'>
-                    <Card.Img src={course.preview} />
+            <div ref={cardRef} id="card" className="col-lg-4">
+                <Card className='border border-3 rounded mb-4' >
+                    <Card.Img src={course.preview} style={{ minHeight: 300 }} />
                     <Card.Body>
                         <Card.Title>{course.name}</Card.Title>
                         <Card.Text>{course.description}</Card.Text>
