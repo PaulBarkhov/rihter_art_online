@@ -7,11 +7,13 @@ class UserProfile(models.Model):
     class Meta: 
         verbose_name = 'Профиль'
         verbose_name_plural = 'Профили'
-    user = models.OneToOneField(User, verbose_name='Пользователь', null=True, blank=True, on_delete=models.CASCADE, related_name='profile')
+    user = models.OneToOneField(User, verbose_name='Пользователь', null=True, on_delete=models.CASCADE, related_name='profile')
     profile_image = models.ImageField('Аватар', default='default.jpg', upload_to='profile_pics', null=True, blank=True)
-    birth_date = models.DateField('Дата рождения', null=True, blank=True, default=datetime.date.today)
+    phone_number = models.CharField('Номер телефона', default='', max_length=64)
+    sex = models.CharField('Пол', max_length=9, choices=[('Мужcкой', 'Мужcкой'), ('Женский', 'Женский'), ('не указан', 'не указан')], default='не указан')
+    birth_date = models.DateField('Дата рождения', null=True, blank=True)
     language_code = models.TextField('Язык', max_length=512, null=True, blank=True)
-    status_text = models.TextField('Статус', max_length=512, null=True, blank=True)
+    about_self = models.TextField('О себе', max_length=512, null=True, blank=True)
 
     purchased_lessonPacks = models.ManyToManyField(LessonPack, verbose_name='Купленные уроки', blank=True, related_name='profiles')
 
