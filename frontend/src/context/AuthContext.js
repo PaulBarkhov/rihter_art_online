@@ -30,7 +30,9 @@ export const AuthProvider = ({ children }) => {
     }
 
     const signup = async (userData) => {
+        console.log(userData)
         setUserData(userData)
+        console.log({ username: userData.email, ...userData })
         await axios.post(`${process.env.REACT_APP_API_URL}/auth/users/`, { username: userData.email, ...userData })
     }
 
@@ -46,14 +48,6 @@ export const AuthProvider = ({ children }) => {
         await axios.post(`${process.env.REACT_APP_API_URL}/auth/users/reset_password_confirm/`, { uid, token, new_password, re_new_password })
     }
 
-
-
-
-
-
-
-
-
     const request_verification_code = async userData => {
         setUserData(userData)
         await axios.post(`${process.env.REACT_APP_API_URL}/authentication/request_verification_code`, { email: userData.email })
@@ -66,7 +60,7 @@ export const AuthProvider = ({ children }) => {
                 setTokens(res.data)
                 setUser(jwt_decode(res.data.access))
                 localStorage.setItem('tokens', JSON.stringify(res.data))
-                navigate('/')
+                navigate('/profile')
             })
         // .catch(err => err.response.status === 401 ? logout() : console.log(err))
     }
@@ -75,6 +69,7 @@ export const AuthProvider = ({ children }) => {
         setTokens(null)
         setUser(null)
         localStorage.removeItem('tokens')
+        navigate("/login")
     }
 
     useEffect(() => {
@@ -85,16 +80,21 @@ export const AuthProvider = ({ children }) => {
                     setUser(jwt_decode(res.data.access))
                     localStorage.setItem('tokens', JSON.stringify(res.data))
                 })
-                .catch(err => err.response.status === 401 ? logout() : console.log(err))
+                .catch(err => {
+                    if (err.response.status === 401) {
+                        setTokens(null)
+                        setUser(null)
+                        localStorage.removeItem('tokens')
+                        navigate("/login")
+                    }
+                })
         }
         const fourMinutes = 1000 * 60 * 4
         const interval = setInterval(() => {
             tokens && refreshToken()
         }, fourMinutes)
         return () => clearInterval(interval)
-    }, [tokens, loading])
-
-    console.log(userData)
+    }, [tokens, loading, navigate])
 
     // useEffect(() => {
     //     setTokens(localStorage.getItem('token') || null)
