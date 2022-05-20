@@ -18,7 +18,6 @@ import json
 import random
 import vimeo
 
-
 from . import models
 
 def front(request):
@@ -93,9 +92,6 @@ class LessonDetailView(APIView):
         profile = request.user.profile
         lesson = models.Lesson.objects.get(id=pk)
 
-
-
-
         client = vimeo.VimeoClient(
             token=settings.VIMEO_TOKEN,
             key=settings.VIMEO_KEY,
@@ -136,78 +132,33 @@ class MarkCompleted(APIView):
 
 
 
-def get_all_courses(request):
-    profile = request.user.profile
-    courses = []
-    for course in models.Course.objects.all():
-        number_of_free_lessons = len(course.lessons.filter(access='free').values()) + 1
-        purchased_lessonPacks = profile.purchased_lessonPacks.filter(course = course)
-        number_of_purchased_lessons = 0
-        for purchased_lessonPack in purchased_lessonPacks:
-            number_of_purchased_lessons = len(purchased_lessonPack.lessons.all().values()) + 1
-        number_of_available_lessons = number_of_free_lessons + number_of_purchased_lessons
-        total_number_of_lessons = len(course.lessons.all().values()) + 1
-        prices = []
-        lessonPacks = course.lessonPacks.all().values("price")
-        for lessonPack in lessonPacks:
-            prices.append(lessonPack['price'])
-        course = course.__dict__
-        del course['_state']
-        courses.append({
-            **course,
-            'price': prices and min(prices) or 0,
-            'number_of_available_lessons': number_of_available_lessons,
-            'total_number_of_lessons': total_number_of_lessons
-        })
+class CommentView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request, pk):
+        lesson = models.Lesson.objects.get(id=pk)   
+        comments = models.Comment.objects.filter(lesson=lesson, parent__isnull=True)
+        return Response({'comments': serializers.CommentListSerializer(comments, many=True).data})
 
-    return JsonResponse(list(courses), safe=False)
+    def post(self, request, pk):
+        # try:
+            lesson = models.Lesson.objects.get(id=pk)
+            user = self.request.user
+            data = self.request.data
 
-def get_lessons(request, pk):
-    course = models.Course.objects.get(id=pk)
-    user = request.user
-    profile = user.profile
+            text = data["text"]
+            parentID = data["parentID"]
+            voice = data["voice"]
 
-    purchased_lessons = []
-    purchased_lessonPacks = profile.purchased_lessonPacks.filter(course=course)
-    for lessonPack in purchased_lessonPacks:
-        purchased_lessons.extend(lessonPack.lessons.all().values())
-    unavailable_lessons = []
-    unavailable_lessonPacks = []
-    lessonPacks = course.lessonPacks.all()
-    for lessonPack in lessonPacks:
-        if lessonPack not in purchased_lessonPacks:
-            unavailable_lessonPack = {
-                'id': lessonPack.id,
-                'course': lessonPack.course.id,
-                'name': lessonPack.name,
-                'price': lessonPack.price,
-                'videos': []
-            }
-            unavailable_lessonPack['videos'].extend(lessonPack.lessons.all().values('id', 'name'))
-            unavailable_lessonPacks.append(unavailable_lessonPack)
+            print(parentID)
 
-    lessons = {
-        'free_lessons': list(course.lessons.filter(access='free').values()),
-        'purchased_lessons': purchased_lessons,
-        'unavailable_lessonPacks': unavailable_lessonPacks
-    }
+            if not parentID:
+                models.Comment.objects.create(lesson=lesson, user=user, text=text, voice=voice)    
+            else:
+                models.Comment.objects.create(lesson=lesson, user=user, text=text, voice=voice, parent=models.Comment.objects.get(pk=parentID))  
 
-
-    return JsonResponse(lessons)
-
-
-def video(request, id):
-
-    client = vimeo.VimeoClient(
-        token=settings.VIMEO_TOKEN,
-        key=settings.VIMEO_KEY,
-        secret=settings.VIMEO_SECRET
-    )
-
-    # Make the request to the server for the "/me" endpoint.
-    video = client.get(f'https://api.vimeo.com/me/videos/{id}')
-
-    return JsonResponse(video.json())
+            return Response(data=None, status=200)
+        # except:
+        #     return Response({'Error': 'Что-то пошло не так при отправке комментария'}, status=500)
 
 @csrf_exempt
 def comments(request, pk):
