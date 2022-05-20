@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, createContext } from 'react'
+import React, { useState, useEffect, createContext } from 'react'
 import axios from 'axios'
 import jwt_decode from 'jwt-decode'
 import { useNavigate } from 'react-router-dom'
@@ -18,21 +18,15 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true)
     const [splashLoading, setSplashLoading] = useState(false)
 
-    const register = async code => {
-
-        await axios.post(`${process.env.REACT_APP_API_URL}/authentication/register`, { ...userData, code: code })
-            // await axios.post(`${process.env.REACT_APP_API_URL}/authentication/send_verification_code`, { ...userData })
-            .then(res => {
-                console.log(res)
-                // if (res.data.error) throw res.data.error
-                // else navigate('/login')
-            })
-    }
+    // const register = async code => {
+    //     await axios.post(`${process.env.REACT_APP_API_URL}/authentication/register`, { ...userData, code: code })
+    //         .then(res => {
+    //             console.log(res)
+    //         })
+    // }
 
     const signup = async (userData) => {
-        console.log(userData)
         setUserData(userData)
-        console.log({ username: userData.email, ...userData })
         await axios.post(`${process.env.REACT_APP_API_URL}/auth/users/`, { username: userData.email, ...userData })
     }
 
@@ -48,10 +42,10 @@ export const AuthProvider = ({ children }) => {
         await axios.post(`${process.env.REACT_APP_API_URL}/auth/users/reset_password_confirm/`, { uid, token, new_password, re_new_password })
     }
 
-    const request_verification_code = async userData => {
-        setUserData(userData)
-        await axios.post(`${process.env.REACT_APP_API_URL}/authentication/request_verification_code`, { email: userData.email })
-    }
+    // const request_verification_code = async userData => {
+    //     setUserData(userData)
+    //     await axios.post(`${process.env.REACT_APP_API_URL}/authentication/request_verification_code`, { email: userData.email })
+    // }
 
     const login = async userData => {
 
@@ -89,19 +83,19 @@ export const AuthProvider = ({ children }) => {
                     }
                 })
         }
-        const fourMinutes = 1000 * 60 * 4
-        const interval = setInterval(() => {
-            tokens && refreshToken()
-        }, fourMinutes)
-        return () => clearInterval(interval)
-    }, [tokens, loading, navigate])
+        // const fourMinutes = 1000 * 60 * 4
+        // const interval = setInterval(() => {
+        //     tokens && refreshToken()
+        // }, fourMinutes)
+        // return () => clearInterval(interval)
+    }, [tokens, navigate])
 
     // useEffect(() => {
     //     setTokens(localStorage.getItem('token') || null)
     // }, [])
 
 
-    return <AuthContext.Provider value={{ userData, loading, splashLoading, tokens, user, login, logout, request_verification_code, resetPassword, setNewPassword, register, signup, resendActivationEmail, header, setHeader }}>
+    return <AuthContext.Provider value={{ userData, loading, splashLoading, tokens, user, login, logout, resetPassword, setNewPassword, signup, resendActivationEmail, header, setHeader }}>
         {children}
     </AuthContext.Provider>
 }
