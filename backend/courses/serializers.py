@@ -1,12 +1,14 @@
-from rest_framework.serializers import ModelSerializer, SlugRelatedField, SerializerMethodField, FloatField
+from rest_framework.serializers import Serializer, ModelSerializer, SlugRelatedField, SerializerMethodField, FloatField, DateTimeField
 from django.contrib.auth.models import User
 from . import models
+from user_profile.serializers import UserProfileSerializer
 
 
 class UserSerializer(ModelSerializer):
+    profile = UserProfileSerializer(read_only=True)
     class Meta:
         model = User
-        fields = ('__all__')
+        fields = ('id', 'first_name', 'last_name', 'email', 'profile')
 
 class PhotoSerializer(ModelSerializer):
     class Meta:
@@ -18,6 +20,19 @@ class VideoSerializer(ModelSerializer):
         model = models.Video
         fields = ('__all__')
 
+class RecursiveSerializer(Serializer):
+    def to_representation(self, value):
+        serializer = self.parent.parent.__class__(value, context=self.context)
+        return serializer.data
+
+class CommentListSerializer(ModelSerializer):
+    user = UserSerializer(read_only=True)
+    date = DateTimeField(format="%d.%m.%Y %H:%M:%S")
+    children = RecursiveSerializer(many=True)
+    class Meta:
+        model = models.Comment
+        fields = ('__all__')
+
 class LessonListSerializer(ModelSerializer):
     class Meta:
         model = models.Lesson
@@ -25,6 +40,7 @@ class LessonListSerializer(ModelSerializer):
 
 class LessonSerializer(ModelSerializer):
     photos = PhotoSerializer(read_only=True, many=True)
+    comments = CommentListSerializer(read_only=True, many=True)
     class Meta:
         model = models.Lesson
         fields = ('__all__')
@@ -50,4 +66,13 @@ class CourseDetailSerializer(ModelSerializer):
     # lessonPacks = LessonGroupSerializer(read_only=True, many=True)
     class Meta:
         model = models.Course
+        fields = ('__all__')
+
+
+
+
+
+class VoiceMessageSerializer(ModelSerializer):
+    class Meta:
+        model = models.VoiceMessage
         fields = ('__all__')
