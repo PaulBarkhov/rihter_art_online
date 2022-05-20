@@ -4,6 +4,9 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { AuthContext } from '../context/AuthContext'
 import Spinner from 'react-bootstrap/Spinner'
 import Video from './Video'
+import Comments from './Comments'
+import VoiceMessage from './VoiceMessage'
+import VoiceRecorder from './voiceRecorder/VoiceRecorder'
 
 const Lesson = () => {
     const params = useParams()
@@ -22,6 +25,7 @@ const Lesson = () => {
         photos: '',
         videos: '',
         excersize: '',
+        comments: ''
     })
 
     useEffect(() => {
@@ -41,20 +45,26 @@ const Lesson = () => {
                         preview: res.data.lesson.preview,
                         photos: res.data.lesson.photos,
                         videos: res.data.videos,
-                        excersize: res.data.lesson.excersize
+                        excersize: res.data.lesson.excersize,
+                        comments: res.data.lesson.comments
                     })
-                    setHeader(res.data.name)
+                    // setHeader(res.data.lesson.name)
                     setLoading(false)
                 })
                 .catch(err => {
-                    logout()
-                    // err.response.status === 401 && logout()
-                    // err.response.status === 403 && setLessonData({ error: 'У вас нет доступа к этому уроку' })
+                    if (err.response.status === 401) logout()
+                    if (err.response.status === 403) setLessonData({ error: 'У вас нет доступа к этому уроку' })
+                    else setLessonData({ error: `Ошибка: ${err.response.data}` })
                 })
         }
         getLessonData()
 
-    }, [params.lessonID, tokens, logout, setHeader])
+    }, [params.lessonID, tokens, logout])
+
+
+    const renderDangerousHTML = () => {
+        return { __html: lessonData.excersize }
+    }
 
     if (loading) return <Spinner animation='border' className="spinner-border-xl f-flex justify-" />
 
@@ -86,12 +96,29 @@ const Lesson = () => {
                     </div>)}
                 </div>
             </div>
-            <div className={activeTab === 1 ? "d-block" : "d-none"}>
 
+
+
+
+            <div className={activeTab === 1 ? "d-block" : "d-none"}>
+                <div dangerouslySetInnerHTML={renderDangerousHTML()}></div>
+                <VoiceRecorder tokens={tokens} lessonID={params.lessonID} />
             </div>
-            <div className={activeTab === 2 ? "d-block" : "d-none"}>
-                <h1>Third</h1>
+
+
+
+
+            <div className={activeTab === 2 ? "d-block" : "d-none"} style={{ paddingBottom: 50 }}>
+                <Comments />
             </div>
+
+
+
+
+
+
+
+
         </div>
 
 
