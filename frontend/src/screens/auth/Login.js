@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { EyeFill, EyeSlash, EyeSlashFill } from 'react-bootstrap-icons'
 import { Link } from 'react-router-dom'
 import logo from '../../assets/logo.png'
-import PasswordVisibility from '../../components/PasswordVisibility'
 import { AuthContext } from '../../context/AuthContext'
 
 const Login = () => {
