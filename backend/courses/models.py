@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from ckeditor.fields import RichTextField 
 
 class Course(models.Model):
     class Meta: 
@@ -36,10 +37,10 @@ class Lesson(models.Model):
     lessonPack = models.ForeignKey(LessonPack, verbose_name='Группа уроков', null=True, on_delete=models.CASCADE, blank=True, related_name='lessons')
     name = models.CharField('Название', max_length=64, blank=True)
     description = models.TextField('Описание', null=True, max_length=512, blank=True)
-    preview = models.ImageField('Фото', upload_to='uploads/lessons/previews', null=True, blank=True)
-   
-    excersize = models.CharField('Задание', null=True, max_length=512, blank=True)
+    excersize = RichTextField('Задание', null=True, blank=True)
     access = models.CharField('Доступ', null=True, max_length=4, choices=[('free', 'бесплатно'), ('paid', 'платно')], default='free')
+    preview = models.ImageField('Фото', upload_to='uploads/lessons/previews', null=True, blank=True)
+    
     def __str__(self):
         return f"{self.id}: {self.name}, {self.lessonPack}"
 
@@ -47,12 +48,23 @@ class Comment(models.Model):
     class Meta: 
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
-    text = models.TextField('Содержание', max_length=512, blank=True)
+    text = models.TextField('Содержание', max_length=5000, blank=True)
+    voice = models.FileField(upload_to='voice_messages/', null=True)
     lesson = models.ForeignKey(Lesson, verbose_name='Урок', null=True, on_delete=models.CASCADE, blank=True, related_name='comments')
     user = models.ForeignKey(User, verbose_name='Пользователь', null=True, on_delete=models.CASCADE, blank=True, related_name='comments')
+    parent = models.ForeignKey('self', verbose_name='Родитель', on_delete=models.SET_NULL, blank=True, null=True, related_name='children')
+    date = models.DateTimeField(auto_now_add=True, blank=True, null=True)
 
     def __str__(self):
         return f"{self.id}: {self.user}: {self.text}"
+
+class VoiceMessage(models.Model):
+    class Meta:
+        verbose_name = 'Голосовое сообщение'
+        verbose_name_plural = 'Голосовые сообщения'
+    blob = models.FileField(upload_to='voice_messages/', null=True)
+    # blob = models.BinaryField(max_length=None, null=True)
+    # file = models.FileField(upload_to='voice_messages/', null=True)
 
 
 class Photo(models.Model):
@@ -71,7 +83,7 @@ class Video(models.Model):
         verbose_name = 'Видео'
         verbose_name_plural = 'Видео'
     name = models.CharField('Название', max_length=64)
-    url = models.TextField('URL')
+    url = models.CharField('ID с Вимео', max_length=64)
     lesson = models.ForeignKey(Lesson, verbose_name='Урок', null=True, on_delete=models.SET_NULL, blank=True, related_name='videos')
 
 class Order(models.Model):
