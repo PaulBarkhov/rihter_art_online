@@ -9,6 +9,7 @@ urlpatterns = [
     path('lesson/<int:pk>', views.LessonDetailView.as_view()),
     path('lesson/<int:pk>/complete', views.MarkCompleted.as_view()),
     path('lesson/<int:pk>/get_status', views.GetLessonStatus.as_view()),
+    path('lesson/<int:pk>/comments', views.CommentView.as_view()),
 
     # path('courses/', views.CourseListView.as_view()),
     # path('courses/<int:pk>', views.CourseDetailView.as_view()),
@@ -18,9 +19,9 @@ urlpatterns = [
     # path('logout', views.LogoutView.as_view()),
     # path('check_authentication', views.CheckAuthenticationView.as_view()),
 
-    path("get_all_courses", views.get_all_courses),
+    # path("get_all_courses", views.get_all_courses),
     # path("account", views.account_view),
-    path("video/<int:id>", views.video),
+    # path("video/<int:id>", views.video),
     # path("auth", views.auth),
     # path("lesson/<int:pk>/comments", views.comments),
     # path("profile/<int:pk>", views.profile),
