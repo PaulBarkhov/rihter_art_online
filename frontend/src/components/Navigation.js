@@ -11,7 +11,7 @@ const Navigation = () => {
     const { user, header } = useContext(AuthContext)
     if (!user) return <></>
     return (
-        <Navbar bg="light" collapseOnSelect expand="lg" className="my-2 border rounded bg-white shadow-sm" expanded={expanded}>
+        <Navbar bg="light" collapseOnSelect expand="lg" className="mb-2 border rounded bg-white shadow-sm fixed-top" expanded={expanded}>
             <Container>
                 <Navbar.Brand>{header}</Navbar.Brand>
                 <Navbar.Toggle onClick={() => setExpanded(!expanded)} />
