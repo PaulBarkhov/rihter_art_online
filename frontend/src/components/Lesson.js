@@ -5,7 +5,6 @@ import { AuthContext } from '../context/AuthContext'
 import Spinner from 'react-bootstrap/Spinner'
 import Video from './Video'
 import Comments from './Comments'
-import VoiceMessage from './VoiceMessage'
 import VoiceRecorder from './voiceRecorder/VoiceRecorder'
 
 const Lesson = () => {
