@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { ProgressBar } from 'react-bootstrap'
-import { Coin, PlayFill, StopFill, X } from 'react-bootstrap-icons'
+import { PlayFill, StopFill, X } from 'react-bootstrap-icons'
 import formatTime from "../utils/format-time"
 
 const initialState = {
@@ -15,6 +15,8 @@ const AudioPlayer = ({ voice, setVoice }) => {
     const [playerState, setPlayerState] = useState(initialState)
     const [loading, setLoading] = useState(true)
 
+    const [play, setPlay] = useState(false)
+
     const audioRef = useRef()
     const audioElement = useRef(new Audio(voice))
 
@@ -24,14 +26,18 @@ const AudioPlayer = ({ voice, setVoice }) => {
         setLoading(false)
     }, [])
 
-    useEffect(() => {
-        audioElement.current.load()
-        const play = () => {
-            audioElement.current.play()
-        }
-        if (playButtonRef.current) playButtonRef.current.addEventListener('click', play)
-        return () => playButtonRef.current.removeEventListener('click', play)
-    }, [loading])
+    useLayoutEffect(() => {
+        audioRef.current && (play ? audioRef.current.play() : audioRef.current.pause())
+    }, [play])
+
+    // useEffect(() => {
+    //     audioElement.current.load()
+    //     const play = () => {
+    //         audioElement.current.play()
+    //     }
+    //     if (playButtonRef.current) playButtonRef.current.addEventListener('click', play)
+    //     return () => playButtonRef.current.removeEventListener('click', play)
+    // }, [loading])
 
 
     if (loading) return <span>Voice loading...</span>
@@ -39,8 +45,8 @@ const AudioPlayer = ({ voice, setVoice }) => {
     return (
         <div className="w-100 d-flex flex-row justify-content-between">
             <div className="d-flex flex-row align-items-end w-100">
-                <button className="btn btn-primary" onClick={() => audioElement.current.load()}>LOAD</button>
-                {/* <audio
+                {/* <button className="btn btn-primary" onClick={() => audioElement.current.load()}>LOAD</button> */}
+                <audio
                     preload='auto'
                     ref={audioRef}
                     controls
@@ -65,11 +71,11 @@ const AudioPlayer = ({ voice, setVoice }) => {
                     onEnded={() => setPlayerState({ ...playerState, isPlaying: false, isEnded: true })}
                     onPause={() => setPlayerState({ ...playerState, isPlaying: false, isPaused: true })}
                     onTimeUpdate={e => setPlayerState({ ...playerState, currentTime: e.target.currentTime })}
-                /> */}
+                />
                 {playerState.isPlaying ? (
-                    <button className="btn btn-warning" onClick={() => audioRef.current.pause()}><StopFill /></button>
+                    <button className="btn btn-warning" onClick={() => setPlay(false)}><StopFill /></button>
                 ) : (
-                    <button ref={playButtonRef} className="btn btn-primary" ><PlayFill /></button>
+                    <button ref={playButtonRef} className="btn btn-primary" onClick={() => setPlay(true)}><PlayFill /></button>
                 )}
 
                 <div className="d-flex flex-column mx-2 w-100">
