@@ -22,7 +22,8 @@ const AudioPlayer = ({ voice, setVoice }) => {
 
     const playButtonRef = useRef()
 
-    useEffect(() => {
+    useLayoutEffect(() => {
+        audioRef.current && audioRef.current.load()
         setLoading(false)
     }, [])
 
