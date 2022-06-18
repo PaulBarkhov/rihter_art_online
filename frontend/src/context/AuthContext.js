@@ -18,12 +18,7 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true)
     const [splashLoading, setSplashLoading] = useState(false)
 
-    // const register = async code => {
-    //     await axios.post(`${process.env.REACT_APP_API_URL}/authentication/register`, { ...userData, code: code })
-    //         .then(res => {
-    //             console.log(res)
-    //         })
-    // }
+    console.log(tokens)
 
     const signup = async (userData) => {
         setUserData(userData)
@@ -41,11 +36,6 @@ export const AuthProvider = ({ children }) => {
     const setNewPassword = async (uid, token, new_password, re_new_password) => {
         await axios.post(`${process.env.REACT_APP_API_URL}/auth/users/reset_password_confirm/`, { uid, token, new_password, re_new_password })
     }
-
-    // const request_verification_code = async userData => {
-    //     setUserData(userData)
-    //     await axios.post(`${process.env.REACT_APP_API_URL}/authentication/request_verification_code`, { email: userData.email })
-    // }
 
     const login = async userData => {
 
