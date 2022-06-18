@@ -1,21 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Modal from 'react-bootstrap/Modal'
 import axios from 'axios'
-
+import resizeFile from '../utils/resize'
 
 const ProfileImageModal = ({ profile_image, tokens, navigate, unmountModal, logout }) => {
 
     const [showModal, setShowModal] = useState(true)
 
     const [uploadedImage, setUploadedImage] = useState()
+    const [thumbnail, setThumbnail] = useState()
     const [preview, setPreview] = useState()
 
     const imageInputRef = useRef()
 
     useEffect(() => {
-        console.log('Did mount')
         return () => {
-            console.log('Did unmount')
             setUploadedImage(null)
             setPreview(null)
         }
@@ -37,6 +36,7 @@ const ProfileImageModal = ({ profile_image, tokens, navigate, unmountModal, logo
 
         if (uploadedImage) {
             formData.append("profile_image", uploadedImage)
+            formData.append("thumbnail", thumbnail)
 
             const config = {
                 headers: {
@@ -80,9 +80,19 @@ const ProfileImageModal = ({ profile_image, tokens, navigate, unmountModal, logo
                     name="profile_image"
                     id="profile_image"
                     accept="image/*"
-                    onChange={e => {
-                        const file = e.target.files[0]
-                        if (file && file.type.substring(0, 5) === "image") setUploadedImage(file)
+                    onChange={async e => {
+                        try {
+                            const file = e.target.files[0]
+                            console.log('Размер до: ' + file.size / 1000 / 1000 + 'мб')
+                            const image = await resizeFile(file, 1000, 1000, 80)
+                            console.log('Размер после: ' + (image.size / 1000 / 1000).toFixed(2) + 'мб')
+                            const thumb = await resizeFile(file, 300, 300, 50)
+                            console.log('Размер thumbnail`а: ' + (thumb.size / 1000 / 1000).toFixed(2) + 'мб')
+                            setThumbnail(thumb)
+                            setUploadedImage(image)
+                        } catch (err) {
+                            console.log(err)
+                        }
                     }}
                 />
             </Modal.Body>
