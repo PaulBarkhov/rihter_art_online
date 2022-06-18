@@ -37,7 +37,7 @@ const Login = () => {
     }
 
     return (
-        <div className='min-vh-100 d-flex flex-column justify-content-center align-items-center'>
+        <div style={{ marginTop: -70 }} className='min-vh-100 d-flex flex-column justify-content-center align-items-center'>
             <div className="col-12 col-md-8 col-lg-5 d-flex flex-column flex-wrap justify-content-center shadow p-5 bg-white rounded" >
                 <div className='d-flex align-items-center justify-content-center mb-4'>
                     <img src={logo} alt="logo" style={{ width: 200, height: 200 }} />
