@@ -17,8 +17,8 @@ const Registration = () => {
     })
 
     const [visibility, setVisibility] = useState({
-        password: 'false',
-        re_password: 'false1'
+        password: false,
+        re_password: false
     })
 
     const [re_password, setRepeatPassword] = React.useState('')
