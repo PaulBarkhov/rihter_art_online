@@ -55,7 +55,7 @@ function Account() {
         <div className="d-flex justify-content-center">
             <div className="col-md-7 col-12 border rounded shadow p-4">
                 <div className="d-flex flex-column w-100 align-items-center justify-content-center mb-2">
-                    <img src={profileData.profile_image} alt="Profile" style={{ width: 150, height: 150, borderRadius: 100, marginBottom: 10, objectFit: 'cover' }} />
+                    <img src={profileData.profile_image} alt="Profile" style={{ width: 150, minWidth: 150, height: 150, minHeight: 150, borderRadius: 100, border: "0.5px solid grey", marginBottom: 10, objectFit: 'cover', textAlign: "center" }} />
                     <h2>{profileData.first_name} {profileData.last_name}</h2>
                     <h6>{profileData.username}</h6>
                 </div>
