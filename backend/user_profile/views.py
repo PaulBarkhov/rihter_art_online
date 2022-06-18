@@ -53,5 +53,6 @@ class UpdateProfileImage(APIView):
         data = self.request.data
         profile = self.request.user.profile
         profile.profile_image=data['profile_image']
+        profile.thumbnail=data['thumbnail']
         profile.save()
         return Response(data=None, status=200)

@@ -21,6 +21,7 @@ class UserProfile(models.Model):
     lessons_on_review = models.ManyToManyField(Lesson, verbose_name='Уроки на ревью', blank=True, related_name='on_review')
 
     profile_image = models.ImageField('Фото', default='default.jpg', upload_to='profile_pics', null=True, blank=True)
+    thumbnail = models.ImageField('Thumbnail', default='default.jpg', upload_to='thumbnails', null=True, blank=True)
 
 
     def __str__(self):
