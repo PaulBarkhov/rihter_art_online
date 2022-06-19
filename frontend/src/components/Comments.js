@@ -6,7 +6,10 @@ import Spinner from 'react-bootstrap/Spinner'
 import autosize from 'autosize';
 import { ArrowRight, X } from 'react-bootstrap-icons'
 import VoiceRecorder from './voiceRecorder/VoiceRecorder'
-import AudioPlayer from './AudioPlayer'
+// import AudioPlayer from './AudioPlayer'
+
+import AudioPlayer from 'react-h5-audio-player'
+import 'react-h5-audio-player/lib/styles.css'
 
 const Comments = () => {
     const params = useParams()
@@ -75,14 +78,24 @@ const Comments = () => {
                 return (
                     <div key={comment.id} className="border rounded p-3 my-3">
                         <div className="d-flex flex-row align-items-center mb-3">
-                            <img src={comment.user.profile.profile_image} alt="profile_image" width="70" height="70" style={{ borderRadius: 100, marginRight: 20 }} />
+                            <img src={comment.user.profile.thumbnail} alt="profile_image" width="70" height="70" style={{ borderRadius: 100, marginRight: 20, objectFit: 'cover' }} />
                             <div>
                                 <h1>{comment.user.first_name} {comment.user.last_name}</h1>
                                 <p>{comment.date}</p>
                             </div>
                         </div>
                         <p>{comment.text}</p>
-                        {comment.voice && <AudioPlayer voice={comment.voice} />}
+                        {comment.voice && <AudioPlayer
+                            src={comment.voice}
+                            layout="horizontal-reverse"
+                            showJumpControls={false}
+                            autoPlayAfterSrcChange={false}
+                            showDownloadProgress={false}
+                            customAdditionalControls={[]}
+                            customVolumeControls={[]}
+                        />
+                        }
+                        {/* {comment.voice && <AudioPlayer voice={comment.voice} />} */}
                         <button
                             className="btn btn-link"
                             onClick={() => {
@@ -93,25 +106,46 @@ const Comments = () => {
                         </button>
                         <div style={{ borderLeft: "1px solid grey" }}>
                             {comment.children.map(child => <div key={child.id} className="p-2">
-                                <div className="d-flex flex-row align-items-center">
-                                    <img src={child.user.profile.profile_image} alt="profile_image" width="40" height="40" style={{ borderRadius: 100, marginRight: 20 }} />
+                                <div className="d-flex flex-row">
+                                    <img src={child.user.profile.thumbnail} alt="profile_image" width="50" height="50" style={{ borderRadius: 100, marginLeft: 6, marginRight: 15, marginTop: 5, objectFit: 'cover' }} />
                                     <div>
-                                        <h3>{child.user.first_name} {child.user.last_name}</h3>
-                                        <p>{child.date}</p>
+                                        <h5>{child.user.first_name} {child.user.last_name}</h5>
+                                        <span>{child.date}</span>
                                     </div>
                                 </div>
-                                <p>{child.text}</p>
-                                {child.voice && <AudioPlayer voice={child.voice} />}
+                                <div className="mt-3 mx-2">
+                                    <p>{child.text}</p>
+                                    {child.voice && <AudioPlayer
+                                        src={child.voice}
+                                        layout="horizontal-reverse"
+                                        showJumpControls={false}
+                                        autoPlayAfterSrcChange={false}
+                                        showDownloadProgress={false}
+                                        customAdditionalControls={[]}
+                                        customVolumeControls={[]}
+                                    />}
+                                </div>
                             </div>)}
                         </div>
                     </div>
                 )
             })}
 
-            <div className="p-2 fixed-bottom bg-white" style={{ maxWidth: 500, margin: "0 auto" }}>
-                <div className="d-flex flex-row">
+            <div className="p-2 fixed-bottom bg-white" >
+                <div className="d-flex flex-row ">
                     {voice ? (
-                        <AudioPlayer voice={voice.audio} setVoice={setVoice} />
+                        <div className='w-100'>
+                            <AudioPlayer
+                                src={voice.audio}
+                                layout="horizontal-reverse"
+                                showJumpControls={false}
+                                autoPlayAfterSrcChange={false}
+                                showDownloadProgress={false}
+                                customAdditionalControls={[]}
+                                customVolumeControls={[]}
+                            />
+
+                        </div>
                     ) : (
                         <div className="w-100">
                             <textarea
@@ -134,7 +168,7 @@ const Comments = () => {
 
                     {commentText || voice ? (
                         <div className="fixed-right d-flex flex-row">
-                            {voice && <button className="btn btn-danger mx-1" onClick={() => setVoice(null)}><X /></button>}
+                            {voice && <button className="btn btn-danger mx-1" onClick={() => setVoice(null)}><X size="20" /></button>}
                             <button className="btn btn-primary" onClick={() => sendComment()}><ArrowRight size="20" /></button>
                         </div>
                     ) : (
@@ -142,7 +176,7 @@ const Comments = () => {
                     )}
                 </div>
             </div>
-        </div>
+        </div >
     )
 }
 

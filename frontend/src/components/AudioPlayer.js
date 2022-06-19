@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { ProgressBar } from 'react-bootstrap'
-import { PlayFill, StopFill, X } from 'react-bootstrap-icons'
+import { PlayFill, StopFill } from 'react-bootstrap-icons'
 import formatTime from "../utils/format-time"
 
 const initialState = {
@@ -19,16 +19,18 @@ const AudioPlayer = ({ voice, setVoice }) => {
 
     const audioRef = useRef()
     const audioElement = useRef(new Audio(voice))
+    // audioRef.current.load()
 
     const playButtonRef = useRef()
 
     useLayoutEffect(() => {
-        audioRef.current && audioRef.current.load()
+        // audioRef.current && audioRef.current.load()
         setLoading(false)
     }, [])
 
     useLayoutEffect(() => {
-        audioRef.current && (play ? audioRef.current.play() : audioRef.current.pause())
+        // play ? audioRef.current.play() : audioRef.current.pause()
+        // audioRef.current && (play ? audioRef.current.play() : audioRef.current.pause())
     }, [play])
 
     // useEffect(() => {
@@ -51,7 +53,8 @@ const AudioPlayer = ({ voice, setVoice }) => {
                     preload='auto'
                     ref={audioRef}
                     controls
-                    style={{ display: 'none' }}
+                    controlsList="nodownload"
+                    // style={{ display: 'none' }}
                     src={voice}
                     onLoadedData={e => {
                         if (e.target.duration === Infinity) {
@@ -73,10 +76,10 @@ const AudioPlayer = ({ voice, setVoice }) => {
                     onPause={() => setPlayerState({ ...playerState, isPlaying: false, isPaused: true })}
                     onTimeUpdate={e => setPlayerState({ ...playerState, currentTime: e.target.currentTime })}
                 />
-                {playerState.isPlaying ? (
-                    <button className="btn btn-warning" onClick={() => setPlay(false)}><StopFill /></button>
+                {/* {play ? (
+                    <button className="btn btn-warning" onClick={() => audioRef.current.pause()}><StopFill /></button>
                 ) : (
-                    <button ref={playButtonRef} className="btn btn-primary" onClick={() => setPlay(true)}><PlayFill /></button>
+                    <button ref={playButtonRef} className="btn btn-primary" onClick={() => audioRef.current.play()}><PlayFill /></button>
                 )}
 
                 <div className="d-flex flex-column mx-2 w-100">
@@ -85,7 +88,7 @@ const AudioPlayer = ({ voice, setVoice }) => {
                         <span className="">{formatTime(playerState.currentTime)}</span>
                         <span>{formatTime(playerState.duration)}</span>
                     </div>
-                </div>
+                </div> */}
             </div>
         </div>
     )
