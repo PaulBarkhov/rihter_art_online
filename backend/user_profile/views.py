@@ -15,6 +15,7 @@ class UserProfileView(APIView):
             'first_name': user.first_name,
             'last_name': user.last_name,
             'profile_image': user_profile['profile_image'],
+            'thumbnail': user_profile['thumbnail'],
             'about_self': user_profile['about_self'],
             'birth_date': user_profile['birth_date'],
             'sex': user_profile['sex'],
