@@ -1,4 +1,4 @@
-from os import access
+from os import access, stat
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie, csrf_protect
 from django.contrib.auth.models import User
@@ -35,15 +35,18 @@ class CourseListView(APIView):
 class CourseDetailView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request, pk):
-        course = models.Course.objects.get(id=pk)
-        purchased_lessonPacks = request.user.profile.purchased_lessonPacks.all()
-        unavailable_lessonPacks = course.lessonPacks.exclude(profiles = request.user.profile)
+        try:
+            course = models.Course.objects.get(id=pk)
+            purchased_lessonPacks = request.user.profile.purchased_lessonPacks.all()
+            unavailable_lessonPacks = course.lessonPacks.exclude(profiles = request.user.profile)
 
-        return Response({
-            'course': serializers.CourseDetailSerializer(course).data,
-            'purchased_lessonPacks': serializers.LessonGroupSerializer(purchased_lessonPacks, many=True).data,
-            'unavailable_lessonPacks': serializers.LessonGroupSerializer(unavailable_lessonPacks, many=True).data
-        })
+            return Response({
+                'course': serializers.CourseDetailSerializer(course).data,
+                'purchased_lessonPacks': serializers.LessonGroupSerializer(purchased_lessonPacks, many=True).data,
+                'unavailable_lessonPacks': serializers.LessonGroupSerializer(unavailable_lessonPacks, many=True).data
+            })
+        except:
+            return Response({'Error': 'Что-то пошло не так'}, status=500)
         # profile = UserProfile.objects.get(user=request.user)
 
         # free_lessons = course.lessons.filter(access='free')
@@ -132,7 +135,7 @@ class MarkCompleted(APIView):
 
 
 
-class CommentView(APIView):
+class CommentListView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request, pk):
         lesson = models.Lesson.objects.get(id=pk)   
@@ -157,8 +160,23 @@ class CommentView(APIView):
                 models.Comment.objects.create(lesson=lesson, user=user, text=text, voice=voice, parent=models.Comment.objects.get(pk=parentID))  
 
             return Response(data=None, status=200)
+
+    def delete(self, request, pk):
+        models.Comment.objects.delete(id=pk)
+        return Response(None, status=200)
         # except:
         #     return Response({'Error': 'Что-то пошло не так при отправке комментария'}, status=500)
+
+class CommentDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+    def delete(self, request, pk):
+        # try:
+            comment = models.Comment.objects.get(id=pk)
+            comment.delete()
+            return Response(None, status=200)
+        # except:
+        #     return Response(None, status=500)
+
 
 @csrf_exempt
 def comments(request, pk):

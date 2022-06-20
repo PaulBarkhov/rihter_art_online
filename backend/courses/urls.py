@@ -9,8 +9,8 @@ urlpatterns = [
     path('lesson/<int:pk>', views.LessonDetailView.as_view()),
     path('lesson/<int:pk>/complete', views.MarkCompleted.as_view()),
     path('lesson/<int:pk>/get_status', views.GetLessonStatus.as_view()),
-    path('lesson/<int:pk>/comments', views.CommentView.as_view()),
-
+    path('lesson/<int:pk>/comments', views.CommentListView.as_view()),
+    path('comment/<int:pk>', views.CommentDetailView.as_view()),
     # path('courses/', views.CourseListView.as_view()),
     # path('courses/<int:pk>', views.CourseDetailView.as_view()),
     # path('register', views.RegisterView.as_view()),
