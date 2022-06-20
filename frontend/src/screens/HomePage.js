@@ -16,7 +16,7 @@ function HomePage() {
                         'Authorization': `JWT ${tokens.access}`
                     }
                 }
-                await axios.get(`${process.env.REACT_APP_API_URL}/all_courses`, config)
+                await axios.get(`${process.env.REACT_APP_API_URL}/api/all_courses`, config)
                     // .then(res => res.json())
                     .then(res => {
                         setCourses(res.data.courses)
