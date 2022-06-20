@@ -18,7 +18,6 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true)
     const [splashLoading, setSplashLoading] = useState(false)
 
-    console.log(tokens)
 
     const signup = async (userData) => {
         setUserData(userData)
