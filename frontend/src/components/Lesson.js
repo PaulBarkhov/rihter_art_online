@@ -34,7 +34,7 @@ const Lesson = () => {
                     'Authorization': `JWT ${tokens.access}`
                 }
             }
-            await axios.get(`${process.env.REACT_APP_API_URL}/lesson/${params.lessonID}`, config)
+            await axios.get(`${process.env.REACT_APP_API_URL}/api/lesson/${params.lessonID}`, config)
                 .then(res => {
                     setLessonData({
                         error: "",
@@ -91,7 +91,7 @@ const Lesson = () => {
                 <div className="d-flex flex-column flex-md-row pb-4">
                     {lessonData.photos && lessonData.photos.map(photo => <div key={photo.id} className="col-md-4 mb-2 text-center">
                         <h1>{photo.name}</h1>
-                        <img key={photo.id} src={photo.url} alt={photo.name} width="100%" />
+                        <img key={photo.id} src={photo.url} alt={photo.name} width="100%" style={{ border: "1px solid grey", borderRadius: 5 }} />
                     </div>)}
                 </div>
             </div>

@@ -21,7 +21,7 @@ const CourseListItem = ({ lesson, index, cardRef }) => {
                     'Authorization': `JWT ${tokens.access}`
                 }
             }
-            await axios.get(`${process.env.REACT_APP_API_URL}/lesson/${lesson.id}/get_status`, config)
+            await axios.get(`${process.env.REACT_APP_API_URL}/api/lesson/${lesson.id}/get_status`, config)
                 .then(res => setStatus({
                     available: res.data.available,
                     completed: res.data.completed,

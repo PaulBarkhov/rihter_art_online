@@ -32,7 +32,7 @@ const Course = () => {
                 }
             }
             const fetchCourseData = async () => {
-                await axios.get(`${process.env.REACT_APP_API_URL}/course/${params.courseID}`, config)
+                await axios.get(`${process.env.REACT_APP_API_URL}/api/course/${params.courseID}`, config)
                     .then(res => {
                         setCourse({
                             id: res.data.course.id,
