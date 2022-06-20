@@ -1,11 +1,26 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Spinner from 'react-bootstrap/Spinner'
 
 const Video = ({ video }) => {
+    const [loading, setLoading] = useState(true)
+
     return (
-        <div key={Math.random()} className="mb-2 text-center">
+        <div key={Math.random()} className="mb-2 text-center d-flex flex-column align-items-center">
             <h1>{video.name}</h1>
-            <iframe src={video.player_embed_url} width="100%" height="500" frameBorder="0" allow="autoplay; fullscreen; picture-in-picture" title="2 сердце boys .MOV"></iframe>
+            {loading && <div style={{ height: 500, width: 290, border: '1px solid grey', borderRadius: 5, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}><Spinner animation="border" role="status" /></div>}
+            <iframe
+                style={{
+                    display: loading && "none",
+                    border: '1px solid grey',
+                    borderRadius: 5,
+                    height: 500,
+                    width: 290
+                }}
+                onLoad={() => setLoading(false)}
+                src={video.player_embed_url}
+                allow="autoplay; fullscreen; picture-in-picture"
+                title={video.name}>
+            </iframe>
         </div>
     )
 }
