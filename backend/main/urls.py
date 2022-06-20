@@ -6,7 +6,8 @@ from django.views.generic import TemplateView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("", include('courses.urls')),
+    path("", TemplateView.as_view(template_name='index.html')),
+    path("api/", include('courses.urls')),
     path('authentication/', include('authentication.urls')),
     path('profile/', include('user_profile.urls')),
     path('auth/', include('djoser.urls')),
