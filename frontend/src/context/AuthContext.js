@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createContext } from 'react'
+import React, { useState, useEffect, createContext, useMemo } from 'react'
 import axios from 'axios'
 import jwt_decode from 'jwt-decode'
 import { useNavigate } from 'react-router-dom'
@@ -18,6 +18,9 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true)
     const [splashLoading, setSplashLoading] = useState(false)
 
+    const config = tokens ? {
+        headers: { 'Authorization': `JWT ${tokens.access}` }
+    } : null
 
     const signup = async (userData) => {
         setUserData(userData)
@@ -26,6 +29,10 @@ export const AuthProvider = ({ children }) => {
 
     const resendActivationEmail = async () => {
         await axios.post(`${process.env.REACT_APP_API_URL}/auth/users/resend_activation/`, { email: userData.email })
+    }
+
+    const activate = async (uid, token) => {
+        await axios.post(`${process.env.REACT_APP_API_URL}/auth/users/activation/`, { uid: uid, token: token })
     }
 
     const resetPassword = async email => {
@@ -84,7 +91,83 @@ export const AuthProvider = ({ children }) => {
     // }, [])
 
 
-    return <AuthContext.Provider value={{ userData, loading, splashLoading, tokens, user, login, logout, resetPassword, setNewPassword, signup, resendActivationEmail, header, setHeader }}>
+    const fetchCourses = async () => {
+        return await axios.get(`${process.env.REACT_APP_API_URL}/api/all_courses`, config)
+            .catch(err => err.response.status === 401 ? logout() : console.log(err))
+    }
+
+    const fetchProfileData = async () => {
+        return await axios.get(`${process.env.REACT_APP_API_URL}/profile/me`, config)
+            .catch(err => err.response.status === 401 ? logout() : console.log(err))
+    }
+
+    const updateProfileData = async (profileData) => {
+        return await axios.post(`${process.env.REACT_APP_API_URL}/profile/update`, profileData, config)
+            .catch(err => err.response.status === 401 ? logout() : console.log(err))
+    }
+
+    const updateProfileImage = async (formData) => {
+        return await axios.post(`${process.env.REACT_APP_API_URL}/profile/update_profile_image`, formData, config)
+            .catch(err => err.response.status === 401 ? logout() : console.log(err))
+    }
+
+    const fetchCourseData = async (courseID) => {
+        return await axios.get(`${process.env.REACT_APP_API_URL}/api/course/${courseID}`, config)
+            .catch(err => err.response.status === 401 ? logout() : console.log(err))
+    }
+
+    const fetchLessonStatus = async (lessonID) => {
+        return await axios.get(`${process.env.REACT_APP_API_URL}/api/lesson/${lessonID}/get_status`, config)
+            .catch(err => err.response.status === 401 ? logout() : console.log(err))
+    }
+
+    const fetchLessonData = async (lessonID) => {
+        return await axios.get(`${process.env.REACT_APP_API_URL}/api/lesson/${lessonID}`, config)
+    }
+
+    const fetchExcersizeData = async (lessonID) => {
+        return await axios.get(`${process.env.REACT_APP_API_URL}/api/lesson/${lessonID}/excersizes/1`, config)
+            .catch(err => err.response.status === 401 ? logout() : console.log(err))
+    }
+
+    const sendExcersizeMessage = async (lessonID, formData) => {
+        return await axios.post(`${process.env.REACT_APP_API_URL}/api/lesson/${lessonID}/excersizes/1/messages`, formData, config)
+            .catch(err => err.response.status === 401 ? logout() : console.log(err))
+    }
+
+    const deleteExcersizeMessage = async (lessonID, excersizeID, messageID) => {
+        return await axios.delete(`${process.env.REACT_APP_API_URL}/api/lesson/${lessonID}/excersizes/${excersizeID}/messages/${messageID}`, config)
+            .catch(err => err.response.status === 401 ? logout() : console.log(err))
+    }
+
+
+    return <AuthContext.Provider
+        value={{
+            userData,
+            loading,
+            splashLoading,
+            tokens,
+            user,
+            header,
+            login,
+            logout,
+            resetPassword,
+            setNewPassword,
+            signup,
+            resendActivationEmail,
+            activate,
+            setHeader,
+            fetchCourses,
+            fetchProfileData,
+            updateProfileData,
+            updateProfileImage,
+            fetchCourseData,
+            fetchLessonStatus,
+            fetchLessonData,
+            fetchExcersizeData,
+            sendExcersizeMessage,
+            deleteExcersizeMessage,
+        }}>
         {children}
     </AuthContext.Provider>
 }
