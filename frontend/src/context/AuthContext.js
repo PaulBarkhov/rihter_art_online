@@ -140,6 +140,21 @@ export const AuthProvider = ({ children }) => {
             .catch(err => err.response.status === 401 ? logout() : console.log(err))
     }
 
+    const fetchComments = async (lessonID) => {
+        return await axios.get(`${process.env.REACT_APP_API_URL}/api/lesson/${lessonID}/comments`, config)
+            .catch(err => err.response.status === 401 ? logout() : console.log(err))
+    }
+
+    const postComment = async (lessonID, formData) => {
+        return await axios.post(`${process.env.REACT_APP_API_URL}/api/lesson/${lessonID}/comments`, formData, config)
+            .catch(err => err.response.status === 401 ? logout() : console.log(err))
+    }
+
+    const deleteComment = async (commentID) => {
+        return await axios.delete(`${process.env.REACT_APP_API_URL}/api/comment/${commentID}`, config)
+            .catch(err => err.response.status === 401 ? logout() : console.log(err))
+    }
+
 
     return <AuthContext.Provider
         value={{
@@ -167,6 +182,9 @@ export const AuthProvider = ({ children }) => {
             fetchExcersizeData,
             sendExcersizeMessage,
             deleteExcersizeMessage,
+            fetchComments,
+            postComment,
+            deleteComment
         }}>
         {children}
     </AuthContext.Provider>
