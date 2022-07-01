@@ -1,58 +1,47 @@
-import React, { useState, useEffect, useRef } from "react"
-import axios from "axios"
+import React, { useState, useLayoutEffect, useRef, useContext } from "react"
 import Card from 'react-bootstrap/Card'
 import { useParams } from "react-router-dom"
 import { AuthContext } from "../context/AuthContext"
 import CourseListItem from './CourseListItem'
 
+const initialState = {
+    id: 0,
+    name: '',
+    description: '',
+    preview: '',
+    lessons: [],
+    purchased_lessonPacks: [],
+    unavailable_lessonPacks: []
+}
+
 const Course = () => {
-    const { tokens, logout } = React.useContext(AuthContext)
-    const [course, setCourse] = useState({
-        id: 0,
-        name: '',
-        description: '',
-        preview: '',
-        lessons: [],
-        purchased_lessonPacks: [],
-        unavailable_lessonPacks: []
-    })
+    const [course, setCourse] = useState(initialState)
     const [loading, setLoading] = useState(true)
-    const [refresher, setRefresher] = useState(false)
-    const params = useParams()
-
-    const cardRef = useRef()
-
     const [selectedOptions, setSelectedOptions] = useState([])
 
-    useEffect(() => {
-        if (tokens) {
-            const config = {
-                headers: {
-                    'Authorization': `JWT ${tokens.access}`
-                }
-            }
-            const fetchCourseData = async () => {
-                await axios.get(`${process.env.REACT_APP_API_URL}/api/course/${params.courseID}`, config)
-                    .then(res => {
-                        setCourse({
-                            id: res.data.course.id,
-                            name: res.data.course.name,
-                            description: res.data.course.description,
-                            preview: res.data.course.preview,
-                            lessons: res.data.course.lessons,
-                            purchased_lessonPacks: res.data.purchased_lessonPacks,
-                            unavailable_lessonPacks: res.data.unavailable_lessonPacks
-                        })
-                        setSelectedOptions([res.data.unavailable_lessonPacks[0]])
-                    })
-                    .catch(err => err.response.status === 401 ? logout() : console.log(err))
-                    .finally(setLoading(false))
-            }
-            fetchCourseData()
-        } else logout()
+    const params = useParams()
+    const cardRef = useRef()
 
-    }, [params.courseID, tokens, logout])
-    const refresh = () => setRefresher(!refresher)
+    const { fetchCourseData } = useContext(AuthContext)
+
+    useLayoutEffect(() => {
+        fetchCourseData(params.courseID)
+            .then(res => {
+                setCourse({
+                    id: res.data.course.id,
+                    name: res.data.course.name,
+                    description: res.data.course.description,
+                    preview: res.data.course.preview,
+                    lessons: res.data.course.lessons,
+                    purchased_lessonPacks: res.data.purchased_lessonPacks,
+                    unavailable_lessonPacks: res.data.unavailable_lessonPacks
+                })
+                setSelectedOptions([res.data.unavailable_lessonPacks[0]])
+            })
+            .finally(setLoading(false))
+
+    }, [params.courseID, fetchCourseData])
+
 
     if (loading) return (<h1>Loading...</h1>)
     return (
@@ -62,14 +51,14 @@ const Course = () => {
                 {/* <h1>{lessons.course_name}</h1>
                     <h5>{lessons.course_description}</h5> */}
                 <div className='f-flex flex-column'>
-                    {course.lessons.map((lesson, index) => <CourseListItem key={lesson.id} index={index} lesson={lesson} logout={logout} cardRef={cardRef} />)}
+                    {course.lessons.map((lesson, index) => <CourseListItem key={lesson.id} index={index} lesson={lesson} cardRef={cardRef} />)}
                 </div>
             </div>
 
             <div className="col-lg-1"></div>
 
             <div ref={cardRef} id="card" className="col-lg-4">
-                <Card className='border border-3 rounded mb-4' >
+                <Card className='border rounded shadow-sm mb-4' >
                     <Card.Img src={course.preview} style={{ minHeight: 300 }} />
                     <Card.Body>
                         <Card.Title>{course.name}</Card.Title>

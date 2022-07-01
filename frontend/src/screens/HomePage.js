@@ -1,32 +1,19 @@
-import React, { useContext, useEffect, useState } from 'react'
-import axios from 'axios'
+import React, { useContext, useLayoutEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AuthContext } from '../context/AuthContext'
 
 function HomePage() {
-    const { tokens, logout } = useContext(AuthContext)
     const [courses, setCourses] = useState([])
     const navigate = useNavigate()
 
-    useEffect(() => {
-        const fetchData = async () => {
-            if (tokens) {
-                const config = {
-                    headers: {
-                        'Authorization': `JWT ${tokens.access}`
-                    }
-                }
-                await axios.get(`${process.env.REACT_APP_API_URL}/api/all_courses`, config)
-                    // .then(res => res.json())
-                    .then(res => {
-                        setCourses(res.data.courses)
-                    })
-                    .catch(err => err.response.status === 401 ? logout() : console.log(err))
-            } else logout()
+    const { fetchCourses } = useContext(AuthContext)
 
-        }
-        fetchData()
-    }, [tokens, logout])
+    useLayoutEffect(() => {
+        fetchCourses()
+            .then(res => {
+                setCourses(res.data.courses)
+            })
+    }, [fetchCourses])
 
     return (
         <div className='d-flex flex-row flex-wrap'>
@@ -34,7 +21,7 @@ function HomePage() {
                 return (
                     <div key={course.id} className="col-12 col-lg-3">
                         <div
-                            className='mb-4 m-lg-1 border rounded'
+                            className='mb-4 m-lg-1 border rounded shadow-sm'
                             style={{ minHeight: 400 }}
                             key={course.id}
                             onClick={() => navigate(`/course/${course.id}`)}>
@@ -57,40 +44,3 @@ function HomePage() {
 }
 
 export default HomePage
-
-const styles = {
-    item: {
-        minWidth: 300,
-        minHeight: 200,
-        margin: 10,
-        flexDirection: 'column',
-        // justifyContent: 'center',
-        // alignItems: 'center',
-        // backgroundColor: 'wheat',
-        // borderRadius: 10,
-        overflow: 'hidden',
-        // borderColor: '#b5b5b5',
-        // borderWidth: 1
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: '700',
-        fontFamily: 'sans-serif'
-    },
-    description: {
-        marginTop: 5,
-        fontSize: 14,
-        fontFamily: 'sans-serif'
-    },
-    image: {
-        height: 150,
-        borderRadius: 10,
-    },
-    textBlock: {
-        flex: 6,
-        flexDirection: 'column',
-        margin: 10,
-        flexShrink: 1
-    },
-
-}

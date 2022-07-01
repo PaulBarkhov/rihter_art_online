@@ -1,12 +1,9 @@
-import axios from 'axios'
-import React, { useEffect, useState } from 'react'
+import React, { useLayoutEffect, useContext, useState } from 'react'
 import { AuthContext } from "../context/AuthContext"
-import Badge from 'react-bootstrap/Badge'
 import { useNavigate } from 'react-router-dom'
 
 const CourseListItem = ({ lesson, index, cardRef }) => {
     const navigate = useNavigate()
-    const { tokens, logout } = React.useContext(AuthContext)
 
     const [status, setStatus] = useState({
         available: false,
@@ -14,29 +11,21 @@ const CourseListItem = ({ lesson, index, cardRef }) => {
         on_review: false
     })
 
-    useEffect(() => {
-        const getStatus = async () => {
-            const config = {
-                headers: {
-                    'Authorization': `JWT ${tokens.access}`
-                }
-            }
-            await axios.get(`${process.env.REACT_APP_API_URL}/api/lesson/${lesson.id}/get_status`, config)
-                .then(res => setStatus({
-                    available: res.data.available,
-                    completed: res.data.completed,
-                    on_review: res.data.on_review
-                }))
-                .catch(err => err.response.status === 401 ? logout() : console.log(err))
+    const { fetchLessonStatus } = useContext(AuthContext)
 
-        }
-        getStatus()
-    }, [lesson.id, tokens, logout])
+    useLayoutEffect(() => {
+        fetchLessonStatus(lesson.id)
+            .then(res => setStatus({
+                available: res.data.available,
+                completed: res.data.completed,
+                on_review: res.data.on_review
+            }))
+    }, [lesson.id, fetchLessonStatus])
 
     return (
         <div
             key={`fl_${lesson.id}`}
-            className={`w-100 d-flex bg-white flex-row rounded shadow-sm mb-3 border border-3 ${lesson.access !== 'free' && !status.available && 'border-secondary'} ${status.completed && 'border-success'} ${status.on_review && 'border-primary'} `}>
+            className={`w-100 d-flex bg-white flex-row rounded shadow-sm mb-3 border shadow-sm ${lesson.access !== 'free' && !status.available && 'border-secondary'} ${status.completed && 'border-success'} ${status.on_review && 'border-primary'} `}>
             <div className="col-4">
                 <img src={lesson.preview} alt='preview' className="w-100" />
             </div>

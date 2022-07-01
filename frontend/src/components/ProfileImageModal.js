@@ -1,25 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Modal from 'react-bootstrap/Modal'
-import axios from 'axios'
 import resizeFile from '../utils/resize'
 
-const ProfileImageModal = ({ profile_image, tokens, navigate, unmountModal, logout }) => {
-
+const ProfileImageModal = ({ profile_image, updateProfileImage, unmountModal }) => {
     const [showModal, setShowModal] = useState(true)
-
     const [uploadedImage, setUploadedImage] = useState()
     const [thumbnail, setThumbnail] = useState()
     const [preview, setPreview] = useState()
 
     const imageInputRef = useRef()
-
-    useEffect(() => {
-        return () => {
-            setUploadedImage(null)
-            setPreview(null)
-        }
-
-    }, [])
 
     useEffect(() => {
         if (uploadedImage) {
@@ -31,25 +20,25 @@ const ProfileImageModal = ({ profile_image, tokens, navigate, unmountModal, logo
         } else setPreview(null)
     }, [uploadedImage])
 
-    const saveProfileImage = async () => {
+    useEffect(() => {
+        return () => {
+            setUploadedImage(null)
+            setPreview(null)
+        }
+    }, [])
+
+    const handleSave = () => {
         const formData = new FormData()
 
         if (uploadedImage) {
             formData.append("profile_image", uploadedImage)
             formData.append("thumbnail", thumbnail)
 
-            const config = {
-                headers: {
-                    "Authorization": `JWT ${tokens.access}`,
-                    "Content-Type": "multipart/form-data"
-                }
-            }
-            await axios.post(`${process.env.REACT_APP_API_URL}/profile/update_profile_image`, formData, config)
+            updateProfileImage(formData)
                 .then(res => {
                     setShowModal(false)
                     unmountModal(preview)
                 })
-                .catch(err => err.response.status === 401 ? logout() : console.log(err.response.data))
         }
     }
 
@@ -68,7 +57,7 @@ const ProfileImageModal = ({ profile_image, tokens, navigate, unmountModal, logo
                 />
 
                 <div className="d-flex flex-row justify-content-end pt-3">
-                    <button className={`btn btn-outline-success mx-1 ${!uploadedImage && "d-none"}`} onClick={saveProfileImage}>Сохранить</button>
+                    <button className={`btn btn-outline-success mx-1 ${!uploadedImage && "d-none"}`} onClick={handleSave}>Сохранить</button>
                     <button className={`btn btn-outline-primary mx-1 ${uploadedImage && "d-none"}`} onClick={() => imageInputRef.current.click()}>Сменить</button>
                     <button className="btn btn-outline-secondary" onClick={handleCancel}>Отмена</button>
                 </div>
