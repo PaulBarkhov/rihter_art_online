@@ -11,6 +11,6 @@ class UserProfileAdmin(admin.ModelAdmin):
 
     def get_profile_image(self, obj):
         if obj.profile_image: 
-            return mark_safe(f'<img src={obj.profile_image.url} width="300" height="300" />')
+            return mark_safe(f'<img src={obj.profile_image.url} width="300" height="300" style="object-fit: cover"/>')
 
     get_profile_image.short_description = "Изображение"
