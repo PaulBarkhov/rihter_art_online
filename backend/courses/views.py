@@ -149,23 +149,17 @@ class CommentListView(APIView):
             data = self.request.data
 
             text = data["text"]
-            parentID = data["parentID"]
             voice = data["voice"]
-
-            print(parentID)
+            parentID = data["parentID"]
 
             if not parentID:
                 models.Comment.objects.create(lesson=lesson, user=user, text=text, voice=voice)    
             else:
-                models.Comment.objects.create(lesson=lesson, user=user, text=text, voice=voice, parent=models.Comment.objects.get(pk=parentID))  
+                parentMessage = models.Comment.objects.get(pk=parentID)
+                text = parentMessage.user.first_name + ', ' + text
+                models.Comment.objects.create(lesson=lesson, user=user, text=text, voice=voice, parent=parentMessage)  
 
             return Response(data=None, status=200)
-
-    def delete(self, request, pk):
-        models.Comment.objects.delete(id=pk)
-        return Response(None, status=200)
-        # except:
-        #     return Response({'Error': 'Что-то пошло не так при отправке комментария'}, status=500)
 
 class CommentDetailView(APIView):
     permission_classes = [IsAuthenticated]
@@ -177,6 +171,93 @@ class CommentDetailView(APIView):
         # except:
         #     return Response(None, status=500)
 
+class ExcersizeDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request, lesson_pk, excersize_pk):
+        excersize = models.Excersize.objects.get(id=excersize_pk)
+        # return Response(serializers.ExcersizeDetailSerializer(excersize).data)
+        if self.request.user.is_staff:
+            if models.Review.objects.filter(excersize=excersize).exists():
+                reviews = models.Review.objects.filter(excersize=excersize)
+                reviews = serializers.ReviewSerializer(reviews, many=True).data
+            else: reviews = []
+            return Response({
+                'excersize': serializers.ExcersizeDetailSerializer(excersize).data,
+                'reviews': reviews
+            })
+        else:
+            if models.Review.objects.filter(excersize=excersize, profile=self.request.user.profile).exists():
+                reviews = models.Review.objects.filter(excersize=excersize, profile=self.request.user.profile)
+                reviews = serializers.ReviewSerializer(reviews, many=True).data
+            else: reviews = []
+            return Response({
+                'excersize': serializers.ExcersizeDetailSerializer(excersize).data,
+                'reviews': reviews
+            })
+
+
+# class ReviewView(APIView):
+#     permission_classes = [IsAuthenticated]
+#     def get(self, request, lesson_pk, excersize_pk):
+#         excersize = models.Excersize.objects.get(id=excersize_pk)
+#         if self.request.user.is_staff:
+#             if models.Review.objects.filter(excersize=excersize).exists():
+#                 reviews = models.Review.objects.filter(excersize=excersize)
+#                 reviews = serializers.ReviewSerializer(reviews, many=True).data
+#             else: reviews = []
+#             return Response({
+#                 'excersize': serializers.ExcersizeDetailSerializer(excersize).data,
+#                 'reviews': reviews
+#             })
+#         else:
+#             if models.Review.objects.filter(excersize=excersize, profile=self.request.user.profile).exists():
+#                 reviews = models.Review.objects.filter(excersize=excersize, profile=self.request.user.profile)
+#                 reviews = serializers.ReviewSerializer(reviews, many=True).data
+#             else: reviews = []
+#             return Response({
+#                 'excersize': serializers.ExcersizeDetailSerializer(excersize).data,
+#                 'reviews': reviews
+#             })
+
+
+class ReviewMessageListView(APIView):
+    permission_classes = [IsAuthenticated]        
+    def get(self, request, lesson_pk, excersize_pk):
+        pass
+        
+    def post(self, request, lesson_pk, excersize_pk):
+        excersize = models.Excersize.objects.get(id=excersize_pk)
+
+        data = self.request.data
+        text = data["text"]
+        voice = data["voice"]
+        parentID = data["parentID"]
+
+        # if self.request.user.is_staff:
+        #     pass
+
+        if parentID:
+            parentMessage = models.ReviewMessage.objects.get(pk=parentID)
+            text = parentMessage.user.first_name + ', ' + text
+            models.ReviewMessage.objects.create(review=parentMessage.review, user=self.request.user, text=text, voice=voice, parent=parentMessage)  
+        elif not models.Review.objects.filter(excersize=excersize, profile=self.request.user.profile).exists():
+            models.Review.objects.create(excersize=excersize, profile=self.request.user.profile, status='onReview')
+            review = models.Review.objects.get(excersize=excersize, profile=self.request.user.profile)
+            models.ReviewMessage.objects.create(review=review, user=self.request.user, text=text, voice=voice)  
+
+        return Response(None, status=200)
+
+class ReviewMessageDetailView(APIView):
+    permission_classes = [IsAuthenticated]        
+    def delete(self, request, lesson_pk, excersize_pk, message_pk):
+        
+        message = models.ReviewMessage.objects.get(id=message_pk)
+        message.delete()
+
+        if len(message.review.review_messages.values()) == 0:
+            message.review.delete()
+
+        return Response(None, status=200)
 
 @csrf_exempt
 def comments(request, pk):

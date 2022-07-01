@@ -11,6 +11,11 @@ urlpatterns = [
     path('lesson/<int:pk>/get_status', views.GetLessonStatus.as_view()),
     path('lesson/<int:pk>/comments', views.CommentListView.as_view()),
     path('comment/<int:pk>', views.CommentDetailView.as_view()),
+    path('lesson/<int:lesson_pk>/excersizes/<int:excersize_pk>', views.ExcersizeDetailView.as_view()),
+    path('lesson/<int:lesson_pk>/excersizes/<int:excersize_pk>/messages', views.ReviewMessageListView.as_view()),
+    path('lesson/<int:lesson_pk>/excersizes/<int:excersize_pk>/messages/<int:message_pk>', views.ReviewMessageDetailView.as_view()),
+
+
     # path('courses/', views.CourseListView.as_view()),
     # path('courses/<int:pk>', views.CourseDetailView.as_view()),
     # path('register', views.RegisterView.as_view()),

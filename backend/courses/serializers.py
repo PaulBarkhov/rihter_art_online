@@ -68,11 +68,27 @@ class CourseDetailSerializer(ModelSerializer):
         model = models.Course
         fields = ('__all__')
 
-
-
-
-
 class VoiceMessageSerializer(ModelSerializer):
     class Meta:
         model = models.VoiceMessage
+        fields = ('__all__') 
+
+class ReviewMessageSerializer(ModelSerializer):
+    user = UserSerializer(read_only=True)
+    date = DateTimeField(format="%d.%m.%Y %H:%M:%S")
+    children = RecursiveSerializer(many=True)
+    class Meta:
+        model = models.ReviewMessage
         fields = ('__all__')
+
+class ReviewSerializer(ModelSerializer):
+    review_messages = ReviewMessageSerializer(read_only=True, many=True)
+    class Meta:
+        model = models.Review
+        fields = ('__all__') 
+
+class ExcersizeDetailSerializer(ModelSerializer):
+    class Meta:
+        model = models.Excersize
+        fields = ('__all__') 
+

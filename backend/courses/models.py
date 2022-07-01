@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from ckeditor.fields import RichTextField 
+from ckeditor.fields import RichTextField
 
 class Course(models.Model):
     class Meta: 
@@ -37,13 +37,51 @@ class Lesson(models.Model):
     lessonPack = models.ForeignKey(LessonPack, verbose_name='Группа уроков', null=True, on_delete=models.CASCADE, blank=True, related_name='lessons')
     name = models.CharField('Название', max_length=64, blank=True)
     description = models.TextField('Описание', null=True, max_length=512, blank=True)
-    excersize = RichTextField('Задание', null=True, blank=True)
+    # excersize_text = RichTextField('Задание', null=True, blank=True)
     access = models.CharField('Доступ', null=True, max_length=4, choices=[('free', 'бесплатно'), ('paid', 'платно')], default='free')
     preview = models.ImageField('Фото', upload_to='uploads/lessons/previews', null=True, blank=True)
     
     def __str__(self):
         return f"{self.id}: {self.name}, {self.lessonPack}"
 
+class Excersize(models.Model):
+    class Meta:
+        verbose_name = 'Задание'
+        verbose_name_plural = 'Задания'
+    lesson = models.ForeignKey(Lesson, verbose_name='Урок', null=True, on_delete=models.CASCADE, blank=True, related_name='excersizes')
+    text = RichTextField('Задание', null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.id}: {self.lesson}"
+
+
+class Review(models.Model):
+    class Meta:
+        verbose_name = 'Ревью'
+        verbose_name_plural = 'Ревью'
+
+    excersize = models.ForeignKey(Excersize, verbose_name='Задание', null=True, on_delete=models.CASCADE, blank=True, related_name='reviews')
+    profile = models.ForeignKey('user_profile.UserProfile', verbose_name='Пользователь', null=True, on_delete=models.CASCADE, blank=True, related_name='reviews')
+    status_options = [
+        ('none', 'none'),
+        ('onReview', 'onReview'),
+        ('completed', 'completed')
+    ]
+    status = models.CharField(max_length=9, choices=status_options, default='none')
+
+
+class ReviewMessage(models.Model):
+    class Meta:
+        verbose_name = 'Сообщение в ревью'
+        verbose_name_plural = 'Сообщения в ревью'
+    review = models.ForeignKey(Review, verbose_name='Ревью', null=True, on_delete=models.CASCADE, blank=True, related_name='review_messages')
+    user = models.ForeignKey(User, verbose_name='Пользователь', null=True, on_delete=models.CASCADE, blank=True, related_name='review_messages')
+    text = models.TextField('Содержание', max_length=5000, blank=True)
+    voice = models.FileField(upload_to='voice_messages/', null=True)
+    parent = models.ForeignKey('self', verbose_name='Родитель', on_delete=models.SET_NULL, blank=True, null=True, related_name='children')
+    date = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+
+    
 class Comment(models.Model):
     class Meta: 
         verbose_name = 'Комментарий'
