@@ -1,26 +1,37 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
+import { AuthContext } from '../../context/AuthContext'
 import { useParams, Link } from 'react-router-dom'
-import axios from 'axios'
 
 const Activate = () => {
     const params = useParams()
+    const { activate } = useContext(AuthContext)
     const [isActivated, setIsActivated] = useState(false)
     const [loading, setLoading] = useState(true)
+    const [error, setError] = useState('')
 
     useEffect(() => {
-        const activate = async () => {
-            await axios.post(`${process.env.REACT_APP_API_URL}/auth/users/activation/`, { uid: params.uid, token: params.token })
-                .then(setIsActivated(true))
-                .catch(err => console.log(err.response))
-                .finally(setLoading(false))
-        }
-        activate()
-    }, [params.uid, params.token])
+        activate(params.uid, params.token)
+            .then(setIsActivated(true))
+            .catch(err => setError(err))
+            .finally(setLoading(false))
+    }, [params.uid, params.token, activate])
 
     return (
         <div className='min-vh-100 d-flex flex-column justify-content-center align-items-center text-center'>
             {loading && <h1>Пожалуйста подождите...</h1>}
-            {isActivated ? <div><h1>Аккаунт активирован!</h1><Link to="/login" className="btn btn-primary" role="button">Войти</Link></div> : <h1>Что-то пошло не так...</h1>}
+            {isActivated ? (
+                <>
+                    <h1>Аккаунт активирован!</h1>
+                    <Link to='/login' className='btn btn-primary' role='button'>
+                        Войти
+                    </Link>
+                </>
+            ) : (
+                <>
+                    <h1>Что-то пошло не так...</h1>
+                    <span>{error.response}</span>
+                </>
+            )}
         </div>
     )
 }

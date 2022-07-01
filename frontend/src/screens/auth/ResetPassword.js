@@ -4,7 +4,7 @@ import { AuthContext } from '../../context/AuthContext'
 
 const ResetPassword = () => {
     const { resetPassword } = useContext(AuthContext)
-    const [email, setEmail] = useState()
+    const [email, setEmail] = useState('')
     const [error, setError] = useState('')
 
     const navigate = useNavigate()
@@ -25,22 +25,22 @@ const ResetPassword = () => {
                 <h1>Введите Email</h1>
                 <p>Мы вышлем вам код для сброса пароля</p>
                 <form onSubmit={e => handleSubmit(e)}>
-                    <div className="input-group mb-3">
+                    <div className='input-group mb-3'>
                         <input
-                            type="email"
+                            type='email'
                             placeholder='Email'
-                            className="form-control"
+                            className='form-control'
                             onChange={e => setEmail(e.target.value)}
                         />
-                        <div className="input-group-append">
-                            <button className="btn btn-outline-primary">OK</button>
+                        <div className='input-group-append'>
+                            <button className='btn btn-outline-primary'>OK</button>
                         </div>
                     </div>
                 </form>
-                <div style={{ minHeight: 25, color: "red", textAlign: 'center' }}>
+                <div style={{ minHeight: 25, color: 'red', textAlign: 'center' }}>
                     {error && <span>{error}</span>}
                 </div>
-                <Link to="/login">Вспомнили пароль?</Link>
+                <Link to='/login'>Вспомнили пароль?</Link>
             </div>
         </div>
     )

@@ -21,10 +21,10 @@ const Registration = () => {
         re_password: false
     })
 
-    const [re_password, setRepeatPassword] = React.useState('')
-    const [isChecked, setIsChecked] = React.useState(false)
+    const [re_password, setRepeatPassword] = useState('')
+    const [isChecked, setIsChecked] = useState(false)
 
-    const [errors, setErrors] = React.useState({
+    const [errors, setErrors] = useState({
         server: '',
         first_name: '',
         last_name: '',
@@ -58,8 +58,7 @@ const Registration = () => {
         ) {
             signup(userData)
                 .then(res => {
-                    console.log(res)
-                    navigate("/verification")
+                    navigate('/verification')
                 })
                 .catch(err => setErrors(err.response.data))
         }
@@ -87,13 +86,13 @@ const Registration = () => {
             case 'email':
                 const emailFormat = /^[a-z0-9@_.-]+$/i
                 if (emailFormat.test(inputValue) || inputValue === '') {
-                    setErrors({ ...errors, email: "", username: "" })
+                    setErrors({ ...errors, email: '', username: '' })
                     setUserData({ ...userData, email: inputValue.toLowerCase() })
                 }
                 break
             case 'password':
                 setUserData({ ...userData, password: inputValue })
-                if (errors.password === "Укажите пароль" || inputValue.length >= 8) setErrors({ ...errors, password: '' })
+                if (errors.password === 'Укажите пароль' || inputValue.length >= 8) setErrors({ ...errors, password: '' })
                 if (inputValue === re_password) setErrors({ ...errors, password: '', re_password: '' })
                 break
             case 're_password':
@@ -108,7 +107,7 @@ const Registration = () => {
     return (
         <div className='d-flex min-vh-100 justify-content-center align-items-center'>
             <div className='col-12 col-md-8 d-flex flex-column justify-content-center align-items-center shadow p-5 bg-white rounded'>
-                <img src={logo} alt="logo" style={{ width: 180, height: 180 }} />
+                <img src={logo} alt='logo' style={{ width: 180, height: 180 }} />
                 <div style={{ minHeight: 30, paddingInline: 10, color: 'red' }}>
                     {errors.server && <span style={styles.error}>{errors.server}</span>}
                 </div>
@@ -118,9 +117,9 @@ const Registration = () => {
                             <div style={styles.formGroup}>
                                 <input
                                     className={`form-control ${errors.first_name && 'is-invalid'}`}
-                                    name="first_name"
-                                    type="text"
-                                    placeholder="Имя"
+                                    name='first_name'
+                                    type='text'
+                                    placeholder='Имя'
                                     maxLength={50}
                                     value={userData.first_name}
                                     onChange={e => validate(e.target.name, e.target.value)}
@@ -131,9 +130,9 @@ const Registration = () => {
                             <div style={styles.formGroup}>
                                 <input
                                     className={`form-control ${errors.last_name && 'is-invalid'}`}
-                                    name="last_name"
-                                    type="text"
-                                    placeholder="Фамилия"
+                                    name='last_name'
+                                    type='text'
+                                    placeholder='Фамилия'
                                     maxLength={50}
                                     value={userData.last_name}
                                     onChange={e => validate(e.target.name, e.target.value)}
@@ -152,8 +151,8 @@ const Registration = () => {
                                 value={userData.email}
                                 onChange={e => validate(e.target.name, e.target.value)}
                                 onBlur={() => {
-                                    const emailFormat = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
-                                    if (userData.email && !emailFormat.test(userData.email)) setErrors({ ...errors, email: "Неправильный email" })
+                                    const emailFormat = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/
+                                    if (userData.email && !emailFormat.test(userData.email)) setErrors({ ...errors, email: 'Неправильный email' })
                                     else setErrors({ ...errors, email: '' })
                                 }}
                             />
@@ -162,11 +161,11 @@ const Registration = () => {
                         </div>
 
                         <div style={styles.formGroup}>
-                            <div className="input-group">
+                            <div className='input-group'>
                                 <input
                                     className={`form-control ${errors.password && 'is-invalid'}`}
                                     name='password'
-                                    type={visibility.password ? "text" : "password"}
+                                    type={visibility.password ? 'text' : 'password'}
                                     placeholder='Пароль'
                                     maxLength={256}
                                     value={userData.password}
@@ -175,16 +174,16 @@ const Registration = () => {
                                         if (userData.password.length !== 0 && userData.password.length < 8) setErrors({ ...errors, password: 'Минимум 8 символов' })
                                     }} />
 
-                                <div className="input-group-append">
-                                    <div className="input-group-text bg-white">
-                                        <label className="control-label" htmlFor="password">
+                                <div className='input-group-append'>
+                                    <div className='input-group-text bg-white'>
+                                        <label className='control-label' htmlFor='password'>
                                             {visibility.password ? <EyeSlashFill /> : <EyeFill />}
                                         </label>
                                         <input
-                                            type="checkbox"
+                                            type='checkbox'
                                             style={{ display: 'none' }}
-                                            name="password"
-                                            id="password"
+                                            name='password'
+                                            id='password'
                                             onChange={() => setVisibility({ ...visibility, password: !visibility.password })} />
                                     </div>
                                 </div>
@@ -193,11 +192,11 @@ const Registration = () => {
                             </div>
                         </div>
                         <div style={styles.formGroup}>
-                            <div className="input-group">
+                            <div className='input-group'>
                                 <input
                                     className={`form-control ${errors.re_password && 'is-invalid'}`}
                                     name='re_password'
-                                    type={visibility.re_password ? "text" : "password"}
+                                    type={visibility.re_password ? 'text' : 'password'}
                                     placeholder='Повторите пароль'
                                     maxLength={256}
                                     value={re_password}
@@ -206,16 +205,16 @@ const Registration = () => {
                                         if (re_password && re_password !== userData.password) setErrors({ ...errors, re_password: 'Пароли не совпадают' })
                                     }}
                                 />
-                                <div className="input-group-append">
-                                    <div className="input-group-text bg-white">
-                                        <label className="control-label" htmlFor="re_password">
+                                <div className='input-group-append'>
+                                    <div className='input-group-text bg-white'>
+                                        <label className='control-label' htmlFor='re_password'>
                                             {visibility.re_password ? <EyeSlashFill /> : <EyeFill />}
                                         </label>
                                         <input
-                                            type="checkbox"
+                                            type='checkbox'
                                             style={{ display: 'none' }}
-                                            name="re_password"
-                                            id="re_password"
+                                            name='re_password'
+                                            id='re_password'
                                             onChange={() => setVisibility({ ...visibility, re_password: !visibility.re_password })} />
                                     </div>
                                 </div>
@@ -240,7 +239,7 @@ const Registration = () => {
                         </div>
 
                         <button className='btn btn-primary m-1 btn-block' type='submit'>Зарегистрироваться</button>
-                        <div style={{ width: '100%', textAlign: 'center' }}><span>Уже есть аккаунт? <Link to="/login">Войти</Link></span></div>
+                        <div style={{ width: '100%', textAlign: 'center' }}><span>Уже есть аккаунт? <Link to='/login'>Войти</Link></span></div>
 
                     </div>
                 </form>

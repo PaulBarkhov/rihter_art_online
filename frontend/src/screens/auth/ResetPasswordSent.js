@@ -17,14 +17,14 @@ const ResetPasswordSent = () => {
 
     return (
         <div className='min-vh-100 d-flex flex-column justify-content-center text-left'>
-            <div className="d-flex flex-column justify-content-center align-items-center text-center">
+            <div className='d-flex flex-column justify-content-center align-items-center text-center'>
                 <h2>Мы отправили на {userData.email} ссылку для сброса пароля</h2>
-                <span>Возможно придется проверить папку "спам"</span>
-                <div className="d-flex flex-row mt-2">
-                    <button className="btn btn-outline-secondary mx-1" onClick={() => navigate(-1)}> Назад</button>
-                    <button disabled={isResended} className="btn btn-outline-primary mx-1" onClick={handleClick}>{isResended ? "Отправлено" : "Я не получил письмо"}</button>
+                <span>Возможно придется проверить папку 'спам'</span>
+                <div className='d-flex flex-row mt-2'>
+                    <button className='btn btn-outline-secondary mx-1' onClick={() => navigate(-1)}> Назад</button>
+                    <button disabled={isResended} className='btn btn-outline-primary mx-1' onClick={handleClick}>{isResended ? 'Отправлено' : 'Я не получил письмо'}</button>
                 </div>
-                {error && <span className="text-danger">{error}</span>}
+                {error && <span className='text-danger'>{error}</span>}
             </div >
         </div >
     )

@@ -43,20 +43,20 @@ const ResetPasswordConfirm = () => {
     if (isChanged) return (
         <div className='d-flex flex-column min-vh-100 justify-content-center align-items-center'>
             <h1>Пароль успешно изменен!</h1>
-            <button className="btn btn-primary mt-3" onClick={() => navigate("/login")}>Войти</button>
+            <button className='btn btn-primary mt-3' onClick={() => navigate('/login')}>Войти</button>
         </div>
     )
 
     return (
         <div className='d-flex min-vh-100 justify-content-center align-items-center'>
-            <div className="col-12 col-md-5 d-flex flex-column justify-content-center align-items-center shadow px-5 pt-5 pb-4 bg-white rounded">
+            <div className='col-12 col-md-5 d-flex flex-column justify-content-center align-items-center shadow px-5 pt-5 pb-4 bg-white rounded'>
                 <h1 className='mb-3'>Новый пароль</h1>
                 <form onSubmit={e => handleSubmit(e)}>
-                    <div className="form-group mb-2">
+                    <div className='form-group mb-2'>
                         <input
-                            type="password"
+                            type='password'
                             className={`form-control ${errors.password && 'is-invalid'}`}
-                            name="password" placeholder="Пароль*"
+                            name='password' placeholder='Пароль*'
                             onChange={e => {
                                 setUserData({ ...userData, password: e.target.value })
                                 setErrors({
@@ -68,12 +68,12 @@ const ResetPasswordConfirm = () => {
                             }} />
                         {errors.password && <div className='invalid-feedback'>{errors.password}</div>}
                     </div>
-                    <div className="form-group mb-2">
+                    <div className='form-group mb-2'>
                         <input
-                            type="password"
+                            type='password'
                             className={`form-control ${errors.re_password && 'is-invalid'}`}
-                            name="re_password"
-                            placeholder="Повторите пароль*"
+                            name='re_password'
+                            placeholder='Повторите пароль*'
                             onChange={e => {
                                 setUserData({ ...userData, re_password: e.target.value })
                                 setErrors({
@@ -85,7 +85,7 @@ const ResetPasswordConfirm = () => {
                             }} />
                         {errors.re_password && <div className='invalid-feedback'>{errors.re_password}</div>}
                     </div>
-                    <button type="submit" className="btn btn-primary w-100">Готово</button>
+                    <button type='submit' className='btn btn-primary w-100'>Готово</button>
                     <div style={{ minHeight: 25, textAlign: 'center', color: 'red', marginTop: '1rem' }}>
                         {errors.match && <span>{errors.match}</span>}
                         {errors.server && <span>{errors.server}</span>}
