@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react'
 import { Reply, X } from 'react-bootstrap-icons'
 import AudioPlayer from 'react-h5-audio-player'
+import 'react-h5-audio-player/lib/styles.css';
 import { AuthContext } from '../../context/AuthContext'
 import Modal from 'react-bootstrap/Modal'
 import Button from 'react-bootstrap/Button'

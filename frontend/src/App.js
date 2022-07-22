@@ -16,6 +16,7 @@ import Course from './components/Course'
 import ResetPassword from './screens/auth/ResetPassword'
 import ResetPasswordSent from './screens/auth/ResetPasswordSent'
 import ResetPasswordConfirm from './screens/auth/ResetPasswordConfirm'
+import ResendActivationLink from './screens/auth/ResendActivationLink'
 // const Lesson = lazy(() => import('./components/Lesson'))
 import Lesson from './components/lesson/Lesson'
 
@@ -33,6 +34,7 @@ function App() {
           <Route path='registration' element={<Registration />} />
           <Route path='activate/:uid/:token' element={<Activate />} />
           <Route path='verification' element={<Verification />} />
+          <Route path='resend_activation_link' element={<ResendActivationLink />} />
           <Route path='reset_password' element={<ResetPassword />} />
           <Route path='reset_password_sent' element={<ResetPasswordSent />} />
           <Route path='password/reset/confirm/:uid/:token' element={<ResetPasswordConfirm />} />

@@ -18,7 +18,7 @@ const Lesson = () => {
 
     useLayoutEffect(() => {
         fetchLessonData(params.lessonID)
-            .then(res => setLessonData(res.data.lesson))
+            .then(res => setLessonData(res.data))
             .catch(err => {
                 if (err.response.status === 401) logout()
                 if (err.response.status === 403) setError('У вас нет доступа к этому уроку')
@@ -34,25 +34,49 @@ const Lesson = () => {
 
     return (
         <>
-            <div className="col-sm-3 d-flex flex-row justify-content-evenly mb-4">
+            <div className="d-lg-none col-sm-3 d-flex flex-row justify-content-evenly mb-4">
                 <div className={`w-100 text-center text-primary p-2 ${activeTab === 0 && "border-bottom border-3 border-primary"}`} role="button" onClick={() => setActiveTab(0)}>Урок</div>
                 <div className={`w-100 text-center text-primary p-2 ${activeTab === 1 && "border-bottom border-3 border-primary"}`} role="button" onClick={() => setActiveTab(1)}>Задание</div>
                 <div className={`w-100 text-center text-primary p-2 ${activeTab === 2 && "border-bottom border-3 border-primary"}`} role="button" onClick={() => setActiveTab(2)}>Обсуждение</div>
             </div>
 
-            <h1 className='text-center'>{lessonData.name}</h1>
+            <h1 className='text-center mb-4'>{lessonData.lesson.name}</h1>
 
-            <div className={activeTab === 0 ? "d-block" : "d-none"}>
-                <p className='border rounded p-2 shadow-sm'>{lessonData.description}</p>
-                <MemorizedLessonMaterials lessonData={lessonData} />
+            <div className="d-lg-none">
+
+                <div className={activeTab === 0 ? "d-block" : "d-none"}>
+                    <h2>Описание</h2>
+                    <p className='border rounded p-2 shadow-sm'>{lessonData.lesson.description}</p>
+                    <MemorizedLessonMaterials lessonData={lessonData} />
+                </div>
+
+                <div className={activeTab === 1 ? "d-block" : "d-none"}>
+                    <Excersize lessonID={params.lessonID} />
+                </div>
+
+                <div className={activeTab === 2 ? "d-block" : "d-none"} >
+                    <Comments />
+                </div>
             </div>
 
-            <div className={activeTab === 1 ? "d-block" : "d-none"}>
-                <Excersize lessonID={params.lessonID} />
-            </div>
 
-            <div className={activeTab === 2 ? "d-block" : "d-none"} style={{ paddingBottom: 50 }}>
-                <Comments />
+            <div className='d-none d-lg-block'>
+                <div className="d-flex justify-content-around">
+                    <div className='col-6'>
+                        <h2>Описание</h2>
+                        <p className='border rounded p-2 shadow-sm'>{lessonData.lesson.description}</p>
+                        <MemorizedLessonMaterials lessonData={lessonData} />
+                    </div>
+
+                    <div className='col-5'>
+                        <div className="sticky-top" style={{ top: 100 }}>
+                            <Comments />
+                        </div>
+                    </div>
+                </div>
+                <div className=''>
+                    <Excersize lessonID={params.lessonID} />
+                </div>
             </div>
 
         </>

@@ -1,29 +1,42 @@
-import React, { useState, useContext } from 'react'
+import React, { useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AuthContext } from '../../context/AuthContext'
 
 const Verification = () => {
-    const { userData, resendActivationEmail } = useContext(AuthContext)
-    const [isResended, setIstResended] = useState(false)
-    const [error, setError] = useState('')
+    const { userData, en } = useContext(AuthContext)
     const navigate = useNavigate()
 
-    const handleClick = () => {
-        resendActivationEmail()
-            .then(res => setIstResended(true))
-            .catch(err => setError(err.response.data))
-    }
+    if (!userData) navigate('/resend_activation_link')
 
     return (
         <div className='min-vh-100 d-flex flex-column justify-content-center align-items-center'>
             <div className='col-12 col-lg-6 d-flex flex-column justify-content-center align-items-center text-center'>
-                <h2>Мы отправили на {userData.email} ссылку для активации аккаунта</h2>
-                <span>Возможно придется проверить папку 'спам'</span>
+                {en ?
+                    <>
+                        <h2>We sent the activation link to {userData.email}</h2>
+                        <span>Apparently you will have to check your spam folder</span>
+                    </>
+                    :
+                    <>
+                        <h2>Мы отправили на {userData.email} ссылку для активации аккаунта</h2>
+                        <span>Возможно придется проверить папку 'спам'</span>
+                    </>
+                }
                 <div className='d-flex flex-row mt-2'>
-                    <button className='btn btn-outline-secondary mx-1' onClick={() => navigate(-1)}>Назад</button>
-                    <button disabled={isResended} className='btn btn-outline-primary mx-1' onClick={handleClick}>{isResended ? 'Отправлено' : 'Я не получил письмо'}</button>
+
+                    <button
+                        className='btn btn-outline-secondary mx-1'
+                        onClick={() => navigate(-1)}>
+                        {en ? 'Back' : 'Назад'}
+                    </button>
+
+                    <button
+                        className='btn btn-outline-primary mx-1'
+                        onClick={() => navigate('/resend_activation_link')}>
+                        {en ? ' Ain`t got the letter' : ' Я не получил письмо'}
+                    </button>
+
                 </div>
-                {error && <span className='text-danger'>{error}</span>}
             </div>
         </div>
     )

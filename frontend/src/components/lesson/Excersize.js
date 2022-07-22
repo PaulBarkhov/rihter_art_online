@@ -52,25 +52,28 @@ const Excersize = ({ lessonID }) => {
         return { __html: excersizeData.excersize.text }
     }
 
-    console.log(excersizeData)
-
     if (loading) return <div className='w-100 text-center pt-4'><Spinner animation='border' className="spinner-border-xl f-flex justify-" /></div>
+
+    if (!excersizeData) return <h1>Задания нет</h1>
 
     return (
         <>
-            <div className="border rounded p-2 shadow-sm mb-3" dangerouslySetInnerHTML={renderDangerousHTML()}></div>
+            <div className=''>
+                <h2>Задание</h2>
+                <div className="border rounded p-2 shadow-sm mb-3" dangerouslySetInnerHTML={renderDangerousHTML()}></div>
 
-            {excersizeData.reviews.map(review => review.review_messages.map(message => {
-                if (!message.parent) { //That should be done on backend but it's complicated there 
-                    return <div key={message.id} className='border rounded shadow-sm mb-2 p-3' >
-                        <Message
-                            message={message}
-                            deleteMessage={deleteMessage}
-                            setReply={setReply}
-                        />
-                    </div>
-                }
-            }))}
+                {excersizeData.reviews.map(review => review.review_messages.map(message => {
+                    if (!message.parent) { //That should be done on backend but it's complicated there 
+                        return <div key={message.id} className='border rounded shadow-sm mb-2 p-3' >
+                            <Message
+                                message={message}
+                                deleteMessage={deleteMessage}
+                                setReply={setReply}
+                            />
+                        </div>
+                    }
+                }))}
+            </div>
 
             {(reply || excersizeData.reviews.length === 0) && <ChatInput send={send} reply={reply} setReply={setReply} />}
             <div style={{ height: 70 }} id="bottomAnchor" ref={bottomRef}></div>

@@ -1,15 +1,20 @@
 import React, { useState, useRef, useEffect } from 'react'
 import AudioPlayer from 'react-h5-audio-player'
-import { ArrowRight, X } from 'react-bootstrap-icons'
+import 'react-h5-audio-player/lib/styles.css';
+import { ArrowRight, Paperclip, X } from 'react-bootstrap-icons'
 import VoiceRecorder from '../voiceRecorder/VoiceRecorder'
 import autosize from 'autosize'
+import resizeFile from '../../utils/resize'
 
 const ChatInput = ({ send, reply, setReply }) => {
     const [recording, setRecording] = useState(false)
     const [voice, setVoice] = useState()
     const [commentText, setCommentText] = useState('')
+    const [uploadedImages, setUploadedImages] = useState([])
+    const [previews, setPreviews] = useState([])
 
     const textareaRef = useRef()
+    const imageInputRef = useRef()
 
     useEffect(() => { autosize(textareaRef.current) }, [])
 
@@ -28,7 +33,14 @@ const ChatInput = ({ send, reply, setReply }) => {
     }
 
     return (
-        <div className="p-2 fixed-bottom bg-white" >
+        <div className="p-2 bg-white" style={{ position: 'sticky', bottom: 0 }}>
+
+            {!!previews.length &&
+                <div style={{ display: 'flex', overflow: 'scroll', marginBottom: 20 }}>
+                    {previews.map(preview => <img key={Math.random()} style={{ maxHeight: 100, objectFit: 'contain' }} src={preview} alt='preview' />)}
+                </div>
+            }
+
             <div className="d-flex flex-row ">
                 {voice ? (
                     <div className='w-100'>
@@ -44,7 +56,16 @@ const ChatInput = ({ send, reply, setReply }) => {
 
                     </div>
                 ) : (
-                    <div className="w-100">
+                    <div className="w-100" style={{ position: 'relative' }}>
+
+                        {reply &&
+                            <div className="position-absolute bg-white" style={{ top: -15, left: "1rem" }}>
+                                <span>{reply.user.first_name} {reply.user.last_name}</span>
+                                <X color="red" size="20" onClick={() => setReply('')} />
+                            </div>
+                        }
+
+
                         <textarea
                             ref={textareaRef}
                             rows="1"
@@ -56,10 +77,43 @@ const ChatInput = ({ send, reply, setReply }) => {
                             onChange={e => setCommentText(e.target.value)}
                             value={commentText}
                         />
-                        <div className="position-absolute bg-white" style={{ top: -15, left: "1rem" }}>
-                            <span>{reply ? `${reply.user.first_name} ${reply.user.last_name},` : "Ваш комментарий:"}</span>
-                            {reply && <X color="red" size="20" onClick={() => setReply('')} />}
-                        </div>
+
+                        <Paperclip
+                            style={{
+                                position: 'absolute',
+                                top: 10,
+                                right: 10
+                            }}
+                            size='20'
+                            onClick={() => imageInputRef.current.click()}
+                        />
+
+                        <input
+                            ref={imageInputRef}
+                            style={{ display: "none" }}
+                            type="file"
+                            name="profile_image"
+                            id="profile_image"
+                            accept="image/*"
+                            onChange={async e => {
+                                try {
+                                    const file = e.target.files[0]
+                                    console.log('Размер до: ' + file.size / 1000 / 1000 + 'мб')
+                                    const image = await resizeFile(file, 1000, 1000, 80)
+                                    console.log('Размер после: ' + (image.size / 1000 / 1000).toFixed(2) + 'мб')
+                                    setUploadedImages(current => [...current, image])
+                                    const reader = new FileReader()
+                                    reader.onloadend = () => {
+                                        setPreviews(current => [...current, reader.result])
+                                    }
+                                    reader.readAsDataURL(image)
+                                } catch (err) {
+                                    console.log(err)
+                                }
+                            }}
+                        />
+
+
                     </div>
                 )}
 

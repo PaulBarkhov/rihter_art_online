@@ -1,12 +1,16 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useContext } from 'react'
 import Modal from 'react-bootstrap/Modal'
 import resizeFile from '../utils/resize'
+import { AuthContext } from '../context/AuthContext'
+
 
 const ProfileImageModal = ({ profile_image, updateProfileImage, unmountModal }) => {
     const [showModal, setShowModal] = useState(true)
     const [uploadedImage, setUploadedImage] = useState()
     const [thumbnail, setThumbnail] = useState()
     const [preview, setPreview] = useState()
+
+    const { en } = useContext(AuthContext)
 
     const imageInputRef = useRef()
 
@@ -57,9 +61,9 @@ const ProfileImageModal = ({ profile_image, updateProfileImage, unmountModal }) 
                 />
 
                 <div className="d-flex flex-row justify-content-end pt-3">
-                    <button className={`btn btn-outline-success mx-1 ${!uploadedImage && "d-none"}`} onClick={handleSave}>Сохранить</button>
-                    <button className={`btn btn-outline-primary mx-1 ${uploadedImage && "d-none"}`} onClick={() => imageInputRef.current.click()}>Сменить</button>
-                    <button className="btn btn-outline-secondary" onClick={handleCancel}>Отмена</button>
+                    <button className={`btn btn-outline-success mx-1 ${!uploadedImage && "d-none"}`} onClick={handleSave}>{en ? 'Save' : 'Сохранить'}</button>
+                    <button className={`btn btn-outline-primary mx-1 ${uploadedImage && "d-none"}`} onClick={() => imageInputRef.current.click()}>{en ? 'Change' : 'Сменить'}</button>
+                    <button className="btn btn-outline-secondary" onClick={handleCancel}>{en ? 'Cancel' : 'Отмена'}</button>
                 </div>
 
                 <input
@@ -72,15 +76,15 @@ const ProfileImageModal = ({ profile_image, updateProfileImage, unmountModal }) 
                     onChange={async e => {
                         try {
                             const file = e.target.files[0]
-                            console.log('Размер до: ' + file.size / 1000 / 1000 + 'мб')
+                            console.log('Size before compression: ' + file.size / 1000 / 1000 + 'mb')
                             const image = await resizeFile(file, 1000, 1000, 80)
-                            console.log('Размер после: ' + (image.size / 1000 / 1000).toFixed(2) + 'мб')
+                            console.log('Size after compression: ' + (image.size / 1000 / 1000).toFixed(2) + 'mb')
                             const thumb = await resizeFile(file, 300, 300, 50)
-                            console.log('Размер thumbnail`а: ' + (thumb.size / 1000 / 1000).toFixed(2) + 'мб')
+                            console.log('Size of thumbnail: ' + (thumb.size / 1000 / 1000).toFixed(2) + 'mb')
                             setThumbnail(thumb)
                             setUploadedImage(image)
                         } catch (err) {
-                            console.log(err)
+                            console.error(err)
                         }
                     }}
                 />

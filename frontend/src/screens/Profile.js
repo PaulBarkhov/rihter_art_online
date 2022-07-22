@@ -20,7 +20,7 @@ function Account() {
 
     const navigate = useNavigate()
 
-    const { fetchProfileData, logout } = useContext(AuthContext)
+    const { fetchProfileData, logout, en } = useContext(AuthContext)
 
     useLayoutEffect(() => {
         if (!editMode) fetchProfileData().then(res => setProfileData(res.data))
@@ -36,15 +36,15 @@ function Account() {
                     <h2>{profileData.first_name} {profileData.last_name}</h2>
                     <h6>{profileData.username}</h6>
                 </div>
-                {profileData.birth_date && <p><b>Дата рождения: </b>{profileData.birth_date}</p>}
-                {profileData.sex !== 'не указан' && <p><b>Пол: </b>{profileData.sex}</p>}
-                {profileData.phone_number && <p><b>Номер телефона: </b>{profileData.phone_number}</p>}
-                {profileData.about_self && <p><b>О себе: </b>{profileData.about_self}</p>}
+                {profileData.birth_date && <p><b>{en ? 'Birth date: ' : 'Дата рождения: '}</b>{profileData.birth_date}</p>}
+                {profileData.sex !== 'не указан' && <p><b>{en ? 'Gender: ' : 'Пол: '}</b>{profileData.sex}</p>}
+                {profileData.phone_number && <p><b>{en ? 'Phone number: ' : 'Номер телефона: '}</b>{profileData.phone_number}</p>}
+                {profileData.about_self && <p><b>{en ? 'About myself: ' : 'О себе: '}</b>{profileData.about_self}</p>}
 
                 <div className='d-flex flex-column flex-sm-row'>
-                    <button className='btn btn-outline-primary m-1' onClick={() => setEditMode(true)}>Редактировать</button>
-                    <button className='btn btn-outline-secondary m-1' onClick={() => navigate('/')}>На главную</button>
-                    <button className='btn btn-outline-danger m-1' onClick={logout}>Выйти</button>
+                    <button className='btn btn-outline-primary m-1' onClick={() => setEditMode(true)}>{en ? 'Edit' : 'Редактировать'}</button>
+                    <button className='btn btn-outline-secondary m-1' onClick={() => navigate('/')}>{en ? 'Home Page' : 'На главную'}</button>
+                    <button className='btn btn-outline-danger m-1' onClick={logout}>{en ? 'Logout' : 'Выйти'}</button>
                 </div>
             </div>
         </div>

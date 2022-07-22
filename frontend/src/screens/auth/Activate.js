@@ -4,7 +4,7 @@ import { useParams, Link } from 'react-router-dom'
 
 const Activate = () => {
     const params = useParams()
-    const { activate } = useContext(AuthContext)
+    const { activate, en } = useContext(AuthContext)
     const [isActivated, setIsActivated] = useState(false)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
@@ -18,17 +18,17 @@ const Activate = () => {
 
     return (
         <div className='min-vh-100 d-flex flex-column justify-content-center align-items-center text-center'>
-            {loading && <h1>Пожалуйста подождите...</h1>}
+            {loading && <h1>{en ? 'Loading...' : 'Пожалуйста подождите...'}</h1>}
             {isActivated ? (
                 <>
-                    <h1>Аккаунт активирован!</h1>
+                    <h1>{en ? 'Account activated' : 'Аккаунт активирован!'}</h1>
                     <Link to='/login' className='btn btn-primary' role='button'>
-                        Войти
+                        {en ? 'Sign in' : 'Войти'}
                     </Link>
                 </>
             ) : (
                 <>
-                    <h1>Что-то пошло не так...</h1>
+                    <h1>{en ? 'Something went wrong...' : 'Что-то пошло не так...'}</h1>
                     <span>{error.response}</span>
                 </>
             )}

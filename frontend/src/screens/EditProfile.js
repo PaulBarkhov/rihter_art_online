@@ -7,7 +7,7 @@ const EditProfile = ({ oldProfileData, setEditMode }) => {
     const [profile_image, setProfile_image] = useState(oldProfileData.profile_image)
     const [showModal, setShowModal] = useState(false)
 
-    const { updateProfileData, updateProfileImage } = useContext(AuthContext)
+    const { updateProfileData, updateProfileImage, en } = useContext(AuthContext)
 
     const handleSubmit = async e => {
         e.preventDefault()
@@ -30,6 +30,7 @@ const EditProfile = ({ oldProfileData, setEditMode }) => {
                 profile_image={profile_image}
                 updateProfileImage={updateProfileImage}
                 unmountModal={unmountModal}
+                en={en}
             />}
 
             <div className='w-100 d-flex justify-content-center'>
@@ -44,7 +45,7 @@ const EditProfile = ({ oldProfileData, setEditMode }) => {
                     </div>
                     <form onSubmit={e => handleSubmit(e)}>
                         <div className='form-group mb-2'>
-                            <label htmlFor='first_name'>Имя</label>
+                            <label htmlFor='first_name'>{en ? 'First name' : 'Имя'}</label>
                             <input
                                 name='first_name'
                                 type='text'
@@ -54,7 +55,7 @@ const EditProfile = ({ oldProfileData, setEditMode }) => {
                             />
                         </div>
                         <div className='form-group mb-2'>
-                            <label htmlFor='last_name'>Фамилия</label>
+                            <label htmlFor='last_name'>{en ? 'Last name' : 'Фамилия'}</label>
                             <input
                                 name='last_name'
                                 type='text'
@@ -66,7 +67,7 @@ const EditProfile = ({ oldProfileData, setEditMode }) => {
 
                         <div className='row'>
                             <div className='col-6'>
-                                <label htmlFor='birth_date'>Дата рождения</label>
+                                <label htmlFor='birth_date'>{en ? 'Birth date' : 'Дата рождения'}</label>
                                 <input
                                     type='date'
                                     name='birth_date'
@@ -83,15 +84,15 @@ const EditProfile = ({ oldProfileData, setEditMode }) => {
                                     value={profileData.sex}
                                     onChange={e => setProfileData({ ...profileData, sex: e.target.value })}
                                 >
-                                    <option>Мужской</option>
-                                    <option>Женский</option>
-                                    <option>не указан</option>
+                                    <option>{en ? 'Male' : 'Мужской'}</option>
+                                    <option>{en ? 'Female' : 'Женский'}</option>
+                                    <option>{en ? 'Unspecified' : 'не указан'}</option>
                                 </select>
                             </div>
                         </div>
 
                         <div className='form-group mb-2'>
-                            <label htmlFor='phone_number'>Номер телефона</label>
+                            <label htmlFor='phone_number'>{en ? 'Phone number' : 'Номер телефона'}</label>
                             <input
                                 type='tel'
                                 className='form-control'
@@ -101,7 +102,7 @@ const EditProfile = ({ oldProfileData, setEditMode }) => {
                         </div>
 
                         <div className='form-group mb-2'>
-                            <label htmlFor='about_self'>О себе</label>
+                            <label htmlFor='about_self'>{en ? 'О себе' : 'About self'}</label>
                             <textarea
                                 rows={3}
                                 className='form-control'
@@ -110,8 +111,8 @@ const EditProfile = ({ oldProfileData, setEditMode }) => {
                             />
                         </div>
 
-                        <button className='btn btn-success' type='submit'>Сохранить</button>
-                        <button className='btn btn-outline-secondary m-2' onClick={() => setEditMode(false)}>Отмена</button>
+                        <button className='btn btn-success' type='submit'>{en ? 'Save' : 'Сохранить'}</button>
+                        <button className='btn btn-outline-secondary m-2' onClick={() => setEditMode(false)}>{en ? 'Cancel' : 'Отмена'}</button>
                     </form>
 
                 </div>

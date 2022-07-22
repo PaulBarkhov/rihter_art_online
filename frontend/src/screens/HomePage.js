@@ -6,7 +6,7 @@ function HomePage() {
     const [courses, setCourses] = useState([])
     const navigate = useNavigate()
 
-    const { fetchCourses } = useContext(AuthContext)
+    const { fetchCourses, en } = useContext(AuthContext)
 
     useLayoutEffect(() => {
         fetchCourses()
@@ -28,7 +28,13 @@ function HomePage() {
                             <img className='card-img-top' src={course.preview} alt='Preview' />
                             <div className='card-body'>
                                 <h5 className="card-title">{course.name}</h5>
-                                <p className="card-text">от {course.min_price} рублей</p>
+                                <p className="card-text">
+                                    {course.min_price &&
+                                        <>
+                                            {en ? 'from' : 'от'} {course.min_price} {en ? course.currency : (course.currency === 'RUB' ? 'рублей' : course.currency)}
+                                        </>
+                                    }
+                                </p>
                                 {/* <p className="card-text">{course.description}</p> */}
                                 {/* <Text style={styles.price}>От {course.price} рублей</Text>
                                 <Text style={styles.price}>

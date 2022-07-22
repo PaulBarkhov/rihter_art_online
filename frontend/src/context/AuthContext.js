@@ -18,17 +18,22 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true)
     const [splashLoading, setSplashLoading] = useState(false)
 
+    const en = useMemo(() => {
+        return navigator.language === 'ru' ? false : true
+    }, [])
+
     const config = tokens ? {
         headers: { 'Authorization': `JWT ${tokens.access}` }
     } : null
 
     const signup = async (userData) => {
         setUserData(userData)
-        await axios.post(`${process.env.REACT_APP_API_URL}/auth/users/`, { username: userData.email, ...userData })
+        await axios.post(`${process.env.REACT_APP_API_URL}/auth/users/`, { username: userData.email, ...userData }, { headers: { 'Accept-Language': en ? 'en' : 'ru' } })
     }
 
-    const resendActivationEmail = async () => {
-        await axios.post(`${process.env.REACT_APP_API_URL}/auth/users/resend_activation/`, { email: userData.email })
+    const resendActivationEmail = async email => {
+        setUserData({ ...userData, email: email })
+        await axios.post(`${process.env.REACT_APP_API_URL}/auth/users/resend_activation/`, { email: email }, { headers: { 'Accept-Language': en ? 'en' : 'ru' } })
     }
 
     const activate = async (uid, token) => {
@@ -36,7 +41,8 @@ export const AuthProvider = ({ children }) => {
     }
 
     const resetPassword = async email => {
-        await axios.post(`${process.env.REACT_APP_API_URL}/auth/users/reset_password/`, { email: email })
+        setUserData({ ...userData, email: email })
+        await axios.post(`${process.env.REACT_APP_API_URL}/auth/users/reset_password/`, { email: email }, { headers: { 'Accept-Language': en ? 'en' : 'ru' } })
     }
 
     const setNewPassword = async (uid, token, new_password, re_new_password) => {
@@ -164,6 +170,7 @@ export const AuthProvider = ({ children }) => {
             tokens,
             user,
             header,
+            en,
             login,
             logout,
             resetPassword,

@@ -11,7 +11,7 @@ const CourseListItem = ({ lesson, index, cardRef }) => {
         on_review: false
     })
 
-    const { fetchLessonStatus } = useContext(AuthContext)
+    const { fetchLessonStatus, en } = useContext(AuthContext)
 
     useLayoutEffect(() => {
         fetchLessonStatus(lesson.id)
@@ -27,7 +27,12 @@ const CourseListItem = ({ lesson, index, cardRef }) => {
             key={`fl_${lesson.id}`}
             className={`w-100 d-flex bg-white flex-row rounded shadow-sm mb-3 border shadow-sm ${lesson.access !== 'free' && !status.available && 'border-secondary'} ${status.completed && 'border-success'} ${status.on_review && 'border-primary'} `}>
             <div className="col-4">
-                <img src={lesson.preview} alt='preview' className="w-100" />
+                <img
+                    src={lesson.preview}
+                    alt='preview'
+                    className="w-100"
+                // style={{ width: '100%' }}
+                />
             </div>
             <div className="p-3 w-100 d-flex flex-column justify-content-between">
                 {/* {status.completed && <Badge bg='success' style={{ float: 'right' }}>Пройден</Badge>} */}
@@ -42,13 +47,13 @@ const CourseListItem = ({ lesson, index, cardRef }) => {
                             className='btn btn-primary'
                             style={{ float: 'right' }}
                             onClick={() => navigate(`/lesson/${lesson.id}`)}>
-                            Начать
+                            {en ? 'Open' : 'Открыть'}
                         </button>) : (
                         <button
-                            className='btn btn-primary'
+                            className='btn btn-outline-primary'
                             style={{ float: 'right' }}
                             onClick={() => cardRef.current.scrollIntoView(false)}>
-                            Купить
+                            {en ? 'Purchase' : 'Купить'}
                         </button>
                     )}
                 </div>

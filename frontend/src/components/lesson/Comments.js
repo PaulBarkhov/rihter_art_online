@@ -42,19 +42,24 @@ const Comments = () => {
     if (loading) return <Spinner animation='border' className="spinner-border-xl f-flex justify-" />
 
     return (
-        <div className="position-relative" style={{ paddingBottom: 70 }}>
-            {comments.length === 0 ? (
-                <h1>Пока нет комментариев</h1>
-            ) : (
-                comments.map(comment =>
-                    <div key={comment.id} className='border rounded shadow-sm p-3 mb-2'>
-                        <Message
-                            message={comment}
-                            setReply={setReply}
-                            deleteMessage={deleteComment}
-                        />
-                    </div>
-                ))}
+        <div>
+            <div className='min-vh-100'>
+                <h2>Комментарии</h2>
+                {comments.length === 0 ? (
+                    <h3>Пока нет комментариев</h3>
+                ) : (
+                    comments.map(comment =>
+                        <div key={comment.id} className='border rounded shadow-sm p-3 mb-2'>
+                            <Message
+                                message={comment}
+                                setReply={setReply}
+                                deleteMessage={deleteComment}
+                            />
+                        </div>
+                    )
+                )}
+            </div>
+
             <ChatInput
                 send={postComment}
                 reply={reply}
