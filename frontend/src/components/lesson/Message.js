@@ -11,7 +11,7 @@ const Message = ({ message, deleteMessage, setReply }) => {
     const [deleteModalShown, setDeleteModalShown] = useState(false)
     const [repliesShown, setRepliesShown] = useState(!!message.parent)
 
-    const { user } = useContext(AuthContext)
+    const { user, en } = useContext(AuthContext)
 
     const handleDelete = () => {
         setDeleteModalShown(true)
@@ -64,7 +64,7 @@ const Message = ({ message, deleteMessage, setReply }) => {
                     aria-expanded={repliesShown}
                     onClick={() => setRepliesShown(true)}
                 >
-                    Смотреть ответы
+                    {en ? 'Show replies' : 'Показать ответы'}
                 </div>
             }
 
@@ -80,7 +80,7 @@ const Message = ({ message, deleteMessage, setReply }) => {
                                 setReply={setReply}
                             />
                         )}
-                        {!message.parent && <div style={{ textAlign: 'right', fontSize: '0.8rem' }} onClick={() => setRepliesShown(false)}>Скрыть ответы</div>}
+                        {!message.parent && <div style={{ textAlign: 'right', fontSize: '0.8rem' }} onClick={() => setRepliesShown(false)}>{en ? 'hide replies' : 'Открыть ответы'}</div>}
                     </div>
                 </div>
             </Collapse>}
@@ -94,14 +94,16 @@ const Message = ({ message, deleteMessage, setReply }) => {
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
             >
-                <Modal.Header closeButton></Modal.Header>
-                <Modal.Body>Вы уверены, что хотите удалить сообщение?</Modal.Body>
+                <Modal.Header closeButton>
+                    {en ? 'Are you sure you want to delete this message?' : 'Вы уверены, что хотите удалить сообщение?'}
+                </Modal.Header>
+                {/* <Modal.Body>{en ? 'Are you sure you want to delete this message?' : 'Вы уверены, что хотите удалить сообщение?'}</Modal.Body> */}
                 <Modal.Footer>
                     <Button variant="secondary" onClick={() => setDeleteModalShown(false)}>
-                        Отмена
+                        {en ? 'Cancel' : 'Отмена'}
                     </Button>
                     <Button variant="danger" onClick={confirmDelete}>
-                        Да
+                        {en ? 'Yes' : 'Да'}
                     </Button>
                 </Modal.Footer>
             </Modal>

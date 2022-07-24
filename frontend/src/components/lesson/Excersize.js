@@ -13,7 +13,7 @@ const Excersize = ({ lessonID }) => {
 
     const bottomRef = useRef()
 
-    const { fetchExcersizeData, sendExcersizeMessage, deleteExcersizeMessage, user } = useContext(AuthContext)
+    const { fetchExcersizeData, sendExcersizeMessage, deleteExcersizeMessage, user, en } = useContext(AuthContext)
 
     useEffect(() => {
 
@@ -21,13 +21,13 @@ const Excersize = ({ lessonID }) => {
             .then(res => setExcersizeData(res.data))
             .finally(() => setLoading(false))
 
-        const timeout = setTimeout(() => {
-            bottomRef.current && bottomRef.current.scrollIntoView({ block: 'end', behavior: 'instant' })
-        }, 200);
+        // const timeout = setTimeout(() => {
+        //     bottomRef.current && bottomRef.current.scrollIntoView({ block: 'end', behavior: 'instant' })
+        // }, 200);
 
-        return () => {
-            clearTimeout(timeout)
-        }
+        // return () => {
+        //     clearTimeout(timeout)
+        // }
 
     }, [lessonID, fetchExcersizeData, reloader])
 
@@ -54,12 +54,12 @@ const Excersize = ({ lessonID }) => {
 
     if (loading) return <div className='w-100 text-center pt-4'><Spinner animation='border' className="spinner-border-xl f-flex justify-" /></div>
 
-    if (!excersizeData) return <h1>Задания нет</h1>
+    if (!excersizeData) return <h1>{en ? 'No excersize' : 'Задания нет'}</h1>
 
     return (
         <>
             <div className=''>
-                <h2>Задание</h2>
+                <h2>{en ? 'Excersize' : 'Задание'}</h2>
                 <div className="border rounded p-2 shadow-sm mb-3" dangerouslySetInnerHTML={renderDangerousHTML()}></div>
 
                 {excersizeData.reviews.map(review => review.review_messages.map(message => {

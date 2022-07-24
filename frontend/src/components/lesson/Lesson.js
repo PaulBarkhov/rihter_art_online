@@ -14,19 +14,19 @@ const Lesson = () => {
 
     const params = useParams()
 
-    const { fetchLessonData, logout } = useContext(AuthContext)
+    const { fetchLessonData, logout, en } = useContext(AuthContext)
 
     useLayoutEffect(() => {
         fetchLessonData(params.lessonID)
             .then(res => setLessonData(res.data))
             .catch(err => {
                 if (err.response.status === 401) logout()
-                if (err.response.status === 403) setError('У вас нет доступа к этому уроку')
-                else setError(`Ошибка: ${err.response.data}`)
+                if (err.response.status === 403) setError(en ? 'You don`t have access to this lesson' : 'У вас нет доступа к этому уроку')
+                else setError(`${en ? 'Error:' : 'Ошибка:'} ${err.response.data}`)
             })
             .finally(() => setLoading(false))
 
-    }, [params.lessonID, fetchLessonData, logout])
+    }, [params.lessonID, fetchLessonData, logout, en])
 
     if (error) return <h1>{error}</h1>
 
@@ -35,9 +35,9 @@ const Lesson = () => {
     return (
         <>
             <div className="d-lg-none col-sm-3 d-flex flex-row justify-content-evenly mb-4">
-                <div className={`w-100 text-center text-primary p-2 ${activeTab === 0 && "border-bottom border-3 border-primary"}`} role="button" onClick={() => setActiveTab(0)}>Урок</div>
-                <div className={`w-100 text-center text-primary p-2 ${activeTab === 1 && "border-bottom border-3 border-primary"}`} role="button" onClick={() => setActiveTab(1)}>Задание</div>
-                <div className={`w-100 text-center text-primary p-2 ${activeTab === 2 && "border-bottom border-3 border-primary"}`} role="button" onClick={() => setActiveTab(2)}>Обсуждение</div>
+                <div className={`w-100 text-center text-primary p-2 ${activeTab === 0 && "border-bottom border-3 border-primary"}`} role="button" onClick={() => setActiveTab(0)}>{en ? 'Lesson' : 'Урок'}</div>
+                <div className={`w-100 text-center text-primary p-2 ${activeTab === 1 && "border-bottom border-3 border-primary"}`} role="button" onClick={() => setActiveTab(1)}>{en ? 'Excersize' : 'Задание'}</div>
+                <div className={`w-100 text-center text-primary p-2 ${activeTab === 2 && "border-bottom border-3 border-primary"}`} role="button" onClick={() => setActiveTab(2)}>{en ? 'Comments' : 'Обсуждение'}</div>
             </div>
 
             <h1 className='text-center mb-4'>{lessonData.lesson.name}</h1>
@@ -45,7 +45,7 @@ const Lesson = () => {
             <div className="d-lg-none">
 
                 <div className={activeTab === 0 ? "d-block" : "d-none"}>
-                    <h2>Описание</h2>
+                    <h2>{en ? 'Description' : 'Описание'}</h2>
                     <p className='border rounded p-2 shadow-sm'>{lessonData.lesson.description}</p>
                     <MemorizedLessonMaterials lessonData={lessonData} />
                 </div>
@@ -63,7 +63,7 @@ const Lesson = () => {
             <div className='d-none d-lg-block'>
                 <div className="d-flex justify-content-around">
                     <div className='col-6'>
-                        <h2>Описание</h2>
+                        <h2>{en ? 'Description' : 'Описание'}</h2>
                         <p className='border rounded p-2 shadow-sm'>{lessonData.lesson.description}</p>
                         <MemorizedLessonMaterials lessonData={lessonData} />
                     </div>

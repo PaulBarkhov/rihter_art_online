@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createContext, useMemo } from 'react'
+import React, { useState, useEffect, createContext, useMemo, useCallback } from 'react'
 import axios from 'axios'
 import jwt_decode from 'jwt-decode'
 import { useNavigate } from 'react-router-dom'
@@ -11,6 +11,8 @@ export const AuthProvider = ({ children }) => {
     const [tokens, setTokens] = useState(() => localStorage.getItem('tokens') ? JSON.parse(localStorage.getItem('tokens')) : null)
     const [user, setUser] = useState(() => localStorage.getItem('tokens') ? jwt_decode(localStorage.getItem('tokens')) : null)
 
+    const [cart, setCart] = useState([])
+
     const [userData, setUserData] = useState({})
 
     const [header, setHeader] = useState("Rihter Art Online")
@@ -18,13 +20,15 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true)
     const [splashLoading, setSplashLoading] = useState(false)
 
+    const [showCartModal, setShowCartModal] = useState(false)
+
     const en = useMemo(() => {
         return navigator.language === 'ru' ? false : true
     }, [])
 
-    const config = tokens ? {
+    const config = useMemo(() => tokens ? {
         headers: { 'Authorization': `JWT ${tokens.access}` }
-    } : null
+    } : null, [tokens])
 
     const signup = async (userData) => {
         setUserData(userData)
@@ -61,12 +65,13 @@ export const AuthProvider = ({ children }) => {
         // .catch(err => err.response.status === 401 ? logout() : console.log(err))
     }
 
-    const logout = () => {
+    const logout = useCallback(() => {
         setTokens(null)
         setUser(null)
         localStorage.removeItem('tokens')
+        setCart([])
         navigate("/login")
-    }
+    }, [navigate])
 
     useEffect(() => {
         const refreshToken = async () => {
@@ -117,19 +122,19 @@ export const AuthProvider = ({ children }) => {
             .catch(err => err.response.status === 401 ? logout() : console.log(err))
     }
 
-    const fetchCourseData = async (courseID) => {
+    const fetchCourseData = useCallback(async (courseID) => {
         return await axios.get(`${process.env.REACT_APP_API_URL}/api/course/${courseID}`, config)
             .catch(err => err.response.status === 401 ? logout() : console.log(err))
-    }
+    }, [config, logout])
 
     const fetchLessonStatus = async (lessonID) => {
         return await axios.get(`${process.env.REACT_APP_API_URL}/api/lesson/${lessonID}/get_status`, config)
             .catch(err => err.response.status === 401 ? logout() : console.log(err))
     }
 
-    const fetchLessonData = async (lessonID) => {
+    const fetchLessonData = useCallback(async (lessonID) => {
         return await axios.get(`${process.env.REACT_APP_API_URL}/api/lesson/${lessonID}`, config)
-    }
+    }, [config])
 
     const fetchExcersizeData = async (lessonID) => {
         return await axios.get(`${process.env.REACT_APP_API_URL}/api/lesson/${lessonID}/excersizes/1`, config)
@@ -162,6 +167,29 @@ export const AuthProvider = ({ children }) => {
     }
 
 
+
+    const getPaymentLink = async data => {
+        return await axios.post(`${process.env.REACT_APP_API_URL}/payments/`, data, config)
+            .catch(err => err.response.status === 401 ? logout() : console.log(err))
+    }
+
+    useEffect(() => {
+        const uploadCart = async () => {
+            await axios.post(`${process.env.REACT_APP_API_URL}/payments/cart`, { cartItems: cart }, config)
+        }
+        uploadCart()
+    }, [cart, config])
+
+    const fetchCart = useCallback(async () => {
+        return await axios.get(`${process.env.REACT_APP_API_URL}/payments/cart`, config)
+            .catch(err => err.response.status === 401 ? logout() : console.log(err))
+    }, [config, logout])
+
+    useEffect(() => {
+        tokens &&
+            fetchCart().then(res => setCart(res.data))
+    }, [fetchCart, config, tokens])
+
     return <AuthContext.Provider
         value={{
             userData,
@@ -191,7 +219,13 @@ export const AuthProvider = ({ children }) => {
             deleteExcersizeMessage,
             fetchComments,
             postComment,
-            deleteComment
+            deleteComment,
+
+            getPaymentLink,
+            setCart,
+            cart,
+            showCartModal,
+            setShowCartModal,
         }}>
         {children}
     </AuthContext.Provider>

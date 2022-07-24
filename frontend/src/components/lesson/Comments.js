@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useContext } from 'react'
-import axios from 'axios'
 import { useParams } from 'react-router-dom'
 import { AuthContext } from '../../context/AuthContext'
 import Spinner from 'react-bootstrap/Spinner'
@@ -13,7 +12,7 @@ const Comments = () => {
     const [comments, setComments] = useState('')
     const [reply, setReply] = useState()
 
-    const { fetchComments, postComment: apiPostComment, deleteComment: apiDeleteComment } = useContext(AuthContext)
+    const { fetchComments, postComment: apiPostComment, deleteComment: apiDeleteComment, en } = useContext(AuthContext)
 
     useEffect(() => {
         fetchComments(params.lessonID)
@@ -44,9 +43,9 @@ const Comments = () => {
     return (
         <div>
             <div className='min-vh-100'>
-                <h2>Комментарии</h2>
+                <h2>{en ? 'Comments' : 'Комментарии'}</h2>
                 {comments.length === 0 ? (
-                    <h3>Пока нет комментариев</h3>
+                    <h3>{en ? 'No comments yet' : 'Пока нет комментариев'}</h3>
                 ) : (
                     comments.map(comment =>
                         <div key={comment.id} className='border rounded shadow-sm p-3 mb-2'>

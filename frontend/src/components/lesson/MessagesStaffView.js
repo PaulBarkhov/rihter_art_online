@@ -8,7 +8,7 @@ const MessagesStaffView = ({ lessonID, reviews }) => {
 
     const bottomRef = useRef()
 
-    const { sendExcersizeMessage, deleteExcersizeMessage, user } = useContext(AuthContext)
+    const { sendExcersizeMessage, deleteExcersizeMessage, user, en } = useContext(AuthContext)
 
     const send = (commentText, voice) => {
         if (commentText || voice) {
