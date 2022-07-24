@@ -1,4 +1,4 @@
-from rest_framework.serializers import Serializer, ModelSerializer, SlugRelatedField, SerializerMethodField, FloatField, DateTimeField
+from rest_framework.serializers import Serializer, ModelSerializer, SlugRelatedField, SerializerMethodField, FloatField, DateTimeField, CharField
 from django.contrib.auth.models import User
 from . import models
 from user_profile.serializers import UserProfileSerializer
@@ -25,10 +25,16 @@ class RecursiveSerializer(Serializer):
         serializer = self.parent.parent.__class__(value, context=self.context)
         return serializer.data
 
+class CommentImageSerializer(ModelSerializer):
+    class Meta: 
+        model = models.CommentImage
+        fields = ('__all__')
+
 class CommentListSerializer(ModelSerializer):
     user = UserSerializer(read_only=True)
     date = DateTimeField(format="%d.%m.%Y %H:%M:%S")
     children = RecursiveSerializer(many=True)
+    images = CommentImageSerializer(read_only=True, many=True)
     class Meta:
         model = models.Comment
         fields = ('__all__')
@@ -46,6 +52,7 @@ class LessonSerializer(ModelSerializer):
         fields = ('__all__')
 
 class LessonGroupSerializer(ModelSerializer):
+    course_name = CharField(source='get_course_name')
     class Meta:
         model = models.LessonPack
         fields = ('__all__')
@@ -57,13 +64,14 @@ class CourseListSerializer(ModelSerializer):
     # lessons_groups = LessonGroupSerializer(read_only=True, many=True)
     # lessonPacks = LessonGroupSerializer(read_only=True, many=True)
     min_price = FloatField(source='get_min_price')
+    currency = CharField()
     class Meta:
         model = models.Course
         fields = ('__all__') 
 
 class CourseDetailSerializer(ModelSerializer):
     lessons = LessonListSerializer(read_only=True, many=True)
-    # lessonPacks = LessonGroupSerializer(read_only=True, many=True)
+    currency = CharField()
     class Meta:
         model = models.Course
         fields = ('__all__')
@@ -73,10 +81,16 @@ class VoiceMessageSerializer(ModelSerializer):
         model = models.VoiceMessage
         fields = ('__all__') 
 
+class ReviewMessageImageSerializer(ModelSerializer):
+    class Meta:
+        model = models.ReviewMessageImage
+        fields = ('__all__')
+
 class ReviewMessageSerializer(ModelSerializer):
     user = UserSerializer(read_only=True)
     date = DateTimeField(format="%d.%m.%Y %H:%M:%S")
     children = RecursiveSerializer(many=True)
+    images = ReviewMessageImageSerializer(read_only=True, many=True)
     class Meta:
         model = models.ReviewMessage
         fields = ('__all__')

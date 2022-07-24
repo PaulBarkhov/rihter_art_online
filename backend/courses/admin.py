@@ -2,6 +2,7 @@ from django.contrib import admin
 from . import models
 from user_profile.models import UserProfile
 from django.utils.safestring import mark_safe
+from payments.models import Cart, CartItem
 # Register your models here.
 admin.site.site_header = "Rihter Art Online - Панель администрирования"
 
@@ -24,6 +25,10 @@ class PhotoInline(admin.StackedInline):
 class VideoInline(admin.StackedInline):
     model = models.Video
     extra = 1
+
+class CartItemInline(admin.StackedInline):
+    model = CartItem
+    extra = 0
 
 @admin.register(models.Course)
 class CourseAdmin(admin.ModelAdmin):
@@ -60,6 +65,10 @@ class PhotoAdmin(admin.ModelAdmin):
 
     get_image.short_description = "Изображение"
 
+@admin.register(Cart)
+class CartAdmin(admin.ModelAdmin):
+    inlines = [CartItemInline]
+
 # admin.site.register(UserProfile)
 # admin.site.register(models.Course, CourseDisplay)
 admin.site.register(models.LessonPack)
@@ -70,3 +79,7 @@ admin.site.register(models.Order)
 admin.site.register(models.Excersize)
 admin.site.register(models.Review)
 admin.site.register(models.ReviewMessage)
+admin.site.register(CartItem)
+
+
+

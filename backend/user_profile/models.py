@@ -7,7 +7,7 @@ class UserProfile(models.Model):
         verbose_name_plural = 'Профили'
     user = models.OneToOneField(User, verbose_name='Пользователь', null=True, on_delete=models.CASCADE, related_name='profile')
     phone_number = models.CharField('Номер телефона', default='', max_length=64)
-    sex = models.CharField('Пол', max_length=9, choices=[('Мужcкой', 'Мужcкой'), ('Женский', 'Женский'), ('не указан', 'не указан')], default='не указан')
+    sex = models.CharField('Пол', max_length=11, choices=[('Male', 'Мужcкой'), ('Female', 'Женский'), ('Unspecified', 'не указан')], default='Unspecified')
     birth_date = models.DateField('Дата рождения', null=True, blank=True)
     # language_code = models.TextField('Язык', max_length=512, null=True, blank=True)
     about_self = models.TextField('О себе', max_length=512, null=True, blank=True)

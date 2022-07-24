@@ -1,21 +1,12 @@
-from os import access, stat
 from django.shortcuts import render
-from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie, csrf_protect
-from django.contrib.auth.models import User
-# from backend import authentication
-from user_profile.models import UserProfile
+from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, JsonResponse
-from django.core.mail import send_mail
 from django.conf import settings
-from rest_framework import authentication, generics
-from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from . import serializers
-from django.db.models import Min, Count, Subquery
 import json
-import random
 import vimeo
 
 from . import models

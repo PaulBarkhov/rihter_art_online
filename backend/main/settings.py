@@ -56,7 +56,9 @@ INSTALLED_APPS = [
     'courses',
     'authentication',
     'user_profile',
-    'djoser'
+    'payments',
+    'djoser',
+    'djmoney',
 ]
 
 MIDDLEWARE = [
@@ -64,6 +66,7 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -127,7 +130,15 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
-LANGUAGE_CODE = 'ru-RU'
+# LANGUAGE_CODE = 'ru-RU'
+# LANGUAGE_SESSION_KEY = 'ru'
+
+# from django.utils.translation import gettext_lazy as _
+
+# LANGUAGES = [
+#     ('ru', _('Russian')),
+#     ('en', _('English')),
+# ]
 
 TIME_ZONE = 'UTC'
 
@@ -154,6 +165,7 @@ REST_FRAMEWORK = {
     #     'rest_framework.permissions.IsAuthenticated'
     # ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        # 'rest_framework.authentication.SessionAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ]
 }
@@ -234,6 +246,7 @@ VIMEO_TOKEN = config['VIMEO_TOKEN']
 VIMEO_KEY = config['VIMEO_KEY']
 VIMEO_SECRET  = config['VIMEO_SECRET']
 
+PRODAMUS_KEY = config['PRODAMUS_KEY']
 
 
 CKEDITOR_UPLOAD_PATH = 'uploads/'
@@ -300,4 +313,3 @@ CKEDITOR_CONFIGS = {
         ]),
     }
 }
-

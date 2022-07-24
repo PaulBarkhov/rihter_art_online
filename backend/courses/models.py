@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from ckeditor.fields import RichTextField
+from djmoney.models.fields import MoneyField
 
 class Course(models.Model):
     class Meta: 
@@ -14,6 +15,13 @@ class Course(models.Model):
     def get_min_price(self):
         return self.lessonPacks.all().aggregate(models.Min('price'))['price__min']
 
+    @property
+    def currency(self):
+        if self.lessonPacks.first():
+            return self.lessonPacks.first().price_currency
+        else: 
+            return ''
+
     def __str__(self):
         return f"{self.id}: {self.name}"
 
@@ -23,8 +31,11 @@ class LessonPack(models.Model):
         verbose_name_plural = 'Группы уроков'
     name = models.CharField('Название', max_length=64, blank=True)
     course = models.ForeignKey(Course, verbose_name='Курс', null=True, on_delete=models.CASCADE, blank=True, related_name='lessonPacks')
-    price = models.DecimalField('Цена', max_digits=6, decimal_places=2, null=True, blank=True)
+    price = MoneyField(max_digits=14, decimal_places=2, default_currency='RUB', null=True)
 
+    @property
+    def get_course_name(self):
+        return self.course.name
 
     def __str__(self):
         return f"{self.course} - {self.name}"
@@ -81,7 +92,13 @@ class ReviewMessage(models.Model):
     parent = models.ForeignKey('self', verbose_name='Родитель', on_delete=models.SET_NULL, blank=True, null=True, related_name='children')
     date = models.DateTimeField(auto_now_add=True, blank=True, null=True)
 
-    
+class ReviewMessageImage(models.Model):
+    class Meta: 
+        verbose_name = 'Фото в сообщении задания'
+        verbose_name_plural = 'Фото в сообщении задания'
+    reviewMessage = models.ForeignKey(ReviewMessage, verbose_name='Сообщение', null=True, on_delete=models.CASCADE, blank=True, related_name='review_message_images')
+    user = models.ForeignKey(User, verbose_name='Пользователь', null=True, on_delete=models.CASCADE, blank=True, related_name='review_message_images')
+
 class Comment(models.Model):
     class Meta: 
         verbose_name = 'Комментарий'
@@ -95,6 +112,13 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"{self.id}: {self.user}: {self.text}"
+
+class CommentImage(models.Model):
+    class Meta: 
+        verbose_name = 'Фото в комментарии'
+        verbose_name_plural = 'Фото в комментарии'
+    comment = models.ForeignKey(Comment, verbose_name='Коммент', null=True, on_delete=models.CASCADE, blank=True, related_name='comment_images')
+    user = models.ForeignKey(User, verbose_name='Пользователь', null=True, on_delete=models.CASCADE, blank=True, related_name='comment_images')
 
 class VoiceMessage(models.Model):
     class Meta:

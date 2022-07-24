@@ -24,7 +24,7 @@ class UserProfileView(APIView):
 
 
 class UpdateProfileView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     def post(self, request, format=None):
         # try:
         user = self.request.user
@@ -36,10 +36,8 @@ class UpdateProfileView(APIView):
         profile = self.request.user.profile
         profile.about_self=data['about_self']
         if not data['birth_date']:
-            print('no date')
             profile.birth_date=None
         else:
-            print('date: ' + data['birth_date'])
             profile.birth_date=data['birth_date']
         profile.sex=data['sex']
         profile.phone_number=data['phone_number']
