@@ -1,6 +1,6 @@
 import React, { useState, useLayoutEffect, useRef, useContext } from "react"
 import Card from 'react-bootstrap/Card'
-import { useParams } from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom"
 import { AuthContext } from "../context/AuthContext"
 import CourseListItem from './CourseListItem'
 import Spinner from 'react-bootstrap/Spinner'
@@ -27,6 +27,9 @@ const Course = () => {
 
     const params = useParams()
     const cardRef = useRef()
+
+    const navigate = useNavigate()
+
 
     useLayoutEffect(() => {
         fetchCourseData(params.courseID)
@@ -65,7 +68,10 @@ const Course = () => {
             lessonPacks: selectedLessonPacks.map(lessonPack => (({ id, name, price, course_name }) => ({ id, name, price, course_name }))(lessonPack)),
             currency: course.currency
         })
-            .then(res => window.open(res.data, '_blank', 'noopener,noreferrer'))
+            .then(res => {
+                const w = window.open()
+                w.location = res.data
+            })
             .finally(() => setLoading(false))
     }
 
@@ -108,7 +114,7 @@ const Course = () => {
                                             className="form-check-label"
                                             htmlFor="freeLessonsCheckbox">
                                             {en ? 'Lessons 1-' : 'Уроки 1-'}
-                                            {course.lessons.filter(lesson => lesson.access === 'free').length + 1}
+                                            {course.lessons.filter(lesson => lesson.access === 'free').length}
                                             {en ? ' free' : ' бесплатно'}
                                         </label>
                                     </div>

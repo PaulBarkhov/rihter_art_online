@@ -32,16 +32,16 @@ const Cart = ({ showCartModal, setShowCartModal, }) => {
                     cart.length === 0 ? <div className="d-flex justify-content-center align-items-center">{en ? 'Nothing here' : 'Тут пока пусто'}</div> :
                         <div className='text-end'>
                             {cart.map(cartItem =>
-                                <div key={cartItem.id} className='d-flex flex-row justify-content-between align-items-end border rounded p-2 my-2'>
-                                    <h4>
-                                        {cartItem.course_name} {cartItem.name}
-                                    </h4>
-                                    <div>
-                                        {cartItem.price} {en ? cartItem.price_currency : (cartItem.price_currency === 'RUB' ? '₽' : cartItem.price_currency)}
+                                <div key={cartItem.id} className='border rounded p-2 my-2'>
+                                    <div className='d-flex justify-content-between'>
+                                        <span>{cartItem.course_name} {cartItem.name}</span>
                                         <X
                                             size='20'
                                             color='red'
                                             onClick={() => setCart(prev => prev.filter(item => item.id !== cartItem.id))} />
+                                    </div>
+                                    <div>
+                                        {cartItem.price} {en ? cartItem.price_currency : (cartItem.price_currency === 'RUB' ? '₽' : cartItem.price_currency)}
                                     </div>
                                 </div>
                             )}
@@ -57,7 +57,7 @@ const Cart = ({ showCartModal, setShowCartModal, }) => {
                 }
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={() => setShowCartModal(false)}>
+                <Button variant="outline-secondary" onClick={() => setShowCartModal(false)}>
                     {en ? 'Close' : 'Закрыть'}
                 </Button>
                 {!!cart.length && <Button variant="primary" onClick={handleBuy}>

@@ -31,7 +31,7 @@ class LessonPack(models.Model):
         verbose_name_plural = 'Группы уроков'
     name = models.CharField('Название', max_length=64, blank=True)
     course = models.ForeignKey(Course, verbose_name='Курс', null=True, on_delete=models.CASCADE, blank=True, related_name='lessonPacks')
-    price = MoneyField(max_digits=14, decimal_places=2, default_currency='RUB', null=True)
+    price = MoneyField(max_digits=14, decimal_places=2, default_currency='RUB', null=True, blank=True)
 
     @property
     def get_course_name(self):
@@ -45,7 +45,7 @@ class Lesson(models.Model):
         verbose_name = 'Урок'
         verbose_name_plural = 'Уроки'
     course = models.ForeignKey(Course, verbose_name='Курс', null=True, on_delete=models.CASCADE, blank=True, related_name='lessons')
-    lessonPack = models.ForeignKey(LessonPack, verbose_name='Группа уроков', null=True, on_delete=models.CASCADE, blank=True, related_name='lessons')
+    lessonPack = models.ForeignKey(LessonPack, verbose_name='Группа уроков', null=True, on_delete=models.SET_NULL, blank=True, related_name='lessons')
     name = models.CharField('Название', max_length=64, blank=True)
     description = models.TextField('Описание', null=True, max_length=512, blank=True)
     # excersize_text = RichTextField('Задание', null=True, blank=True)
