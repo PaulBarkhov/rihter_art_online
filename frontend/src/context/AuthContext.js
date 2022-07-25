@@ -173,22 +173,40 @@ export const AuthProvider = ({ children }) => {
             .catch(err => err.response.status === 401 ? logout() : console.log(err))
     }
 
-    useEffect(() => {
-        const uploadCart = async () => {
-            await axios.post(`${process.env.REACT_APP_API_URL}/payments/cart`, { cartItems: cart }, config)
-        }
-        uploadCart()
-    }, [cart, config])
+    // useEffect(() => {
+    //     const uploadCart = async () => {
+    //         await axios.post(`${process.env.REACT_APP_API_URL}/payments/cart`, { cartItems: cart }, config)
+    //     }
+    //     config && uploadCart()
+    // }, [cart, config])
 
-    const fetchCart = useCallback(async () => {
-        return await axios.get(`${process.env.REACT_APP_API_URL}/payments/cart`, config)
+    // const fetchCart = useCallback(async () => {
+    //     console.log('fetching cart...')
+    //     return await axios.get(`${process.env.REACT_APP_API_URL}/payments/cart`, config)
+    //         .catch(err => err.response.status === 401 ? logout() : console.log(err))
+    // }, [config, logout])
+
+    const addCartItems = useCallback(async (cartItems) => {
+        console.log('adding cart items...')
+        return await axios.post(`${process.env.REACT_APP_API_URL}/payments/cart`, { cartItems: cartItems }, config)
+            .catch(err => err.response.status === 401 ? logout() : console.log(err))
+    }, [config, logout])
+
+    const deleteCartItem = useCallback(async (id) => {
+        console.log('adding cart items...')
+        return await axios.post(`${process.env.REACT_APP_API_URL}/payments/cart/${id}`, config)
             .catch(err => err.response.status === 401 ? logout() : console.log(err))
     }, [config, logout])
 
     useEffect(() => {
+        const fetchCart = async () => {
+            console.log('fetching cart...')
+            return await axios.get(`${process.env.REACT_APP_API_URL}/payments/cart`, config)
+                .catch(err => err.response.status === 401 ? logout() : console.log(err))
+        }
         tokens &&
             fetchCart().then(res => setCart(res.data))
-    }, [fetchCart, config, tokens])
+    }, [config, tokens, logout])
 
     return <AuthContext.Provider
         value={{
@@ -226,6 +244,8 @@ export const AuthProvider = ({ children }) => {
             cart,
             showCartModal,
             setShowCartModal,
+            addCartItems,
+            deleteCartItem,
         }}>
         {children}
     </AuthContext.Provider>

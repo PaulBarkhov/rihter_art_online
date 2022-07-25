@@ -165,7 +165,11 @@ class CommentDetailView(APIView):
 class ExcersizeDetailView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request, lesson_pk, excersize_pk):
-        excersize = models.Excersize.objects.get(id=excersize_pk)
+        lesson = models.Lesson.objects.get(id=lesson_pk)
+        try:
+            excersize = models.Excersize.objects.get(lesson=lesson)
+        except models.Excersize.DoesNotExist:
+            excersize = models.Excersize.objects.create(lesson=lesson)
         # return Response(serializers.ExcersizeDetailSerializer(excersize).data)
         if self.request.user.is_staff:
             if models.Review.objects.filter(excersize=excersize).exists():

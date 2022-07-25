@@ -3,12 +3,20 @@ import { AuthContext } from '../context/AuthContext'
 import { X } from 'react-bootstrap-icons'
 
 const UnavailableLessonPack = ({ pack, index, selectedLessonPacks, selectLessonPack }) => {
-    const { cart, setCart, en } = useContext(AuthContext)
+    const { cart, setCart, deleteCartItem, en } = useContext(AuthContext)
     const [isInCart, setIsInCart] = useState(false)
 
     useEffect(() => {
         setIsInCart(!!cart.filter(item => item.id === pack.id).length)
     }, [cart, pack])
+
+    const handleDelete = () => {
+        deleteCartItem(pack.id)
+            .then(res => console.log(res))
+        setCart(prev => prev.filter(item => item.id !== pack.id))
+        selectLessonPack(false, index)
+
+    }
 
     return (
         <div key={pack.id} className="form-check">
@@ -35,10 +43,7 @@ const UnavailableLessonPack = ({ pack, index, selectedLessonPacks, selectLessonP
                     <X
                         size='20'
                         color='red'
-                        onClick={() => {
-                            setCart(prev => prev.filter(item => item.id !== pack.id))
-                            selectLessonPack(false, index)
-                        }} />
+                        onClick={handleDelete} />
                 }
             </label>
         </div>

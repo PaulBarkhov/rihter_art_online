@@ -19,7 +19,7 @@ const initialState = {
 }
 
 const Course = () => {
-    const { fetchCourseData, getPaymentLink, cart, setCart, en, setShowCartModal } = useContext(AuthContext)
+    const { fetchCourseData, getPaymentLink, cart, setCart, en, setShowCartModal, addCartItems } = useContext(AuthContext)
 
     const [course, setCourse] = useState(initialState)
     const [loading, setLoading] = useState(false)
@@ -55,6 +55,7 @@ const Course = () => {
     }
 
     const addToCart = () => {
+        addCartItems(selectedLessonPacks)
         setCart(prev => {
             prev = [...prev, ...selectedLessonPacks]
             return [...new Map(prev.map(pack => [pack.id, pack])).values()] //deletes duplicates by id

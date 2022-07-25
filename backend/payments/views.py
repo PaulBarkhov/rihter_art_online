@@ -25,10 +25,22 @@ class CartView(APIView):
         except models.Cart.DoesNotExist:
             cart = models.Cart.objects.create(user=self.request.user)
         cartItems = self.request.data['cartItems']
+        # models.CartItem.objects.filter(cart=cart).delete()
         for cartItem in cartItems:
             # lessonPack = LessonPack.objects.get(id=cartItem['id'])
             models.CartItem.objects.update_or_create(name=cartItem['course_name'] + ' ' + cartItem['name'], price=cartItem['price'], cart=cart)
         return Response(None, 200)
+
+class CartItemView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        try:
+            models.CartItem.objects.get(id=pk).delete()
+            return Response('', 200)
+        except models.CartItem.DoesNotExist:
+            print('sdfsd')
+            return Response('Something went wrong...', 500)
 
 class PaymentView(APIView):
     permission_classes = [IsAuthenticated]
