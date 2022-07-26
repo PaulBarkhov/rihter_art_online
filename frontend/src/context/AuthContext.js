@@ -102,15 +102,15 @@ export const AuthProvider = ({ children }) => {
     // }, [])
 
 
-    const fetchCourses = async () => {
+    const fetchCourses = useCallback(async () => {
         return await axios.get(`${process.env.REACT_APP_API_URL}/api/all_courses`, config)
             .catch(err => err.response.status === 401 ? logout() : console.log(err))
-    }
+    }, [config, logout])
 
-    const fetchProfileData = async () => {
+    const fetchProfileData = useCallback(async () => {
         return await axios.get(`${process.env.REACT_APP_API_URL}/profile/me`, config)
             .catch(err => err.response.status === 401 ? logout() : console.log(err))
-    }
+    }, [config, logout])
 
     const updateProfileData = async (profileData) => {
         return await axios.post(`${process.env.REACT_APP_API_URL}/profile/update`, profileData, config)
@@ -127,19 +127,19 @@ export const AuthProvider = ({ children }) => {
             .catch(err => err.response.status === 401 ? logout() : console.log(err))
     }, [config, logout])
 
-    const fetchLessonStatus = async (lessonID) => {
+    const fetchLessonStatus = useCallback(async (lessonID) => {
         return await axios.get(`${process.env.REACT_APP_API_URL}/api/lesson/${lessonID}/get_status`, config)
             .catch(err => err.response.status === 401 ? logout() : console.log(err))
-    }
+    }, [config, logout])
 
     const fetchLessonData = useCallback(async (lessonID) => {
         return await axios.get(`${process.env.REACT_APP_API_URL}/api/lesson/${lessonID}`, config)
     }, [config])
 
-    const fetchExcersizeData = async (lessonID) => {
+    const fetchExcersizeData = useCallback(async (lessonID) => {
         return await axios.get(`${process.env.REACT_APP_API_URL}/api/lesson/${lessonID}/excersizes/1`, config)
             .catch(err => err.response.status === 401 ? logout() : console.log(err))
-    }
+    }, [config, logout])
 
     const sendExcersizeMessage = async (lessonID, formData) => {
         return await axios.post(`${process.env.REACT_APP_API_URL}/api/lesson/${lessonID}/excersizes/1/messages`, formData, config)
@@ -151,10 +151,10 @@ export const AuthProvider = ({ children }) => {
             .catch(err => err.response.status === 401 ? logout() : console.log(err))
     }
 
-    const fetchComments = async (lessonID) => {
+    const fetchComments = useCallback(async (lessonID) => {
         return await axios.get(`${process.env.REACT_APP_API_URL}/api/lesson/${lessonID}/comments`, config)
             .catch(err => err.response.status === 401 ? logout() : console.log(err))
-    }
+    }, [config, logout])
 
     const postComment = async (lessonID, formData) => {
         return await axios.post(`${process.env.REACT_APP_API_URL}/api/lesson/${lessonID}/comments`, formData, config)
@@ -187,14 +187,14 @@ export const AuthProvider = ({ children }) => {
     // }, [config, logout])
 
     const addCartItems = useCallback(async (cartItems) => {
-        console.log('adding cart items...')
         return await axios.post(`${process.env.REACT_APP_API_URL}/payments/cart`, { cartItems: cartItems }, config)
+            .then(res => setCart(res.data))
             .catch(err => err.response.status === 401 ? logout() : console.log(err))
     }, [config, logout])
 
     const deleteCartItem = useCallback(async (id) => {
-        console.log('adding cart items...')
-        return await axios.post(`${process.env.REACT_APP_API_URL}/payments/cart/${id}`, config)
+        return await axios.delete(`${process.env.REACT_APP_API_URL}/payments/cart/${id}`, config)
+            .then(res => setCart(res.data))
             .catch(err => err.response.status === 401 ? logout() : console.log(err))
     }, [config, logout])
 

@@ -11,7 +11,6 @@ const Lesson = () => {
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(true)
     const [activeTab, setActiveTab] = useState(0)
-
     const params = useParams()
 
     const { fetchLessonData, logout, en } = useContext(AuthContext)
@@ -28,9 +27,10 @@ const Lesson = () => {
 
     }, [params.lessonID, fetchLessonData, logout, en])
 
+
     if (error) return <h1>{error}</h1>
 
-    if (loading) return <div className='w-100 text-center pt-4'><Spinner animation='border' className="spinner-border-xl f-flex justify-" /></div>
+    if (loading) return <div className='w-100 text-center pt-4'><Spinner animation='border' className="spinner-border-xl" /></div>
 
     return (
         <>
@@ -42,9 +42,10 @@ const Lesson = () => {
 
             <h1 className='text-center mb-4'>{lessonData.lesson.name}</h1>
 
-            <div className="d-lg-none">
+            <div>
 
-                <div className={activeTab === 0 ? "d-block" : "d-none"}>
+                <div
+                    className={activeTab === 0 ? "d-block" : "d-none"}>
                     <h2>{en ? 'Description' : 'Описание'}</h2>
                     <p className='border rounded p-2 shadow-sm'>{lessonData.lesson.description}</p>
                     <MemorizedLessonMaterials lessonData={lessonData} />

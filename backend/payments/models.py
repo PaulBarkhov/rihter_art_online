@@ -17,8 +17,9 @@ class CartItem(models.Model):
     class Meta: 
         verbose_name = 'Товар в корзине'
         verbose_name_plural = 'Товары в корзине'
-    name = models.CharField('Название', max_length=64, blank=True)
-    price = MoneyField(max_digits=14, decimal_places=2, default_currency='RUB', null=True)
+    ref = models.OneToOneField('courses.LessonPack', verbose_name='Референс к товару', on_delete=models.CASCADE, blank=True, null=True, related_name='cart_item')
+    # name = models.CharField('Название', max_length=64, blank=True)
+    # price = MoneyField(max_digits=14, decimal_places=2, default_currency='RUB', null=True)
     cart = models.ForeignKey(Cart, verbose_name='Корзина', null=True, on_delete=models.CASCADE, blank=True, related_name='cart_items')
 
     def __str__(self):

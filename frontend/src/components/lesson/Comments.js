@@ -42,12 +42,16 @@ const Comments = () => {
 
     return (
         <div>
-            <div className='min-vh-100'>
-                <h2>{en ? 'Comments' : 'Комментарии'}</h2>
-                {comments.length === 0 ? (
-                    <h3>{en ? 'No comments yet' : 'Пока нет комментариев'}</h3>
-                ) : (
-                    comments.map(comment =>
+
+            <h2>{en ? 'Comments' : 'Комментарии'}</h2>
+            {comments.length === 0 ? (
+                <div style={{ height: 150 }} className='d-flex flex-column shadow-sm justify-content-center text-center border rounded p-2' >
+                    {en ? 'No comments yet' : 'Пока нет комментариев'}
+                </div>
+
+            ) : (
+                <div style={{ maxHeight: 'calc(100vh - 310px)', overflowY: 'scroll' }}>
+                    {comments.map(comment =>
                         <div key={comment.id} className='border rounded shadow-sm p-3 mb-2'>
                             <Message
                                 message={comment}
@@ -55,15 +59,17 @@ const Comments = () => {
                                 deleteMessage={deleteComment}
                             />
                         </div>
-                    )
-                )}
-            </div>
+                    )}
+                </div>
+
+            )}
 
             <ChatInput
                 send={postComment}
                 reply={reply}
                 setReply={setReply}
             />
+
         </div >
     )
 }

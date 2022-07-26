@@ -1,10 +1,12 @@
 import React, { useContext, useLayoutEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AuthContext } from '../context/AuthContext'
+import OffsetSpinner from '../components/OffsetSpinner'
 
 function HomePage() {
     const [courses, setCourses] = useState([])
     const navigate = useNavigate()
+    const [offset, setOffset] = useState(100) //animation
 
     const { fetchCourses, en } = useContext(AuthContext)
 
@@ -13,10 +15,16 @@ function HomePage() {
             .then(res => {
                 setCourses(res.data.courses)
             })
+            .finally(() => setOffset(0))
     }, [fetchCourses])
 
     return (
-        <div className='d-flex flex-row flex-wrap'>
+        <div
+            style={{ transform: `translateX(${offset}%)`, transition: 'transform 0.2s ease' }}
+            className='d-flex flex-row flex-wrap'>
+
+            <OffsetSpinner />
+
             {courses && courses.map(course => {
                 return (
                     <div key={course.id} className="col-12 col-lg-3">

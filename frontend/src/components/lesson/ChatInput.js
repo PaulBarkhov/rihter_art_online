@@ -33,7 +33,7 @@ const ChatInput = ({ send, reply, setReply }) => {
     }
 
     return (
-        <div className="p-2 bg-white" style={{ position: 'sticky', bottom: 0 }}>
+        <div className="py-2" style={{ position: 'sticky', bottom: 0 }}>
 
             {!!previews.length &&
                 <div style={{ display: 'flex', overflow: 'scroll', marginBottom: 20 }}>

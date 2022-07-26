@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from . import models
+from courses.models import Lesson, LessonPack
 from .import serilalizers
 from courses.models import LessonPack
 from django.conf import settings
@@ -24,21 +25,24 @@ class CartView(APIView):
             cart = models.Cart.objects.get(user=self.request.user)
         except models.Cart.DoesNotExist:
             cart = models.Cart.objects.create(user=self.request.user)
+
         cartItems = self.request.data['cartItems']
         # models.CartItem.objects.filter(cart=cart).delete()
         for cartItem in cartItems:
-            # lessonPack = LessonPack.objects.get(id=cartItem['id'])
-            models.CartItem.objects.update_or_create(name=cartItem['course_name'] + ' ' + cartItem['name'], price=cartItem['price'], cart=cart)
-        return Response(None, 200)
+            lessonPack = LessonPack.objects.get(id=cartItem['id'])
+            models.CartItem.objects.update_or_create(ref=lessonPack, cart=cart)
+        return Response(serilalizers.CartItemSerializer(cart.cart_items, many=True).data, 200)
 
 class CartItemView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def post(self, request, pk):
+    def delete(self, request, pk):
         try:
-            models.CartItem.objects.get(id=pk).delete()
-            return Response('', 200)
-        except models.CartItem.DoesNotExist:
+            cart_item = LessonPack.objects.get(id=pk).cart_item
+            cart_item.delete()
+            cart = cart_item.cart
+            return Response(serilalizers.CartItemSerializer(cart.cart_items, many=True).data, 200)
+        except LessonPack.DoesNotExist:
             print('sdfsd')
             return Response('Something went wrong...', 500)
 

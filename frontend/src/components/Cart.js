@@ -5,20 +5,23 @@ import Modal from 'react-bootstrap/Modal'
 import Button from 'react-bootstrap/Button'
 
 const Cart = ({ showCartModal, setShowCartModal, }) => {
-    const { user, header, cart, setCart, en, getPaymentLink } = useContext(AuthContext)
+    const { user, header, cart, setCart, en, getPaymentLink, deleteCartItem } = useContext(AuthContext)
 
     const [loading, setLoading] = useState(false)
 
-    const currency = cart[0] && cart[0].price_currency
+    const currency = cart[0] && cart[0].ref.price_currency
 
     const handleBuy = () => {
         setLoading(true)
 
         getPaymentLink({
-            lessonPacks: cart.map(cartItem => (({ id, name, price, course_name }) => ({ id, name, price, course_name }))(cartItem)),
+            lessonPacks: cart.map(cartItem => (({ id, name, price, course_name }) => ({ id, name, price, course_name }))(cartItem.ref)),
             currency: currency
         })
-            .then(res => window.open(res.data, '_blank', 'noopener,noreferrer'))
+            .then(res => {
+                const w = window.open()
+                w.location = res.data
+            })
             .finally(() => setLoading(false))
     }
 
@@ -34,21 +37,24 @@ const Cart = ({ showCartModal, setShowCartModal, }) => {
                             {cart.map(cartItem =>
                                 <div key={cartItem.id} className='border rounded p-2 my-2'>
                                     <div className='d-flex justify-content-between'>
-                                        <span>{cartItem.course_name} {cartItem.name}</span>
+                                        <span>{cartItem.ref.course_name} {cartItem.ref.name}</span>
                                         <X
                                             size='20'
                                             color='red'
-                                            onClick={() => setCart(prev => prev.filter(item => item.id !== cartItem.id))} />
+                                            onClick={() => {
+                                                deleteCartItem(cartItem.ref.id)
+                                                // setCart(prev => prev.filter(item => item.id !== cartItem.id))
+                                            }} />
                                     </div>
                                     <div>
-                                        {cartItem.price} {en ? cartItem.price_currency : (cartItem.price_currency === 'RUB' ? '₽' : cartItem.price_currency)}
+                                        {cartItem.ref.price} {en ? cartItem.ref.price_currency : (cartItem.ref.price_currency === 'RUB' ? '₽' : cartItem.ref.price_currency)}
                                     </div>
                                 </div>
                             )}
 
                             <h4 className='mt-3'>
                                 {en ? 'Total: ' : 'Итого: '}
-                                {cart.reduce((sum, item) => sum + parseFloat(item.price), 0).toFixed(2) + ' '}
+                                {cart.reduce((sum, item) => sum + parseFloat(item.ref.price), 0).toFixed(2) + ' '}
                                 {en ? currency : (currency === 'RUB' ? '₽' : currency)}
                             </h4>
 

@@ -54,16 +54,22 @@ const Excersize = ({ lessonID }) => {
 
     if (loading) return <div className='w-100 text-center pt-4'><Spinner animation='border' className="spinner-border-xl f-flex justify-" /></div>
 
-    if (!excersizeData) return <h1>{en ? 'No excersize' : 'Задания нет'}</h1>
-
     return (
-        <>
+        <div>
             <div className=''>
                 <h2>{en ? 'Excersize' : 'Задание'}</h2>
-                <div className="border rounded p-2 shadow-sm mb-3" dangerouslySetInnerHTML={renderDangerousHTML()}></div>
+                <div className="border rounded p-2 shadow-sm">
+                    {!excersizeData.text ?
+                        <div style={{ height: 150 }} className="d-flex flex-column justify-content-center text-center">
+                            {en ? 'No excersize' : 'Задания нет'}
+                        </div>
+                        :
+                        <div dangerouslySetInnerHTML={renderDangerousHTML()}></div>
+                    }
 
+                </div>
                 {excersizeData.reviews.map(review => review.review_messages.map(message => {
-                    if (!message.parent) { //That should be done on backend but it's complicated there 
+                    if (!message.parent) {
                         return <div key={message.id} className='border rounded shadow-sm mb-2 p-3' >
                             <Message
                                 message={message}
@@ -78,7 +84,7 @@ const Excersize = ({ lessonID }) => {
             {(reply || excersizeData.reviews.length === 0) && <ChatInput send={send} reply={reply} setReply={setReply} />}
             <div style={{ height: 70 }} id="bottomAnchor" ref={bottomRef}></div>
 
-        </>
+        </div>
     )
 }
 

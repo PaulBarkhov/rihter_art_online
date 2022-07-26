@@ -4,6 +4,7 @@ import { useParams, useNavigate } from "react-router-dom"
 import { AuthContext } from "../context/AuthContext"
 import CourseListItem from './CourseListItem'
 import Spinner from 'react-bootstrap/Spinner'
+import OffsetSpinner from "./OffsetSpinner"
 import UnavailableLessonPack from "./UnavailableLessonPack"
 import { useEffect } from "react"
 
@@ -25,11 +26,12 @@ const Course = () => {
     const [loading, setLoading] = useState(false)
     const [selectedLessonPacks, setSelectedLessonPacks] = useState([])
 
+    const [offset, setOffset] = useState(100) //animation
+
     const params = useParams()
     const cardRef = useRef()
 
     const navigate = useNavigate()
-
 
     useLayoutEffect(() => {
         fetchCourseData(params.courseID)
@@ -44,10 +46,13 @@ const Course = () => {
                     purchased_lessonPacks: res.data.purchased_lessonPacks,
                     unavailable_lessonPacks: res.data.unavailable_lessonPacks,
                 })
-                setSelectedLessonPacks([res.data.unavailable_lessonPacks[0]])
+                setSelectedLessonPacks(cart.length === 0 ? [res.data.unavailable_lessonPacks[0]] :
+                    res.data.unavailable_lessonPacks.filter(pack => cart.some(cartItem =>
+                        pack.id === cartItem.ref.id
+                    )))
             })
-
-    }, [params.courseID, fetchCourseData])
+            .finally(() => setOffset(0))
+    }, [params.courseID, fetchCourseData, cart])
 
     const selectLessonPack = (checked, index) => {
         if (index === 0 || checked) setSelectedLessonPacks(course.unavailable_lessonPacks.slice(0, index + 1))
@@ -56,10 +61,10 @@ const Course = () => {
 
     const addToCart = () => {
         addCartItems(selectedLessonPacks)
-        setCart(prev => {
-            prev = [...prev, ...selectedLessonPacks]
-            return [...new Map(prev.map(pack => [pack.id, pack])).values()] //deletes duplicates by id
-        })
+        // setCart(prev => {
+        //     prev = [...prev, ...selectedLessonPacks]
+        //     return [...new Map(prev.map(pack => [pack.id, pack])).values()] //deletes duplicates by id
+        // })
     }
 
     const handleBuy = () => {
@@ -76,10 +81,14 @@ const Course = () => {
             .finally(() => setLoading(false))
     }
 
-    return (
-        <div className='d-flex flex-column-reverse flex-lg-row justify-content-around'>
+    // if (qwe) return <></>
 
-            <div className='col-lg-7'>
+    return (
+        <div style={{ transform: `translateX(${offset}%)`, transition: 'transform 0.2s ease' }} className='d-flex flex-column-reverse flex-lg-row justify-content-around'>
+
+            <OffsetSpinner />
+
+            <div className='col-lg-6 col-xl-7'>
                 {/* <h1>{lessons.course_name}</h1>
                     <h5>{lessons.course_description}</h5> */}
                 <div className='f-flex flex-column'>
@@ -93,11 +102,12 @@ const Course = () => {
                 </div>
             </div>
 
-            <div ref={cardRef} id="card" className="col-lg-4">
-                <div className="sticky-top mb-4" style={{ top: 100 }}>
+            <div id="card" className="col-lg-5 col-xl-4">
+                {/* <div className="sticky-top mb-4" style={{ top: 100 }}> */}
+                <div className="mb-4">
                     <Card className='border rounded shadow-sm' >
                         <Card.Img src={course.preview} style={{ minHeight: 300 }} />
-                        <Card.Body>
+                        <Card.Body ref={cardRef} >
                             <Card.Title>{course.name}</Card.Title>
                             <Card.Text>{course.description}</Card.Text>
                             <form>
@@ -171,8 +181,8 @@ const Course = () => {
                                     {en ? ' Purchase' : ' Купить'}
                                 </button>
                                 {
-                                    cart.filter(cartItem =>
-                                        selectedLessonPacks.some(pack => cartItem.id === pack.id)
+                                    selectedLessonPacks.filter(pack =>
+                                        cart.some(cartItem => cartItem.ref.id === pack.id)
                                     ).length === selectedLessonPacks.length ?
                                         <button
                                             className="btn btn-warning w-100"
