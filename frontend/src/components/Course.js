@@ -84,9 +84,11 @@ const Course = () => {
     // if (qwe) return <></>
 
     return (
-        <div style={{ transform: `translateX(${offset}%)`, transition: 'transform 0.2s ease' }} className='d-flex flex-column-reverse flex-lg-row justify-content-around'>
+        <div
+            style={{ transform: `translateX(${offset}%)`, transition: 'transform 0.2s ease' }}
+            className='d-flex flex-column-reverse flex-lg-row justify-content-around'>
 
-            <OffsetSpinner />
+            {offset === 100 && <OffsetSpinner />}
 
             <div className='col-lg-6 col-xl-7'>
                 {/* <h1>{lessons.course_name}</h1>

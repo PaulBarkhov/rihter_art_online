@@ -37,7 +37,9 @@ function Account() {
         <div
             style={{ transform: `translateX(${offset}%)`, transition: 'transform 0.2s ease' }}
             className='d-flex justify-content-center'>
-            <OffsetSpinner />
+
+            {offset === 100 && <OffsetSpinner />}
+
             <div className='col-md-7 col-12 border rounded shadow p-4'>
                 <div className='d-flex flex-column w-100 align-items-center justify-content-center mb-2'>
                     <img src={profileData.profile_image} alt='Profile' style={{ width: 150, minWidth: 150, height: 150, minHeight: 150, borderRadius: 100, marginBottom: 10, objectFit: 'cover', textAlign: 'center' }} />

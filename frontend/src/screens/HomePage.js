@@ -23,7 +23,7 @@ function HomePage() {
             style={{ transform: `translateX(${offset}%)`, transition: 'transform 0.2s ease' }}
             className='d-flex flex-row flex-wrap'>
 
-            <OffsetSpinner />
+            {offset === 100 && <OffsetSpinner />}
 
             {courses && courses.map(course => {
                 return (

@@ -4,11 +4,11 @@ import Spinner from 'react-bootstrap/Spinner'
 const OffsetSpinner = () => {
     return (
         <div
+            className='container'
             style={{
                 position: 'absolute',
-                width: '100vw',
                 height: 'calc(100vh - 74px)',
-                transform: `translateX(calc(-100% + 10px))`,
+                transform: `translateX(-100%)`,
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'center',
