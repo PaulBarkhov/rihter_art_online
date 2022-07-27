@@ -5,6 +5,7 @@ import { ArrowRight, Paperclip, X } from 'react-bootstrap-icons'
 import VoiceRecorder from '../voiceRecorder/VoiceRecorder'
 import autosize from 'autosize'
 import resizeFile from '../../utils/resize'
+import UploadedImage from './UploadedImage';
 
 const ChatInput = ({ send, reply, setReply }) => {
     const [recording, setRecording] = useState(false)
@@ -24,11 +25,22 @@ const ChatInput = ({ send, reply, setReply }) => {
         }
     }, [reply])
 
+
+    useEffect(() => {
+        return () => {
+            setUploadedImages([])
+            setPreviews([])
+        }
+    }, [])
+
     const handleSend = () => {
-        send(commentText, voice).finally(() => {
+        console.log(uploadedImages)
+        send(commentText, voice, uploadedImages).finally(() => {
             setCommentText('')
             setVoice(null)
             setReply(null)
+            setPreviews([])
+            setUploadedImages([])
         })
     }
 
@@ -36,8 +48,8 @@ const ChatInput = ({ send, reply, setReply }) => {
         <div className="py-2" style={{ position: 'sticky', bottom: 0 }}>
 
             {!!previews.length &&
-                <div style={{ display: 'flex', overflow: 'scroll', marginBottom: 20 }}>
-                    {previews.map(preview => <img key={Math.random()} style={{ maxHeight: 100, objectFit: 'contain' }} src={preview} alt='preview' />)}
+                <div style={{ display: 'flex', overflowX: 'auto', marginBottom: 5 }}>
+                    {previews.map(preview => <UploadedImage key={Math.random()} image={preview} setPreviews={setPreviews} />)}
                 </div>
             }
 
@@ -92,21 +104,24 @@ const ChatInput = ({ send, reply, setReply }) => {
                             ref={imageInputRef}
                             style={{ display: "none" }}
                             type="file"
+                            multiple
                             name="profile_image"
                             id="profile_image"
                             accept="image/*"
                             onChange={async e => {
                                 try {
-                                    const file = e.target.files[0]
-                                    console.log('Размер до: ' + file.size / 1000 / 1000 + 'мб')
-                                    const image = await resizeFile(file, 1000, 1000, 80)
-                                    console.log('Размер после: ' + (image.size / 1000 / 1000).toFixed(2) + 'мб')
-                                    setUploadedImages(current => [...current, image])
-                                    const reader = new FileReader()
-                                    reader.onloadend = () => {
-                                        setPreviews(current => [...current, reader.result])
+                                    const files = e.target.files
+                                    for (let i = 0; i < files.length; i++) {
+                                        console.log('Размер до: ' + files[i].size / 1000 / 1000 + 'мб')
+                                        const image = await resizeFile(files[i], 1000, 1000, 80)
+                                        console.log('Размер после: ' + (image.size / 1000 / 1000).toFixed(2) + 'мб')
+                                        setUploadedImages(current => [...current, image])
+                                        const reader = new FileReader()
+                                        reader.onloadend = () => {
+                                            setPreviews(current => [...current, reader.result])
+                                        }
+                                        reader.readAsDataURL(image)
                                     }
-                                    reader.readAsDataURL(image)
                                 } catch (err) {
                                     console.log(err)
                                 }

@@ -205,7 +205,7 @@ export const AuthProvider = ({ children }) => {
                 .catch(err => err.response.status === 401 ? logout() : console.log(err))
         }
         tokens &&
-            fetchCart().then(res => setCart(res.data))
+            fetchCart().then(res => setCart(res.data || []))
     }, [config, tokens, logout])
 
     return <AuthContext.Provider

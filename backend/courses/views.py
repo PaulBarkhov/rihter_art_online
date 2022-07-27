@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from . import serializers
 import json
 import vimeo
-
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from . import models
 
 def front(request):
@@ -144,11 +144,17 @@ class CommentListView(APIView):
             parentID = data["parentID"]
 
             if not parentID:
-                models.Comment.objects.create(lesson=lesson, user=user, text=text, voice=voice)    
+                comment = models.Comment.objects.create(lesson=lesson, user=user, text=text, voice=voice)  
+                for item in data.values():
+                    if type(item) == InMemoryUploadedFile:
+                        models.CommentImage.objects.create(user=user, comment=comment, image=item )   
             else:
                 parentMessage = models.Comment.objects.get(pk=parentID)
                 text = parentMessage.user.first_name + ', ' + text
-                models.Comment.objects.create(lesson=lesson, user=user, text=text, voice=voice, parent=parentMessage)  
+                comment = models.Comment.objects.create(lesson=lesson, user=user, text=text, voice=voice, parent=parentMessage)  
+                for item in data.values():
+                    if type(item) == InMemoryUploadedFile:
+                        models.CommentImage.objects.create(user=user, comment=comment, image=item )
 
             return Response(data=None, status=200)
 
@@ -234,11 +240,18 @@ class ReviewMessageListView(APIView):
         if parentID:
             parentMessage = models.ReviewMessage.objects.get(pk=parentID)
             text = parentMessage.user.first_name + ', ' + text
-            models.ReviewMessage.objects.create(review=parentMessage.review, user=self.request.user, text=text, voice=voice, parent=parentMessage)  
+            reviewMessage = models.ReviewMessage.objects.create(review=parentMessage.review, user=self.request.user, text=text, voice=voice, parent=parentMessage) 
+            for item in data.values():
+                if type(item) == InMemoryUploadedFile:
+                    models.ReviewMessageImage.objects.create(reviewMessage=reviewMessage, user=self.request.user, image=item )   
         elif not models.Review.objects.filter(excersize=excersize, profile=self.request.user.profile).exists():
             models.Review.objects.create(excersize=excersize, profile=self.request.user.profile, status='onReview')
             review = models.Review.objects.get(excersize=excersize, profile=self.request.user.profile)
-            models.ReviewMessage.objects.create(review=review, user=self.request.user, text=text, voice=voice)  
+            reviewMessage = models.ReviewMessage.objects.create(review=review, user=self.request.user, text=text, voice=voice)  
+            for item in data.values():
+                if type(item) == InMemoryUploadedFile:
+                    models.ReviewMessageImage.objects.create(reviewMessage=reviewMessage, user=self.request.user, image=item )   
+
 
         return Response(None, status=200)
 

@@ -7,7 +7,7 @@ const UnavailableLessonPack = ({ pack, index, selectedLessonPacks, selectLessonP
     const [isInCart, setIsInCart] = useState(false)
 
     useEffect(() => {
-        setIsInCart(!!cart.filter(item => item.ref.id === pack.id).length)
+        cart && setIsInCart(!!cart.filter(item => item.ref.id === pack.id).length)
     }, [cart, pack])
 
     const handleDelete = () => {

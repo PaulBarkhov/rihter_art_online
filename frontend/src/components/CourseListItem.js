@@ -72,7 +72,7 @@ const CourseListItem = ({ lesson, index, cardRef }) => {
                                     {en ? 'Open' : 'Открыть'}
                                 </button>) : (
                                 <button
-                                    className='btn btn-outline-primary'
+                                    className='btn btn-outline-primary d-lg-none'
                                     style={{ float: 'right' }}
                                     onClick={() => cardRef.current.scrollIntoView(false)}>
                                     {en ? 'Purchase' : 'Купить'}

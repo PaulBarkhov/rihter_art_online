@@ -34,7 +34,7 @@ class CommentListSerializer(ModelSerializer):
     user = UserSerializer(read_only=True)
     date = DateTimeField(format="%d.%m.%Y %H:%M:%S")
     children = RecursiveSerializer(many=True)
-    images = CommentImageSerializer(read_only=True, many=True)
+    comment_images = CommentImageSerializer(read_only=True, many=True)
     class Meta:
         model = models.Comment
         fields = ('__all__')
@@ -90,7 +90,7 @@ class ReviewMessageSerializer(ModelSerializer):
     user = UserSerializer(read_only=True)
     date = DateTimeField(format="%d.%m.%Y %H:%M:%S")
     children = RecursiveSerializer(many=True)
-    images = ReviewMessageImageSerializer(read_only=True, many=True)
+    review_message_images = ReviewMessageImageSerializer(read_only=True, many=True)
     class Meta:
         model = models.ReviewMessage
         fields = ('__all__')

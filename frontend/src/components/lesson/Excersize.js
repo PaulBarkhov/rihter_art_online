@@ -31,12 +31,13 @@ const Excersize = ({ lessonID }) => {
 
     }, [lessonID, fetchExcersizeData, reloader])
 
-    const send = (commentText, voice) => {
+    const send = (commentText, voice, images) => {
         if (commentText || voice) {
             const formData = new FormData()
             formData.append("text", commentText || '')
             formData.append("voice", voice ? voice.blob : '')
             formData.append("parentID", reply ? reply.id : '')
+            images.forEach((image, i) => formData.append(`image_${i}`, image, image.name))
 
             return sendExcersizeMessage(lessonID, formData)
                 .then(res => setReloader(!reloader))
@@ -56,10 +57,10 @@ const Excersize = ({ lessonID }) => {
 
     return (
         <div>
-            <div className=''>
-                <h2>{en ? 'Excersize' : 'Задание'}</h2>
-                <div className="border rounded p-2 shadow-sm">
-                    {!excersizeData.text ?
+            <h2 className='text-lg-center'>{en ? 'Excersize' : 'Задание'}</h2>
+            <div className='d-flex flex-column justify-content-center align-items-center'>
+                <div className="col-lg-8 border rounded p-2 shadow-sm mb-2">
+                    {!excersizeData.excersize.text ?
                         <div style={{ height: 150 }} className="d-flex flex-column justify-content-center text-center">
                             {en ? 'No excersize' : 'Задания нет'}
                         </div>
@@ -70,7 +71,7 @@ const Excersize = ({ lessonID }) => {
                 </div>
                 {excersizeData.reviews.map(review => review.review_messages.map(message => {
                     if (!message.parent) {
-                        return <div key={message.id} className='border rounded shadow-sm mb-2 p-3' >
+                        return <div key={message.id} className='col-lg-8 border rounded shadow-sm mb-2 p-3' >
                             <Message
                                 message={message}
                                 deleteMessage={deleteMessage}
@@ -79,10 +80,14 @@ const Excersize = ({ lessonID }) => {
                         </div>
                     }
                 }))}
+                <div className='col-lg-8 col-12' >
+                    {(reply || excersizeData.reviews.length === 0) && <ChatInput send={send} reply={reply} setReply={setReply} />}
+                    <div style={{ height: 70 }} id="bottomAnchor" ref={bottomRef}></div>
+                </div>
+
             </div>
 
-            {(reply || excersizeData.reviews.length === 0) && <ChatInput send={send} reply={reply} setReply={setReply} />}
-            <div style={{ height: 70 }} id="bottomAnchor" ref={bottomRef}></div>
+
 
         </div>
     )

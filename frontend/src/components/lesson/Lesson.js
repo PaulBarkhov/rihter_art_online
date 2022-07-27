@@ -27,10 +27,9 @@ const Lesson = () => {
 
     }, [params.lessonID, fetchLessonData, logout, en])
 
-
     if (error) return <h1>{error}</h1>
 
-    if (loading) return <div className='w-100 text-center pt-4'><Spinner animation='border' className="spinner-border-xl" /></div>
+    if (loading) return <div className='w-100 text-center pt-4'><Spinner animation='border' className="spinner-border-xl f-flex justify-" /></div>
 
     return (
         <>
@@ -42,10 +41,9 @@ const Lesson = () => {
 
             <h1 className='text-center mb-4'>{lessonData.lesson.name}</h1>
 
-            <div>
+            <div className="d-lg-none">
 
-                <div
-                    className={activeTab === 0 ? "d-block" : "d-none"}>
+                <div className={activeTab === 0 ? "d-block" : "d-none"}>
                     <h2>{en ? 'Description' : 'Описание'}</h2>
                     <p className='border rounded p-2 shadow-sm'>{lessonData.lesson.description}</p>
                     <MemorizedLessonMaterials lessonData={lessonData} />
@@ -75,7 +73,7 @@ const Lesson = () => {
                         </div>
                     </div>
                 </div>
-                <div className=''>
+                <div style={{ marginTop: 100 }}>
                     <Excersize lessonID={params.lessonID} />
                 </div>
             </div>

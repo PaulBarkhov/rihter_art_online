@@ -20,12 +20,13 @@ const Comments = () => {
             .finally(() => setLoading(false))
     }, [params.lessonID, reloading, fetchComments])
 
-    const postComment = async (commentText, voice) => {
+    const postComment = async (commentText, voice, images) => {
         if (commentText || voice) {
             const formData = new FormData()
             formData.append("text", commentText || '')
             formData.append("voice", voice ? voice.blob : '')
             formData.append("parentID", reply ? reply.id : '')
+            images.forEach((image, i) => formData.append(`image_${i}`, image, image.name))
 
             apiPostComment(params.lessonID, formData)
                 .then(res => setReloading(!reloading))
@@ -50,9 +51,9 @@ const Comments = () => {
                 </div>
 
             ) : (
-                <div style={{ maxHeight: 'calc(100vh - 310px)', overflowY: 'scroll' }}>
+                <div style={{ maxHeight: 'calc(100vh - 310px)', overflowY: 'auto', overFlowX: 'hidden' }}>
                     {comments.map(comment =>
-                        <div key={comment.id} className='border rounded shadow-sm p-3 mb-2'>
+                        <div key={comment.id} className='border rounded shadow-sm p-3 mb-2 mx-1'>
                             <Message
                                 message={comment}
                                 setReply={setReply}

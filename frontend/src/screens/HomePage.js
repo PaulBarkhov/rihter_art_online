@@ -30,7 +30,6 @@ function HomePage() {
                     <div key={course.id} className="col-12 col-lg-3">
                         <div
                             className='mb-4 m-lg-1 border rounded shadow-sm'
-                            style={{ minHeight: 400 }}
                             key={course.id}
                             onClick={() => navigate(`/course/${course.id}`)}>
                             <img className='card-img-top' src={course.preview} alt='Preview' />

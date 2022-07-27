@@ -65,6 +65,18 @@ class PhotoAdmin(admin.ModelAdmin):
 
     get_image.short_description = "Изображение"
 
+@admin.register(models.CommentImage)
+class CommentImageAdmin(admin.ModelAdmin):
+    list_display = ("get_image", )
+    list_display_links = ("get_image", )
+    readonly_fields = ("get_image", )
+
+    def get_image(self, obj):
+        if obj.image: 
+            return mark_safe(f'<img src={obj.image.url} width="300" height="300" />')
+
+    get_image.short_description = "Изображение"
+
 @admin.register(Cart)
 class CartAdmin(admin.ModelAdmin):
     inlines = [CartItemInline]

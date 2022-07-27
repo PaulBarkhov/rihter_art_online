@@ -98,6 +98,7 @@ class ReviewMessageImage(models.Model):
         verbose_name_plural = 'Фото в сообщении задания'
     reviewMessage = models.ForeignKey(ReviewMessage, verbose_name='Сообщение', null=True, on_delete=models.CASCADE, blank=True, related_name='review_message_images')
     user = models.ForeignKey(User, verbose_name='Пользователь', null=True, on_delete=models.CASCADE, blank=True, related_name='review_message_images')
+    image = models.ImageField('Изображение', null=True, upload_to='uploads/review-images', blank=True)
 
 class Comment(models.Model):
     class Meta: 
@@ -119,6 +120,10 @@ class CommentImage(models.Model):
         verbose_name_plural = 'Фото в комментарии'
     comment = models.ForeignKey(Comment, verbose_name='Коммент', null=True, on_delete=models.CASCADE, blank=True, related_name='comment_images')
     user = models.ForeignKey(User, verbose_name='Пользователь', null=True, on_delete=models.CASCADE, blank=True, related_name='comment_images')
+    image = models.ImageField('Изображение', null=True, upload_to='uploads/comment-images', blank=True)
+
+    def __str__(self):
+        return f"{self.id}: {self.user}: {self.image}"
 
 class VoiceMessage(models.Model):
     class Meta:

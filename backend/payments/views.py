@@ -16,9 +16,12 @@ class CartView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        cart = models.Cart.objects.get(user=self.request.user)
-        cart_items = cart.cart_items
-        return Response(serilalizers.CartItemSerializer(cart_items, many=True).data)
+        try:
+            cart = models.Cart.objects.get(user=self.request.user)
+            cart_items = cart.cart_items
+            return Response(serilalizers.CartItemSerializer(cart_items, many=True).data)
+        except models.Cart.DoesNotExist:
+            return Response('')
 
     def post(self, request):
         try:

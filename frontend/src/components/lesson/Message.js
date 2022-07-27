@@ -6,10 +6,13 @@ import { AuthContext } from '../../context/AuthContext'
 import Modal from 'react-bootstrap/Modal'
 import Button from 'react-bootstrap/Button'
 import Collapse from 'react-bootstrap/Collapse'
+import MessageImage from './MessageImage';
 
 const Message = ({ message, deleteMessage, setReply }) => {
     const [deleteModalShown, setDeleteModalShown] = useState(false)
     const [repliesShown, setRepliesShown] = useState(!!message.parent)
+
+    const images = message.comment_images || message.review_message_images
 
     const { user, en } = useContext(AuthContext)
 
@@ -32,7 +35,8 @@ const Message = ({ message, deleteMessage, setReply }) => {
                     <span className='text-muted'>{message.date}</span>
                 </div>
             </div>
-            <span>{message.text}</span>
+            <p>{message.text}</p>
+            {images.map(image => <MessageImage image={image} />)}
             {
                 message.voice && <AudioPlayer
                     src={message.voice}
@@ -107,7 +111,6 @@ const Message = ({ message, deleteMessage, setReply }) => {
                     </Button>
                 </Modal.Footer>
             </Modal>
-
         </div >
 
     )

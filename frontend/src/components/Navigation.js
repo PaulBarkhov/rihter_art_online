@@ -17,7 +17,7 @@ const Navigation = () => {
     if (!user) return <></>
     return (
         <>
-            <div className="py-2 mb-3 sticky-top" style={{ zIndex: 999099 }}>
+            <div className="py-2 mb-3 sticky-top" style={{ zIndex: 10000 }}>
                 <Navbar bg="light" collapseOnSelect expand="lg" className="border rounded bg-white shadow" expanded={expanded}>
                     <Container className='justify-content-start'>
                         <Navbar.Toggle onClick={() => setExpanded(!expanded)} />
