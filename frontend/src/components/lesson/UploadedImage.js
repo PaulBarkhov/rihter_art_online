@@ -4,24 +4,12 @@ import Button from 'react-bootstrap/Button'
 
 const UploadedImage = ({ image, setPreviews }) => {
 
-    const [deleteModalShown, setDeleteModalShown] = useState(false)
+    const [imageModalShown, setImageModalShown] = useState(false)
     const [contextMenuShown, setContextMenuShown] = useState(false)
 
     const menuRef = useRef()
 
     const en = true
-
-    const handleImageRightClick = (e, image) => {
-        e.preventDefault()
-        setContextMenuShown(true)
-        window.addEventListener('click', (event) => {
-            if (event.target.innerHTML === 'Delete') {
-                setDeleteModalShown(true)
-            }
-            setContextMenuShown(false)
-
-        }, { once: true })
-    }
 
     const confirmDelete = () => {
         setPreviews(prev => prev.filter(prevImage => prevImage !== image))
@@ -39,7 +27,7 @@ const UploadedImage = ({ image, setPreviews }) => {
                 }}
                 src={image}
                 alt='preview'
-                onContextMenu={e => handleImageRightClick(e, image)} />
+                onClick={e => setImageModalShown(true)} />
 
             <ul
                 ref={menuRef}
@@ -53,26 +41,24 @@ const UploadedImage = ({ image, setPreviews }) => {
                 <li>Delete</li>
             </ul>
 
-            <Modal
-                show={deleteModalShown}
-                onHide={() => setDeleteModalShown(false)}
-                backdrop="static"
-                size="sm"
-                keyboard={false}
-                // aria-labelledby="contained-modal-title-vcenter"
-                centered>
-                <Modal.Header closeButton>
-                    {en ? 'Delete this image?' : 'Удалить изображение?'}
-                </Modal.Header>
+            <Modal show={imageModalShown} onHide={() => setImageModalShown(false)} centered>
+                <Modal.Body>
+                    <img
+                        src={image}
+                        alt="profile_image"
+                        width="100%"
+                    />
+                </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setDeleteModalShown(false)}>
-                        {en ? 'Cancel' : 'Отмена'}
-                    </Button>
-                    <Button variant="danger" onClick={confirmDelete}>
-                        {en ? 'Yes' : 'Да'}
+                    <Button
+                        variant="danger"
+                        onClick={confirmDelete}
+                    >
+                        {en ? 'Удалить' : 'Delete'}
                     </Button>
                 </Modal.Footer>
             </Modal>
+
         </div>
     )
 }

@@ -86,16 +86,16 @@ export const AuthProvider = ({ children }) => {
                         setTokens(null)
                         setUser(null)
                         localStorage.removeItem('tokens')
-                        navigate("/login")
+                        // navigate("/login")
                     }
                 })
         }
-        // const fourMinutes = 1000 * 60 * 4
-        // const interval = setInterval(() => {
-        //     tokens && refreshToken()
-        // }, fourMinutes)
-        // return () => clearInterval(interval)
-    }, [tokens, navigate])
+        const fourMinutes = 1000 * 60 * 4
+        const interval = setInterval(() => {
+            tokens && refreshToken()
+        }, fourMinutes)
+        return () => clearInterval(interval)
+    }, [tokens])
 
     // useEffect(() => {
     //     setTokens(localStorage.getItem('token') || null)

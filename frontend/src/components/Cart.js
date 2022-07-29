@@ -19,8 +19,9 @@ const Cart = ({ showCartModal, setShowCartModal, }) => {
             currency: currency
         })
             .then(res => {
-                const w = window.open()
-                w.location = res.data
+                window.open(res.data)
+                // const w = window.open()
+                // w.location = res.data
             })
             .finally(() => setLoading(false))
     }

@@ -46,13 +46,16 @@ const Course = () => {
                     purchased_lessonPacks: res.data.purchased_lessonPacks,
                     unavailable_lessonPacks: res.data.unavailable_lessonPacks,
                 })
-                setSelectedLessonPacks(cart.length === 0 ? [res.data.unavailable_lessonPacks[0]] :
-                    res.data.unavailable_lessonPacks.filter(pack => cart.some(cartItem =>
-                        pack.id === cartItem.ref.id
-                    )))
             })
             .finally(() => setOffset(0))
-    }, [params.courseID, fetchCourseData, cart])
+    }, [params.courseID, fetchCourseData])
+
+    useLayoutEffect(() => {
+        setSelectedLessonPacks(cart.length === 0 ? [course.unavailable_lessonPacks[0]] :
+            course.unavailable_lessonPacks.filter(pack => cart.some(cartItem =>
+                pack.id === cartItem.ref.id
+            )))
+    }, [course, cart])
 
     const selectLessonPack = (checked, index) => {
         if (index === 0 || checked) setSelectedLessonPacks(course.unavailable_lessonPacks.slice(0, index + 1))
@@ -75,8 +78,8 @@ const Course = () => {
             currency: course.currency
         })
             .then(res => {
-                const w = window.open()
-                w.location = res.data
+                window.open(res.data)
+                // w.location = res.data
             })
             .finally(() => setLoading(false))
     }
