@@ -1,12 +1,11 @@
 import React, { useState, useLayoutEffect, useRef, useContext } from "react"
 import Card from 'react-bootstrap/Card'
-import { useParams, useNavigate } from "react-router-dom"
+import { useParams } from "react-router-dom"
 import { AuthContext } from "../context/AuthContext"
 import CourseListItem from './CourseListItem'
 import Spinner from 'react-bootstrap/Spinner'
 import OffsetSpinner from "./OffsetSpinner"
 import UnavailableLessonPack from "./UnavailableLessonPack"
-import { useEffect } from "react"
 
 const initialState = {
     id: 0,
@@ -20,7 +19,7 @@ const initialState = {
 }
 
 const Course = () => {
-    const { fetchCourseData, getPaymentLink, cart, setCart, en, setShowCartModal, addCartItems } = useContext(AuthContext)
+    const { fetchCourseData, getPaymentLink, cart, en, setShowCartModal, addCartItems } = useContext(AuthContext)
 
     const [course, setCourse] = useState(initialState)
     const [loading, setLoading] = useState(false)
@@ -30,8 +29,6 @@ const Course = () => {
 
     const params = useParams()
     const cardRef = useRef()
-
-    const navigate = useNavigate()
 
     useLayoutEffect(() => {
         fetchCourseData(params.courseID)
@@ -46,15 +43,17 @@ const Course = () => {
                     purchased_lessonPacks: res.data.purchased_lessonPacks,
                     unavailable_lessonPacks: res.data.unavailable_lessonPacks,
                 })
+                setSelectedLessonPacks([res.data.unavailable_lessonPacks[0]])
             })
             .finally(() => setOffset(0))
     }, [params.courseID, fetchCourseData])
 
     useLayoutEffect(() => {
-        setSelectedLessonPacks(cart.length === 0 ? [course.unavailable_lessonPacks[0]] :
-            course.unavailable_lessonPacks.filter(pack => cart.some(cartItem =>
-                pack.id === cartItem.ref.id
-            )))
+        cart.length !== 0 &&
+            setSelectedLessonPacks(course.unavailable_lessonPacks.filter(pack =>
+                cart.some(cartItem =>
+                    pack.id === cartItem.ref.id
+                )))
     }, [course, cart])
 
     const selectLessonPack = (checked, index) => {
@@ -83,8 +82,6 @@ const Course = () => {
             })
             .finally(() => setLoading(false))
     }
-
-    // if (qwe) return <></>
 
     return (
         <div
@@ -198,7 +195,7 @@ const Course = () => {
                                         {en ? ' Purchase' : ' Купить'}
                                     </button>
                                     {
-                                        selectedLessonPacks.filter(pack =>
+                                        selectedLessonPacks && selectedLessonPacks.filter(pack =>
                                             cart.some(cartItem => cartItem.ref.id === pack.id)
                                         ).length === selectedLessonPacks.length ?
                                             <button
