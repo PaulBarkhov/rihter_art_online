@@ -65,7 +65,10 @@ const Registration = () => {
                     .then(res => {
                         navigate('/verification')
                     })
-                    .catch(err => setErrors(err.response.data))
+                    .catch(err => {
+                        setErrors(err.response.data)
+                        console.log('Sign up failed')
+                    })
                     .finally(() => setLoading(false))
             }
         }

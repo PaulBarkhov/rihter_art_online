@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef, useContext } from 'react'
 import Modal from 'react-bootstrap/Modal'
 import resizeFile from '../utils/resize'
 import { AuthContext } from '../context/AuthContext'
+import Spinner from 'react-bootstrap/Spinner'
+
 
 
 const ProfileImageModal = ({ profile_image, updateProfileImage, unmountModal }) => {
@@ -9,6 +11,7 @@ const ProfileImageModal = ({ profile_image, updateProfileImage, unmountModal }) 
     const [uploadedImage, setUploadedImage] = useState()
     const [thumbnail, setThumbnail] = useState()
     const [preview, setPreview] = useState()
+    const [loading, setLoading] = useState(false)
 
     const { en } = useContext(AuthContext)
 
@@ -35,6 +38,7 @@ const ProfileImageModal = ({ profile_image, updateProfileImage, unmountModal }) 
         const formData = new FormData()
 
         if (uploadedImage) {
+            setLoading(true)
             formData.append("profile_image", uploadedImage)
             formData.append("thumbnail", thumbnail)
 
@@ -43,6 +47,8 @@ const ProfileImageModal = ({ profile_image, updateProfileImage, unmountModal }) 
                     setShowModal(false)
                     unmountModal(preview)
                 })
+                .catch(err => console.error(err))
+                .finally(() => setLoading(false))
         }
     }
 
@@ -61,9 +67,22 @@ const ProfileImageModal = ({ profile_image, updateProfileImage, unmountModal }) 
                 />
 
                 <div className="d-flex flex-row justify-content-end pt-3">
-                    <button className={`btn btn-outline-success mx-1 ${!uploadedImage && "d-none"}`} onClick={handleSave}>{en ? 'Save' : 'Сохранить'}</button>
-                    <button className={`btn btn-outline-primary mx-1 ${uploadedImage && "d-none"}`} onClick={() => imageInputRef.current.click()}>{en ? 'Change' : 'Сменить'}</button>
-                    <button className="btn btn-outline-secondary" onClick={handleCancel}>{en ? 'Cancel' : 'Отмена'}</button>
+                    <button
+                        className={`btn btn-outline-success mx-1 ${!uploadedImage && "d-none"}`}
+                        onClick={handleSave}>
+                        {loading && <Spinner animation="border" size="sm" />}
+                        {en ? ' Save' : ' Сохранить'}
+                    </button>
+                    <button
+                        className={`btn btn-outline-primary mx-1 ${uploadedImage && "d-none"}`}
+                        onClick={() => imageInputRef.current.click()}>
+                        {en ? 'Change' : 'Сменить'}
+                    </button>
+                    <button
+                        className="btn btn-outline-secondary"
+                        onClick={handleCancel}>
+                        {en ? 'Cancel' : 'Отмена'}
+                    </button>
                 </div>
 
                 <input

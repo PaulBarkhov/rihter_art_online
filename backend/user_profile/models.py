@@ -18,8 +18,8 @@ class UserProfile(models.Model):
     completed_lessons = models.ManyToManyField('courses.Lesson', verbose_name='Пройденные уроки', blank=True, related_name='completed')
     lessons_on_review = models.ManyToManyField('courses.Lesson', verbose_name='Уроки на ревью', blank=True, related_name='on_review')
 
-    profile_image = models.ImageField('Фото', default='default.jpg', upload_to='profile_pics', null=True, blank=True)
-    thumbnail = models.ImageField('Thumbnail', default='default.jpg', upload_to='thumbnails', null=True, blank=True)
+    profile_image = models.ImageField('Фото', default='default.png', upload_to='profile_pics', null=True, blank=True)
+    thumbnail = models.ImageField('Thumbnail', default='default.png', upload_to='thumbnails', null=True, blank=True)
 
 
     def __str__(self):

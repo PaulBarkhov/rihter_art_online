@@ -148,18 +148,6 @@ USE_I18N = True
 
 USE_TZ = False
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.0/howto/static-files/
-
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "build/static")]
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-STATIC_URL = '/static/'
-
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL = '/media/'
-
 REST_FRAMEWORK = {
     # 'DEFAULT_PERMISSION_CLASSES': [
     #     'rest_framework.permissions.IsAuthenticated'
@@ -232,14 +220,34 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = config['EMAIL_HOST_USER']
 EMAIL_HOST_PASSWORD = config['EMAIL_HOST_PASSWORD']
 
+AWS_STORAGE_BUCKET_NAME = config['AWS_STORAGE_BUCKET_NAME']
+AWS_CLOUDFRONT_DOMAIN = config['AWS_CLOUDFRONT_DOMAIN']
 AWS_ACCESS_KEY_ID = config['AWS_ACCESS_KEY_ID']
 AWS_SECRET_ACCESS_KEY = config['AWS_SECRET_ACCESS_KEY']
-AWS_STORAGE_BUCKET_NAME = config['AWS_STORAGE_BUCKET_NAME']
-AWS_S3_SIGNATURE_VERSION = 's3v4'
-AWS_S3_REGION_NAME = 'eu-central-1'
-AWS_S3_FILE_OVERWRITE = False
-AWS_DEFAULT_ACL = None
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+MEDIAFILES_LOCATION = 'media'
+MEDIA_ROOT = '/%s/' % MEDIAFILES_LOCATION
+MEDIA_URL = '//%s/%s/' % (AWS_CLOUDFRONT_DOMAIN, MEDIAFILES_LOCATION)
+DEFAULT_FILE_STORAGE = 'courses.custom_storages.MediaStorage'
+
+# STATICFILES_LOCATION = 'static'
+# STATIC_ROOT = '/%s/' % STATICFILES_LOCATION
+# STATIC_URL = '//%s/%s/' % (AWS_CLOUDFRONT_DOMAIN, STATICFILES_LOCATION)
+# STATICFILES_STORAGE = 'courses.custom_storages.StaticStorage'
+
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# MEDIA_URL = '/media/'
+# STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "build/static")]
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+STATIC_URL = '/static/'
+
+# AWS_S3_SIGNATURE_VERSION = 's3v4'
+# AWS_S3_REGION_NAME = 'eu-central-1'
+# AWS_S3_FILE_OVERWRITE = False
+# AWS_DEFAULT_ACL = None
+# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 
 VIMEO_TOKEN = config['VIMEO_TOKEN']
